@@ -6,7 +6,7 @@
   Plugin Name: WooCommerce RMA
   Plugin URI:  https://www.openstream.ch
   Description: This plug-in connect WooCommerce to <a href="https://www.runmyaccounts.ch/">Run My Accounts</a>
-  Version:     1.1.0
+  Version:     1.1.1
   Author:      Openstream Internet Solutions
   Author URI:  https://www.openstream.ch
   Text Domain: wc-rma

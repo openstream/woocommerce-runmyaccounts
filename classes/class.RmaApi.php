@@ -68,7 +68,7 @@ if (!class_exists('WC_RMA_API')) {
 		public function get_callerUrl() {
 			// Set caller URL
 			if(CALLERSANDBOX) { // Caller URL set for Sandbox
-				$callerUrl = 'http://office.runmyaccounts.com/api-integration/latest/clients/'; // End with / !
+				$callerUrl = 'https://service-swint.runmyaccounts.com/rma-backend/latest/clients/'; // End with / !
 			} else { // Caller URL set for Live page
 				$callerUrl = 'https://service.runmyaccounts.com/api/latest/clients/'; // End with / !
 			}
@@ -256,6 +256,7 @@ if (!class_exists('WC_RMA_API')) {
 					'message' => __('Plugin was not activated','wc-rma','Log') );
 
 				$this->writeLog($logvalues);
+				// send email with log details
 				if ( LOGEMAIL ) $this->sendLogEmail($logvalues);
 			}
 
@@ -310,6 +311,8 @@ if (!class_exists('WC_RMA_API')) {
 			// $response !empty => errors
 			$status = ( ( empty($response) ) ? 'invoiced' : 'error' );
 
+			//ToDo: add order note if no error
+
 			if ( ( 'error' == LOGLEVEL && 'error' == $status ) || 'complete' == LOGLEVEL ) {
 
 				$logvalues = array(
@@ -319,6 +322,7 @@ if (!class_exists('WC_RMA_API')) {
 					'message' => $response );
 				$this->writeLog($logvalues);
 
+				// send email on error
 				if ( 'error' == $status && LOGEMAIL ) $this->sendLogEmail($logvalues);
 
 			}
