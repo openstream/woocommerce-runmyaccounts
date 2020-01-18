@@ -3,20 +3,20 @@
  * class.BackendAbstract.php 
  * 
  * @author      Sandro Lucifora
- * @copyright   (c) 2018, Openstream Internet Solutions
+ * @copyright   (c) 2020, Openstream Internet Solutions
  * @link        https://www.openstream.ch/
- * @package     WooCommerce Run My Account
+ * @package     WooCommerceRunMyAccounts
  * @since       1.0  
  */
 
-if (!defined('ABSPATH')) { exit; }
+if ( !defined('ABSPATH' ) ) exit;
 
-if (!class_exists('WC_RMA_BACKEND_ABSTRACT')) {
+if ( !class_exists('WC_RMA_BACKEND_ABSTRACT') ) {
 
     abstract class WC_RMA_BACKEND_ABSTRACT {
 
-        const VERSION = '1.1.0';
-        const DB_VERSION = '1.0.0';
+        const VERSION = '1.2.0';
+        const DB_VERSION = '1.1.0';
 
 	    private static function _table_log() {
 		    global $wpdb;
@@ -40,27 +40,30 @@ if (!class_exists('WC_RMA_BACKEND_ABSTRACT')) {
                     id mediumint(9) NOT NULL AUTO_INCREMENT,
                     time datetime DEFAULT "0000-00-00 00:00:00" NOT NULL,
                     status text NOT NULL,
-                    orderid text NOT NULL, 
+                    section text NOT NULL, 
+                    section_id text NOT NULL,
                     mode text NOT NULL,
                     message text NOT NULL, 
                     UNIQUE KEY id (id) ) ' . $charset_collate . ';';
 
 		        require_once(ABSPATH . 'wp-admin/includes/upgrade.php');
+
 		        dbDelta($sql);
+
 	        }
 
         }
 
         /**
          * Update Custom Tables
-         * Diese funktion wird in der class.Backend.php aufgerufen mit plugins_loaded()
+         * is called in class.Backend.php with plugins_loaded()
          */
         public function update() {
             /**
              * get_option() WP Since: 1.5.0
              * https://codex.wordpress.org/Function_Reference/get_option
              */
-            if (self::DB_VERSION > get_option('wc_rma_db_version')) { // update option if value is different
+            if ( self::DB_VERSION > get_option( 'wc_rma_db_version' ) ) { // update option if value is different
 
                 // database update if necessary
                 /**
@@ -68,18 +71,20 @@ if (!class_exists('WC_RMA_BACKEND_ABSTRACT')) {
                  * https://codex.wordpress.org/Function_Reference/update_option
                  */
                 update_option("wc_rma_db_version", self::DB_VERSION);
+
             }
 
-            if (self::VERSION > get_option('wc_rma_version')) { // update option if value is different
+            if ( self::VERSION > get_option( 'wc_rma_version' ) ) { // update option if value is different
 
                 update_option("wc_rma_version", self::VERSION);
 
-	            // do necessary stuff for a version update
             }
         }
 
 	    public function delete() {
+
 		    $settings = get_option('wc_rma_settings'); // get settings
+
 		    if ( 'yes' == $settings['rma-delete-settings'] ) {
 			    global $wpdb;
 
@@ -93,10 +98,6 @@ if (!class_exists('WC_RMA_BACKEND_ABSTRACT')) {
 		    }
 	    }
 
-        /**
-         * Hier kannst du alle deine vorhandenen bzw. benötigten option schon anlegen
-         * Diese funktion wird in der class.Backend.php aufgerufen mit admin_init()
-         */
         public function init_options() {
 
             /**
@@ -107,21 +108,26 @@ if (!class_exists('WC_RMA_BACKEND_ABSTRACT')) {
             add_option('wc_rma_db_version', self::DB_VERSION);
         }
 
-        /**
-         * Das kannst du benutzen um Short Codes im WP Editor anzulegen
-         * Diese funktion wird in der class.Backend.php aufgerufen mit admin_init()
-         */
-        public function init_filter() {
+        public function init_hooks() {
 
-	        if ( class_exists( 'WooCommerce' ) ) {
+            // fire if woocommerce is enabled
+            if ( in_array( 'woocommerce/woocommerce.php', apply_filters( 'active_plugins', get_option( 'active_plugins' ) ) ) ) {
 		        // Add RMA fields to user profile
-		        add_filter( 'woocommerce_customer_meta_fields', array( $this, 'profile_rma_fields' ), 10, 1 );
-	        }
+		        add_filter('woocommerce_customer_meta_fields', array( $this, 'usermeta_profile_fields' ), 10, 1 );
+            }
+
+            // if WooCommerce Germanized is not active add our own custom meta field title
+            if ( ! defined( 'WC_GERMANIZED_VERSION' ) ) {
+
+                add_action( 'edit_user_profile', array( $this, 'usermeta_form_field_title' ) ); // add the field to user's own profile editing screen
+                add_action( 'show_user_profile', array( $this, 'usermeta_form_field_title' ) ); // add the field to user profile editing screen
+                add_action( 'personal_options_update', array( $this, 'usermeta_form_field_update' ) ); // add the save action to user's own profile editing screen update
+                add_action( 'edit_user_profile_update', array( $this, 'usermeta_form_field_update' ) ); // add the save action to user profile editing screen update
+
+            }
+
         }
 
-        /**
-         * 
-         */
         public function init_settings() {
 
             /**
@@ -129,86 +135,129 @@ if (!class_exists('WC_RMA_BACKEND_ABSTRACT')) {
              * https://codex.wordpress.org/Function_Reference/register_setting
              */
             register_setting(
-                    "wc_rma_settings_group", // ID
-                    "wc_rma_settings", // Datenbankeintrag
-                    array($this, 'save_option') // Funktion die aufgerufen wird
+                    "wc_rma_settings_group",
+                    "wc_rma_settings",
+                    array( $this, 'save_option' ) // save options
             );
 
         }
 
         /**
-         * 
-         * @param type $input
+         * Save settings options
+         *
+         * @param $input
          * @return boolean
          */
-        public function save_option($input) {
+        public function save_option( $input ) {
 
             $return = $input;
-            if (!empty($_POST) && check_admin_referer('wc-rma-nonce-action', 'wc-rma-nonce')) {
+
+            if ( !empty( $_POST ) &&
+                 check_admin_referer('woocommerce-rma-nonce-action', 'woocommerce-rma-nonce' ) ) {
 
                 /**
                  * https://codex.wordpress.org/Function_Reference/current_user_can
                  * https://codex.wordpress.org/Roles_and_Capabilities
                  * since 2.0.0
                  */
-                if (!current_user_can('edit_posts') && !current_user_can('edit_pages')) {
+                if ( !current_user_can('edit_posts') &&
+                     !current_user_can('edit_pages'))
                     $return = false;
-                }
 
                 return $return;
             }
+
+            return false;
         }
 
 	    /**
-	     * Add RMA fields to user profile
+	     * Add custom fields to user profile
 	     *
 	     * @param $fields
 	     * @return mixed
 	     */
-	    public function profile_rma_fields( $fields ) {
+	    public function usermeta_profile_fields( $fields ) {
 
-		    $fields[ 'rma' ][ 'title' ] = __( 'Settings Run My Account', 'wc-rma' );
+            // if WooCommerce Germanized is not active add our own billing title
+            if ( ! defined( 'WC_GERMANIZED_VERSION' ) ) {
+                $fields['billing']['fields']['billing_title'] = array(
+                    'label'       => __('Title', 'woocommerce-rma'),
+                    'type'        => 'select',
+                    'options'     => apply_filters( 'woocommerce_rma_title_options',
+                        array(
+                            1 => __('Mr.', 'woocommerce-rma'),
+                            2 => __('Ms.', 'woocommerce-rma')
+                        )
+                    )
+                );
+            }
 
-		    if (class_exists('WC_RMA_API')) $WC_RMA_API = new WC_RMA_API();
+		    $fields[ 'rma' ][ 'title' ] = __( 'Settings Run my Accounts', 'woocommerce-rma' );
 
-		    $options = $WC_RMA_API->get_customers();
+		    if ( class_exists('WC_RMA_API') ) {
+
+		        $WC_RMA_API = new WC_RMA_API();
+                $options = $WC_RMA_API->get_customers();
+
+            }
 
 		    if( !$options ) {
 
 			    $fields[ 'rma' ][ 'fields' ][ 'rma_customer' ] = array(
-				    'label'       => __( 'Customer', 'wc-rma' ),
+				    'label'       => __( 'Customer', 'woocommerce-rma' ),
 				    'type'		  => 'select',
-				    'options'	  => array('' => __( 'Error while connecting to RMA. Please check your settings.', 'wc-rma' )),
-				    'description' => __( 'Select the corresponding RMA customer for this account.', 'wc-rma' )
+				    'options'	  => array('' => __( 'Error while connecting to RMA. Please check your settings.', 'woocommerce-rma' )),
+				    'description' => __( 'Select the corresponding RMA customer for this account.', 'woocommerce-rma' )
 			    );
 
 			    return $fields;
 		    }
 
-		    $options = array('' => __( 'Select customer...', 'wc-rma' )) + $options;
+		    $options = array('' => __( 'Select customer...', 'woocommerce-rma' )) + $options;
 
 		    $fields[ 'rma' ][ 'fields' ][ 'rma_customer' ] = array(
-			    'label'       => __( 'Customer', 'wc-rma' ),
+			    'label'       => __( 'Customer', 'woocommerce-rma' ),
 			    'type'		  => 'select',
 			    'options'	  => $options,
-			    'description' => __( 'Select the corresponding RMA customer for this account.', 'wc-rma' )
+			    'description' => __( 'Select the corresponding RMA customer for this account.', 'woocommerce-rma' )
 		    );
 
-		    unset($WC_RMA_API);
+		    if ( !empty( $WC_RMA_API )) unset( $WC_RMA_API );
 
 		    $fields[ 'rma' ][ 'fields' ][ 'rma_billing_account' ] = array(
-			    'label'       => __( 'Receivables Account', 'wc-rma' ),
+			    'label'       => __( 'Receivables Account', 'woocommerce-rma' ),
 			    'type'		  => 'input',
-			    'description' => __( 'The receivables account has to be available in RMA. Leave it blank to use default value 1100.', 'wc-rma' )
+			    'description' => __( 'The receivables account has to be available in RMA. Leave it blank to use default value 1100.', 'woocommerce-rma' )
 		    );
 
 		    $fields[ 'rma' ][ 'fields' ][ 'rma_payment_period' ] = array(
-			    'label'       => __( 'Payment Period', 'wc-rma' ),
+			    'label'       => __( 'Payment Period', 'woocommerce-rma' ),
 			    'type'		  => 'input',
-			    'description' => __( 'How many days has this customer to pay your invoice?', 'wc-rma' )
+			    'description' => __( 'How many days has this customer to pay your invoice?', 'woocommerce-rma' )
 		    );
+
 		    return $fields;
 	    }
+
+        /**
+         * Save custom user meta field.
+         *
+         * @param $user_id int the ID of the current user.
+         * @return bool Meta ID if the key didn't exist, true on successful update, false on failure.
+         */
+        public function usermeta_form_field_update( $user_id ) {
+            // check that the current user have the capability to edit the $user_id
+            if (!current_user_can('edit_user', $user_id))
+                return false;
+
+            // create/update user meta for the $user_id
+            if ( isset( $_POST['billing_title'] ) ) {
+                return update_user_meta( $user_id, 'billing_title', absint( $_POST['billing_title'] ) );
+            }
+
+            return false;
+
+        }
 
     }
 

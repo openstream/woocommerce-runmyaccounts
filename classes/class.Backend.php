@@ -5,19 +5,18 @@
  * @author      Sandro Lucifora
  * @copyright   (c) 2018, Openstream Internet Solutions
  * @link        https://www.openstream.ch/
- * @package     WooCommerce Run My Account
+ * @package     WooCommerceRunMyAccounts
  * @since       1.0  
  */
 
-if (!defined('ABSPATH')) { exit; }
+if ( !defined('ABSPATH' ) ) exit;
 
 require_once 'class.BackendAbstract.php';
 
 if (!class_exists('WC_RMA_BACKEND')) {
 
     /**
-     * Class  
-     * Dann erstellen wir die Klasse und verbinden Sie mit unserer Abstract Klasse  
+     * Create class and extends it
      */
     class WC_RMA_BACKEND extends WC_RMA_BACKEND_ABSTRACT {
 
@@ -26,37 +25,34 @@ if (!class_exists('WC_RMA_BACKEND')) {
          */
         public function __construct() {
 
-            add_action('admin_menu', array($this, 'add_menu')); // admin_menu diese action wird benötigt um die Admin Menüs zu registrieren
-            add_action('admin_init', array($this, 'admin_init')); // admin_init diese action wird benötigt um z.B. option, settings und filter zusetzen  
-            add_action('plugins_loaded', array($this, 'plugins_loaded')); // plugins_loaded diese action wird bei jedem aufruf der Seite ausgeführt
-            add_action('plugins_loaded', array($this, 'plugins_loaded_about'), 1); // plugins_loaded diese action begrenzen wir auf ein einmaligen aufruf, der hier beim aktivieren des plugins genutzt wird
+            add_action( 'admin_menu', array($this, 'add_menu')); // admin_menu diese action wird benötigt um die Admin Menüs zu registrieren
+            add_action( 'admin_init', array($this, 'admin_init')); // admin_init diese action wird benötigt um z.B. option, settings und filter zusetzen
+            add_action( 'plugins_loaded', array($this, 'plugins_loaded')); // plugins_loaded diese action wird bei jedem aufruf der Seite ausgeführt
+            add_action( 'plugins_loaded', array($this, 'plugins_loaded_settings'), 1); // plugins_loaded diese action begrenzen wir auf ein einmaligen aufruf, der hier beim aktivieren des plugins genutzt wird
 
         }
 
         /**
-         * Activate - Diese Funktion wird beim Aufruf register_activation_hook() ausgelöst, doch dies machen wir in der mein-plugin-name.php  
+         * Activate - is triggered when calling register_activation_hook(), but we do this in woocommerce-rma.php
          */
         public function activate() {
-
             /**
              * set_transient() WP Since: 2.8  
              * https://codex.wordpress.org/Function_Reference/set_transient  
              */
-            set_transient('wc-rma-page-activated', 1, 30);
+            set_transient('woocommerce-rma-page-activated', 1, 30);
 
-	        //ToDo: Check if cCURL is installed. Is needed for POST requests to RMA
         }
 
         /**
-         * Deactivate - Diese Funktion wird beim Aufruf register_deactivation_hook() ausgelöst, doch dies machen wir in der wc-rma.php
+         * Deactivate - is triggered when register_deactivation_hook() is called, but we do this in the woocommerce-rma.php
          */
         public function deactivate() {
 
-            //..  
         }
 
 	    /**
-	     * Uninstall - will call by register_uninstall_hook(), but we do it already in wc-rma.php
+	     * Uninstall - is triggered when register_uninstall_hook() is called, but we do it already in woocommerce-rma.php
 	     */
 	    public function uninstall() {
 
@@ -65,26 +61,24 @@ if (!class_exists('WC_RMA_BACKEND')) {
 	    }
 
         /**
-         * Admin Menus - Dies ist nun die admin_menu action und die funktion, die funktion hätte auch anders benannt werden können,  
-         * diese funktion wird auch im Konstruktor aufgerufen, mit add_action()  
+         * Admin Menus - adds menu in WordPress admin, as submenu in WooCommerce menu
          */
 	    public function add_menu() {
 		    /**
-		     * Sub Menu -- Dies ist das untermenü
 		     * add_submenu_page() WP Since: 1.5.0
 		     * https://developer.wordpress.org/reference/functions/add_submenu_page/
 		     */
 		    add_submenu_page('woocommerce', // $parent_slug
-			    'Run My Accounts - Settings', // $page_title
-			    __('Run My Accounts', 'wc-rma'), // $menu_title
+			    'Run my Accounts - Settings', // $page_title
+			    __('Run my Accounts', 'woocommerce-rma'), // $menu_title
 			    'manage_options', // $capability
-			    'wc-rma-settings', // $menu_slug
+			    'woocommerce-rma-settings', // $menu_slug
 			    array($this, 'settings') // $function
 		    );
 	    }
 
         /**
-         * Menu Download -- Hier machen wir das selbe jedoch fürs erste untermenü -- diese funktion wird in add_menu_page aufgerufen in der funktion add_submenu_page() 
+         * plugin settings page, is called by add_menu()
          */
         public function settings() {
 
@@ -92,60 +86,57 @@ if (!class_exists('WC_RMA_BACKEND')) {
         }
 
         /**
-         * Admin Init -- Hier initieren wir alles was wir benötigen, 
-         * ich habe diese 3 funktionen in die Abstract Klasse verlegt wegen der übersichtlichkeit, diese funktion wird auch im Konstruktor aufgerufen, mit add_action() 
+         * Admin Init - we initiate everything we need
          */
         public function admin_init() {
 
-            $this->init_options(); // Option 
-            $this->init_settings(); // Einstellungen 
-            $this->init_filter(); // Filter 
+            $this->init_options();
+            $this->init_settings();
+            $this->init_hooks();
         }
 
         /**
-         * Plugins Loaded -- Diese Funktionen sind ebenfalls in der Abstract Klasse für die Übersichtlichkeit.
+         * Plugins Loaded
          */
         public function plugins_loaded() {
 
-            $this->create(); // Create 
-            $this->update(); // Update 
+            $this->create();
+            $this->update();
         }
 
         /**
-         * Plugins Loaded Once on Activate -- Diese Funktion wird nur einmal aufgerufen wenn das Plugin aktiviert wird,
-         * diese funktion wird auch im Konstruktor aufgerufen, mit add_action() 
+         * Plugins Loaded Once on Activate -- This function is only called once when the plugin is activated.
+         * this function is called in the constructor, with add_action()
          */
-        public function plugins_loaded_about() {
+        public function plugins_loaded_settings() {
 
             /**
-             * Wir Prüfen ob transient vorhanden, wenn es nicht vorhanden ist wird nichts gemacht 
+             * We check whether there is transient. If not, we will do it here
              * get_transient() WP Since: 2.8 
              * https://codex.wordpress.org/Function_Reference/get_transient 
              */
-            if (!get_transient('wc-rma-page-activated')) {
-
+            if (!get_transient('woocommerce-rma-page-activated')) {
                 return;
             }
 
             /**
-             * Hier löschen wir den transient weil wir nicht wollen, dass die Willkommen-Seite immer wieder aufgerufen wird
+             * We delete the transient because we do not want the welcome page to be called again and again
              * delete_transient() WP Since: 2.8 
              * https://codex.wordpress.org/Function_Reference/delete_transient 
              */
-            delete_transient('wc-rma-page-activated');
+            delete_transient('woocommerce-rma-page-activated');
 
             /**
-             * Und hier leiten wir nun weiter zur gewünschten Seite in diesem fall habe ich das letzte untermenü genommen 
+             * here we redirect to the settings page
              * wp_redirect() WP Since: 1.5.1 
              * https://codex.wordpress.org/Function_Reference/wp_redirect 
              */
             wp_redirect(
-                    
                     /**
                      * admin_url() WP Since:2.6.0 
                      * https://codex.wordpress.org/Function_Reference/admin_url 
                      */
-                    admin_url('admin.php?page=wc-rma-settings')
+                    admin_url('admin.php?page=woocommerce-rma-settings')
             );
 
             exit;

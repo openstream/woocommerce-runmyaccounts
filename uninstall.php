@@ -2,32 +2,32 @@
 
 /**
  * uninstall.php
- * 
+ *
  * @author      Sandro Lucifora
- * @copyright   (c) 2018, Openstream Internet Solutions
+ * @copyright   (c) 2020, Openstream Internet Solutions
  * @link        https://www.openstream.ch/
- * @package     WooCommerce Run My Account
- * @since       1.0  
+ * @package     WooCommerceRunMyAccounts
+ * @since       1.0
  */
-if (!defined('ABSPATH')) { exit; }
+if ( !defined('ABSPATH' ) ) exit;
 /**
  * https://developer.wordpress.org/plugins/the-basics/uninstall-methods/
  */
 if (!defined('WP_UNINSTALL_PLUGIN')) { exit(); }
 
-// Does function exist?
-if (!function_exists('wc_rma')) {
+// Does function not exist?
+if ( !function_exists('uninstall_woocommerce_rma' ) ) {
 
     /**
-     * Deinstall
-     * @return type
+     * Uninstall
+     * @return void
      */
-    function wc_rma() {
+    function uninstall_woocommerce_rma() {
 
         // Check Admin
-        if (is_admin()) {
+        if ( is_admin() ) {
 
-            if (!current_user_can('delete_plugins')) {
+            if ( !current_user_can('delete_plugins' ) ) {
                 return;
             }
 
@@ -35,12 +35,13 @@ if (!function_exists('wc_rma')) {
              * Unregister settings
              * https://codex.wordpress.org/Function_Reference/unregister_setting
              */
-            unregister_setting("wc_rma_settings_group", "wc_rma_settings", "");
-            delete_option("wc_rma_settings");
-            
+            unregister_setting('wc_rma_settings_group', 'wc_rma_settings', '');
+            delete_option('wc_rma_settings');
+
             delete_option('wc_rma_db_version');
             delete_option('wc_rma_version');
         }
     }
-    wc_rma();
+
+    uninstall_woocommerce_rma();
 }
