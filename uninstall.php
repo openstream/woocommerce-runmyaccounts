@@ -35,7 +35,7 @@ if ( !function_exists('uninstall_woocommerce_rma' ) ) {
              * Unregister settings
              * https://codex.wordpress.org/Function_Reference/unregister_setting
              */
-            unregister_setting('wc_rma_settings_group', 'wc_rma_settings', '');
+            unregister_setting('wc_rma_settings', 'wc_rma_settings', '');
             delete_option('wc_rma_settings');
 
             delete_option('wc_rma_db_version');

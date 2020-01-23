@@ -387,8 +387,15 @@ if ( !class_exists('WC_RMA_API') ) {
 			// should a customer be created automatically
 			$do_create_customer = self::do_create_customer();
 
-			if( !$user_id || !$is_active || !$do_create_customer )
+            // is user connected with a RMA customer
+            $rma_customer_id = get_user_meta( $user_id, 'rma_customer', true );
+
+            if( !$user_id || !$is_active || !$do_create_customer )
 			    return false;
+
+            // user_id ias already linked to a RMA customer
+            if( $rma_customer_id )
+                return true;
 
 			$data = $this->get_customer_values( $user_id );
 
@@ -445,6 +452,7 @@ if ( !class_exists('WC_RMA_API') ) {
                 // add RMA customer number to user_meta
                 update_user_meta( $user_id, 'rma_customer', $data['customernumber'] ); // return (int|bool) Meta ID if the key didn't exist, true on successful update, false on failure.
 
+                return true;
             }
 
 			return $response;

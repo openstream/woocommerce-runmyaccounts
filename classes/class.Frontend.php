@@ -212,6 +212,7 @@ if ( ! class_exists('WC_RMA_FRONTEND' ) ) {
          * @param $user_id
          *
          * @return bool|string
+         * @throws Exception
          */
         public function create_rma_customer_on_registration( $user_id ) {
 

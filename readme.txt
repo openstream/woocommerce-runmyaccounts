@@ -36,8 +36,14 @@ Yes. WooCommerce Run My Accounts plugin is for ever for free. Maybe, in the futu
 
 Please send a request to the developer Openstream Internet Solutions. We provide customization on an hourly rate. Otherwise you can fork the plugin on GitHub and develop the missing features by yourself. We only ask to send a pull request so, each user can benefit from your extension.
 
-== ToDos ==
-* Update customer in Run My Accounts if user data were updated in WooCommerce
+== Known issues ==
+* Update customer in Run My Accounts if user data were updated in WooCommerce is nor working yet.
+* To create an invoice, if client does not register on checkout page, does not work.
+
+== Changelog ==
+= 1.3.0 =
+* Tweak - use settings API for settings page
+* Tweak - check if user_id is already linked to a Run My Accounts customer id before creating customer in Run My Accounts
 
 == Changelog ==
 = 1.2.0 =

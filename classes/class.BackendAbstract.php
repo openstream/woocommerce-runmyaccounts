@@ -15,10 +15,10 @@ if ( !class_exists('WC_RMA_BACKEND_ABSTRACT') ) {
 
     abstract class WC_RMA_BACKEND_ABSTRACT {
 
-        const VERSION = '1.2.0';
+        const VERSION = '1.3.0';
         const DB_VERSION = '1.1.0';
 
-	    private static function _table_log() {
+        private static function _table_log() {
 		    global $wpdb;
 		    return $wpdb->prefix . WC_RMA_LOG_TABLE;
 	    }
@@ -125,20 +125,6 @@ if ( !class_exists('WC_RMA_BACKEND_ABSTRACT') ) {
                 add_action( 'edit_user_profile_update', array( $this, 'usermeta_form_field_update' ) ); // add the save action to user profile editing screen update
 
             }
-
-        }
-
-        public function init_settings() {
-
-            /**
-             * register_setting() WP Since: 2.7.0
-             * https://codex.wordpress.org/Function_Reference/register_setting
-             */
-            register_setting(
-                    "wc_rma_settings_group",
-                    "wc_rma_settings",
-                    array( $this, 'save_option' ) // save options
-            );
 
         }
 

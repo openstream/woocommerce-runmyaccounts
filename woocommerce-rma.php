@@ -11,7 +11,7 @@
  * @license              GPL-2.0-or-later
  *
  * Plugin Name:          WooCommerce Run My Accounts
- * Version:              1.2.0
+ * Version:              1.3.0
  * Plugin URI:           https://www.openstream.ch
  * Description:          This plug-in connects WooCommerce to <a href="https://www.runmyaccounts.ch/">Run my Accounts</a>. Create customers and invoices as soon as you get an order in your WooCommerce shop.
  * Requires at least:    4.7
@@ -35,19 +35,28 @@ if (!defined('WC_RMA_LOG_TABLE')) { define('WC_RMA_LOG_TABLE', 'wc_rma_log'); }
 
 // LOAD BACKEND ////////////////////////////////////////////////////////////////
 
-if (is_admin()) {
+if ( is_admin() ) {
 
     // We include our backend class
     require_once WC_RMA_PFAD . 'classes/class.Backend.php';
 
     // Does the backend class exist?
-    if (class_exists('WC_RMA_BACKEND')) {
+    if ( class_exists('WC_RMA_BACKEND')  ) {
 
         // Instantiate backend class
         $WC_RMA_BACKEND = new WC_RMA_BACKEND();
 
         register_activation_hook(__FILE__, array('WC_RMA_BACKEND', 'activate'));
         register_deactivation_hook(__FILE__, array('WC_RMA_BACKEND', 'deactivate'));
+    }
+
+    // We include our settings page class
+    require_once WC_RMA_PFAD . 'classes/class.Settings.php';
+
+    if ( class_exists('SETTINGS_PAGE')  ) {
+
+        $my_settings_page = new SETTINGS_PAGE();
+
     }
 }
 

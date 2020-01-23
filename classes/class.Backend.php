@@ -25,7 +25,6 @@ if (!class_exists('WC_RMA_BACKEND')) {
          */
         public function __construct() {
 
-            add_action( 'admin_menu', array($this, 'add_menu')); // admin_menu diese action wird benötigt um die Admin Menüs zu registrieren
             add_action( 'admin_init', array($this, 'admin_init')); // admin_init diese action wird benötigt um z.B. option, settings und filter zusetzen
             add_action( 'plugins_loaded', array($this, 'plugins_loaded')); // plugins_loaded diese action wird bei jedem aufruf der Seite ausgeführt
             add_action( 'plugins_loaded', array($this, 'plugins_loaded_settings'), 1); // plugins_loaded diese action begrenzen wir auf ein einmaligen aufruf, der hier beim aktivieren des plugins genutzt wird
@@ -61,28 +60,11 @@ if (!class_exists('WC_RMA_BACKEND')) {
 	    }
 
         /**
-         * Admin Menus - adds menu in WordPress admin, as submenu in WooCommerce menu
-         */
-	    public function add_menu() {
-		    /**
-		     * add_submenu_page() WP Since: 1.5.0
-		     * https://developer.wordpress.org/reference/functions/add_submenu_page/
-		     */
-		    add_submenu_page('woocommerce', // $parent_slug
-			    'Run my Accounts - Settings', // $page_title
-			    __('Run my Accounts', 'woocommerce-rma'), // $menu_title
-			    'manage_options', // $capability
-			    'woocommerce-rma-settings', // $menu_slug
-			    array($this, 'settings') // $function
-		    );
-	    }
-
-        /**
          * plugin settings page, is called by add_menu()
          */
         public function settings() {
 
-            require_once WC_RMA_PFAD . 'html/settings.php';
+            require_once WC_RMA_PFAD . 'admin/html/settings.php';
         }
 
         /**
@@ -91,7 +73,6 @@ if (!class_exists('WC_RMA_BACKEND')) {
         public function admin_init() {
 
             $this->init_options();
-            $this->init_settings();
             $this->init_hooks();
         }
 
