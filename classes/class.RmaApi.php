@@ -159,38 +159,37 @@ if ( !class_exists('WC_RMA_API') ) {
 		/**
 		 * Create data for invoice
 		 *
-		 * @param $orderID
+		 * @param $order_id
          *
 		 * @return array
 		 */
-		private function get_invoice_values($orderID) {
+		private function get_invoice_values( $order_id ) {
 
-			list( $orderDetails, $orderDetailsProducts ) = $this->get_wc_order_details( $orderID );
-
+			list( $order_details, $order_details_products ) = $this->get_wc_order_details( $order_id );
 
 			// ToDo: add notes to invoice from notes field WC order
-			$data = array(
-                    'invoice' => array(
-                    'invnumber' => INVPREFIX . str_pad($orderID, max( INVDIGITS-strlen(INVPREFIX), 0 ), '0', STR_PAD_LEFT),
-                    'ordnumber' => $orderID,
+            $data = array(
+                'invoice' => array(
+                    'invnumber' => INVPREFIX . str_pad( $order_id, max(INVDIGITS - strlen(INVPREFIX), 0 ), '0', STR_PAD_LEFT ),
+                    'ordnumber' => $order_id,
                     'status' => 'OPEN',
-                    'currency' => $orderDetails['currency'],
-                    'ar_accno' => $orderDetails['ar_accno'],
+                    'currency' => $order_details['currency'],
+                    'ar_accno' => $order_details['ar_accno'],
                     'transdate' => date( DateTime::RFC3339, time() ),
-                    'duedate' => $orderDetails['duedate'], //date( DateTime::RFC3339, time() ),
-                    'description' => str_replace('[orderdate]',$orderDetails['orderdate'], DESCRIPTION),
+                    'duedate' => $order_details['duedate'], //date( DateTime::RFC3339, time() ),
+                    'description' => str_replace('[orderdate]',$order_details['orderdate'], DESCRIPTION),
                     'notes' => '',
                     'intnotes' => '',
-                    'taxincluded' => $orderDetails['taxincluded'],
+                    'taxincluded' => $order_details['taxincluded'],
                     'dcn' => '',
-                    'customernumber' => $orderDetails['customernumber']
-				),
-				'part' => array()
-			);
+                    'customernumber' => $order_details['customernumber']
+                ),
+                'part' => array()
+            );
 
-			// Add parts
-			if (count($orderDetailsProducts) > 0) :
-				foreach ($orderDetailsProducts as $partnumber => $part ) :
+            // Add parts
+			if ( count( $order_details_products ) > 0 ) :
+				foreach ( $order_details_products as $partnumber => $part ) :
 					$data['part'][] = array (
 						'partnumber' => $partnumber,
 						'description' => $part['name'],
@@ -223,6 +222,7 @@ if ( !class_exists('WC_RMA_API') ) {
             $customer = new WC_Customer( $user_id );
 
             $is_company = !empty( $customer->get_billing_company() ) ? true : false;
+            $billing_account = get_user_meta( $user_id, 'rma_billing_account', true );
 
             return array(
 				'customernumber' => $customer_prefix . $user_id,
@@ -245,7 +245,7 @@ if ( !class_exists('WC_RMA_API') ) {
 				'bcc' => '',
 				'language_code' => '',
 				'remittancevoucher' => 'false',
-				'arap_accno' => '', // Default accounts receivable account number - 1100
+				'arap_accno' => !empty ( $billing_account ) ? $billing_account : '', // Default accounts receivable account number - 1100
                 'payment_accno' => '', // Default payment account number	1020
 				'notes' => '',
 				'terms' => '0',
@@ -259,26 +259,28 @@ if ( !class_exists('WC_RMA_API') ) {
 		/**
 		 * get WooCommerce order details
 		 *
-		 * @param $orderID
+		 * @param $order_id
 		 *
 		 * @return array
 		 */
-		private function get_wc_order_details($orderID) {
+		private function get_wc_order_details( $order_id ) {
 
-			$order = new WC_Order( $orderID );
+			$order = new WC_Order( $order_id );
+			$option_accounting = get_option( 'wc_rma_settings_accounting' );
+            $order_payment_method = $order->get_payment_method();
 
-			$orderDetails['currency'] = $order->get_currency();
-			$orderDetails['orderdate'] = wc_format_datetime($order->get_date_created(),'d.m.Y');
-			$orderDetails['taxincluded'] = $order->get_prices_include_tax() ? 'true' : 'false';
-			$orderDetails['ar_accno'] = get_user_meta( $order->get_customer_id(), 'rma_billing_account', true );
-			$orderDetails['customernumber'] = get_user_meta( $order->get_customer_id(), 'rma_customer', true );
+			$order_details['currency'] = $order->get_currency();
+			$order_details['orderdate'] = wc_format_datetime($order->get_date_created(),'d.m.Y');
+			$order_details['taxincluded'] = $order->get_prices_include_tax() ? 'true' : 'false';
+			$order_details['customernumber'] = get_user_meta( $order->get_customer_id(), 'rma_customer', true );
+            $order_details['ar_accno'] = isset ( $option_accounting[ $order_payment_method ] ) && !empty( $option_accounting[ $order_payment_method ] ) ? $option_accounting[ $order_payment_method ] : '';
 
-			// Calculate due date
+            // Calculate due date
 			$user_payment_period = get_user_meta( $order->get_customer_id(), 'rma_payment_period', true );
 			// Set payment period - if user payment not period exist set tu global period
 			$payment_period = ( $user_payment_period ? $user_payment_period : GLOBALPAYMENTPERIOD);
 			// Calculate duedate (now + payment period)
-			$orderDetails['duedate'] = date( DateTime::RFC3339, time() + ($payment_period*60*60*24) );
+			$order_details['duedate'] = date( DateTime::RFC3339, time() + ($payment_period*60*60*24) );
 
 			$_order = $order->get_items(); //to get info about product
             $order_details_products = array();
@@ -295,7 +297,7 @@ if ( !class_exists('WC_RMA_API') ) {
 
 			}
 
-			return array($orderDetails, $order_details_products);
+			return array($order_details, $order_details_products);
 		}
 
 		/**
@@ -307,7 +309,7 @@ if ( !class_exists('WC_RMA_API') ) {
 		 */
 		public function create_invoice( $order_id='' ) {
 
-			$is_active = self::is_activated( __('$order_id', 'woocommerce-rma', 'Log') . ' ' . $order_id );
+			$is_active = self::is_activated( __( '$order_id' , 'woocommerce-rma', 'Log') . ' ' . $order_id );
 
 			// Continue only if an order_id is available and plugin function is activated
 			if( !$order_id || !$is_active ) return false;
@@ -321,7 +323,7 @@ if ( !class_exists('WC_RMA_API') ) {
 
 			// create root element invoice and child
 			$root = $xml_doc->appendChild($xml_doc->createElement("invoice"));
-			foreach($data['invoice'] as $key=>$val) {
+			foreach( $data['invoice'] as $key=>$val ) {
 				if ( ! empty( $key ) )
 					$root->appendChild( $xml_doc->createElement( $key, $val ) );
 			}
@@ -348,10 +350,25 @@ if ( !class_exists('WC_RMA_API') ) {
             // send xml content to RMA with curl
 			$response = self::send_xml_content( $xml_str, $caller_url_invoice );
 
-			// $response !empty => errors
-			$status = ( ( empty( $response ) ) ? 'invoiced' : 'error' );
+			// $response empty == no errors
+			if ( empty( $response ) ) {
 
-			//ToDo: add order note if no error
+                $status = 'invoiced';
+
+                $invoice_number = $data['invoice']['invnumber'];
+                $response = sprintf( __( 'Invoice %u created', 'woocommerce-rma', 'Log'), $invoice_number);
+
+                // add order note
+                $order = wc_get_order(  $order_id );
+                $note = sprintf( __( 'Invoice %u created in Run My Accounts', 'woocommerce-rma', 'Order'), $invoice_number);
+                $order->add_order_note( $note );
+                unset( $order );
+
+            } else {
+
+                $status = 'error';
+
+            }
 
 			if ( ( 'error' == LOGLEVEL && 'error' == $status ) || 'complete' == LOGLEVEL ) {
 
@@ -567,16 +584,7 @@ if ( !class_exists('WC_RMA_API') ) {
 		 */
 		public function send_log_email(&$values) {
 			// ToDo: send email out
-			/*
-							array(
-								'time' => current_time( 'mysql' ),
-								'status' => $values['status'],
-								'section_id' => $values['orderid'],
 
-								'mode' => $values['mode'],
-								'message' => $values['message']
-							)
-			*/
 			return true;
 		}
 

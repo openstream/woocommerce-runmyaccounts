@@ -17,16 +17,22 @@ if ( !class_exists('SETTINGS_PAGE') ) {
 
         private $admin_url;
         private $option_group_general;
+        private $option_group_accounting;
         private $options_general;
+        private $options_accounting;
         private $option_page_general;
+        private $option_page_accounting;
 
         public function __construct() {
 
-            $this->admin_url = 'admin.php?page=woocommerce-rma';
-            $this->option_group_general = 'wc_rma_settings';
-            $this->option_page_general = 'settings-general';
+            $this->admin_url               = 'admin.php?page=woocommerce-rma';
+            $this->option_group_general    = 'wc_rma_settings';
+            $this->option_group_accounting = 'wc_rma_settings_accounting';
+            $this->option_page_general     = 'settings-general';
+            $this->option_page_accounting  = 'settings-accounting';
 
             $this->options_general    = get_option( $this->option_group_general );
+            $this->options_accounting = get_option( $this->option_group_accounting );
 
             add_action( 'admin_menu', array( $this, 'add_plugin_page' ) );
 
@@ -55,10 +61,16 @@ if ( !class_exists('SETTINGS_PAGE') ) {
                 <?php settings_errors(); ?>
                 <h2 class="nav-tab-wrapper">
                     <a href="<?php echo admin_url( $this->admin_url ); ?>" class="nav-tab<?php echo ( 'general' == $active_page ? ' nav-tab-active' : '' ); ?>"><?php esc_html_e('General', 'woocommerce-rma'); ?></a>
+                    <a href="<?php echo esc_url( add_query_arg( array( 'tab' => 'accounting' ), admin_url( $this->admin_url ) ) ); ?>" class="nav-tab<?php echo ( 'accounting' == $active_page ? ' nav-tab-active' : '' ); ?>"><?php esc_html_e('Accounting', 'woocommerce-rma'); ?></a>
                 </h2>
 
                 <form method="post" action="options.php"><?php //   settings_fields( $this->option_group_general );
                     switch ( $active_page ) {
+                        case 'accounting':
+                            settings_fields( $this->option_group_accounting );
+                            do_settings_sections( $this->option_page_accounting );
+                            submit_button();
+                            break;
                         default:
                             settings_fields( $this->option_group_general );
                             do_settings_sections( $this->option_page_general );
@@ -86,6 +98,14 @@ if ( !class_exists('SETTINGS_PAGE') ) {
             $this->options_general_customer();
 
             $this->options_general_misc();
+
+            register_setting(
+                $this->option_group_accounting, // Option group
+                $this->option_group_accounting, // Option name
+                array( $this, 'sanitize' ) // Sanitize
+            );
+
+            $this->options_accounting_gateways();
 
         }
 
@@ -365,6 +385,45 @@ if ( !class_exists('SETTINGS_PAGE') ) {
 
         }
 
+        public function options_accounting_gateways() {
+
+            $section = 'accounting_settings_payment';
+
+            add_settings_section(
+                $section, // ID
+                'Payment Provider Accounting Account', // Title
+                array( $this, 'section_info_accounting' ), // Callback
+                $this->option_page_accounting // Page
+            );
+
+            // add  settings fields for all payment gateways
+
+            $available_gateways = WC()->payment_gateways->payment_gateways();
+
+            foreach ( $available_gateways as $gateway_key => $values ) {
+
+                add_settings_field(
+                    $gateway_key,
+                    $values->title,
+                    array( $this, 'option_input_text_cb'),
+                    $this->option_page_accounting,
+                    $section,
+                    array(
+                        'option_group' => $this->option_group_accounting,
+                        'id'           => $gateway_key,
+                        'value'        => isset( $this->options_accounting[ $gateway_key ] ) ? $this->options_accounting[ $gateway_key ] : ''
+                    )
+                );
+
+            }
+
+        }
+
+        public function section_info_accounting() {
+            esc_html_e('You can specify a dedicated receivable account for each payment gateway.', 'woocommerce-rma');
+        }
+
+
         /**
          * General Input Field Checkbox
          *
@@ -448,13 +507,13 @@ if ( !class_exists('SETTINGS_PAGE') ) {
             $id           = ( isset( $args['id'] ) ) ? $args['id'] : '';
 
             $select_args  = array(
-                    'option_group' => $option_group,
-                    'id'           => $id,
-                    'value'        => isset( $this->options_general[ $id ] ) ? $this->options_general[ $id ] : '',
-                    'options'      => array(
-                            'test' => esc_html__('Test','woocommerce-rma'),
-                            'live' => esc_html__('Live','woocommerce-rma'),
-                        )
+                'option_group' => $option_group,
+                'id'           => $id,
+                'value'        => isset( $this->options_general[ $id ] ) ? $this->options_general[ $id ] : '',
+                'options'      => array(
+                    'test' => esc_html__('Test','woocommerce-rma'),
+                    'live' => esc_html__('Live','woocommerce-rma'),
+                )
             );
 
             // create select

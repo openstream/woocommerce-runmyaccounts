@@ -38,29 +38,31 @@ Please send a request to the developer Openstream Internet Solutions. We provide
 
 == Known issues ==
 * Update customer in Run My Accounts if user data were updated in WooCommerce is nor working yet.
-* To create an invoice, if client does not register on checkout page, does not work.
+* Create an invoice, if client does not register on checkout page, does not work.
 
 == Changelog ==
 = 1.3.0 =
-* Tweak - use settings API for settings page
-* Tweak - check if user_id is already linked to a Run My Accounts customer id before creating customer in Run My Accounts
+* Feature - added dedicated receivable account for each payment gateway
+* Enhancement - use settings API for settings page
+* Enhancement - added order note if invoice is created
+* Enhancement - check if user_id is already linked to a Run My Accounts customer id before creating customer in Run My Accounts
 
 == Changelog ==
 = 1.2.0 =
-* Enhancement - create customer in Run my Accounts when new WooCommerce user is created on checkout page
-* Enhancement - added title to billing address
+* Feature - create customer in Run my Accounts when new WooCommerce user is created on checkout page
+* Enhancement - added title to billing address if no WooCommerce Germanized is active
 * Enhancement - added compatibility with WooCommerce Germanized and use the same user meta for billing title (e.g. billing_title)
-* Tweak - added warning if php extension curl is not loaded (is required for communication with Run My Accounts API)
+* Enhancement - added warning if php extension curl is not loaded (is required for communication with Run My Accounts API)
 
 = 1.1.1 =
 * Tweak - new Run My Accounts API url
 
 = 1.1 =
-* Enhancement - added logging feature for RMA results
-* Enhancement - added connection test on settings page
-* Enhancement - added handling for different access data for live and test
-* Tweak - improved error handling
-* Tweak - improved security of files
+* Feature - added logging feature for RMA results
+* Feature - added connection test on settings page
+* Feature - added handling for different access data for live and test
+* Enhancement - improved error handling
+* Enhancement - improved security of files
 * Localization - added German and German (formal) translation   
 
 = 1.0 =
