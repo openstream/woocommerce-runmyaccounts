@@ -41,6 +41,10 @@ Please send a request to the developer Openstream Internet Solutions. We provide
 * Create an invoice, if client does not register on checkout page, does not work.
 
 == Changelog ==
+= 1.3.1 =
+* Bug Fix - opened the wrong settings page when activating the plugin for the very first time
+
+== Changelog ==
 = 1.3.0 =
 * Feature - added dedicated receivable account for each payment gateway
 * Enhancement - use settings API for settings page

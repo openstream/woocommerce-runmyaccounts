@@ -117,7 +117,7 @@ if (!class_exists('WC_RMA_BACKEND')) {
                      * admin_url() WP Since:2.6.0 
                      * https://codex.wordpress.org/Function_Reference/admin_url 
                      */
-                    admin_url('admin.php?page=woocommerce-rma-settings')
+                    admin_url('admin.php?page=woocommerce-rma')
             );
 
             exit;
