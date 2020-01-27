@@ -1,4 +1,4 @@
-# WooCommerce RMA
+# WooCommerce Run my Accounts
 Contributors: codestylist, openstream
 Tags: Run my Accounts, WooCommerce, Billing
 Requires at least: 4.7
@@ -20,24 +20,24 @@ Activate the plugin, enter the API key and check the settings page.
 
 ## Frequently Asked Questions
 
-### Can I use this plugin without WooCommerce
+### Can I use this plugin without WooCommerce?
 
 No. WooCommerce Run My Accounts requires WooCommerce to provide all features.
 
-### Do I need a paid account with Run My Accounts
+### Do I need a paid account with Run My Accounts?
 
-Yes. Without the paid account you are not able to set up your company within Run My Accounts
+Yes. Without the paid account you are not able to set up your company within Run My Accounts.
 
 ### Is the plugin for free?
 
-Yes. WooCommerce Run My Accounts plugin is for ever for free. Maybe, in the future, there can be a Pro version with more features. But, right now, all features are for free.
+The source code is freely available, but you need a Run My Accounts API key. Openstream and Run my Accounts agreed that plugin users will be charged CHF 200.- yearly for plugin maintenance, i.e. for making sure that the plugin works with new versions of WordPress and WooCommerce.
 
-### I miss a feature. How can I get them?
+### I miss a feature. What to do?
 
-Please send a request to the developer Openstream Internet Solutions. We provide customization on an hourly rate. Otherwise you can fork the plugin on GitHub and develop the missing features by yourself. We only ask to send a pull request so, each user can benefit from your extension.
+Please send a request to the Openstream Internet Solutions. We provide customization on an hourly rate. Otherwise you can fork the plugin on GitHub and develop the missing feature yourself. We only ask to send a pull request so, each user can benefit from your extension.
 
 ## Known issues
-* Update customer in Run My Accounts if user data were updated in WooCommerce is nor working yet.
+* Update customer in Run My Accounts if user data was updated in WooCommerce is not working yet.
 * Create an invoice, if client does not register on checkout page, does not work.
 
 ## Changelog
@@ -54,7 +54,7 @@ Please send a request to the developer Openstream Internet Solutions. We provide
 * Feature - create customer in Run my Accounts when new WooCommerce user is created on checkout page
 * Enhancement - added title to billing address if no WooCommerce Germanized is active
 * Enhancement - added compatibility with WooCommerce Germanized and use the same user meta for billing title (e.g. billing_title)
-* Enhancement - added warning if php extension curl is not loaded (is required for communication with Run My Accounts API)
+* Enhancement - added warning if php extension curl is not loaded (is required for communication with Run my Accounts API)
 
 ### 1.1.1
 * Tweak - new Run My Accounts API url
