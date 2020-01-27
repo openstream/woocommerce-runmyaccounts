@@ -1,16 +1,16 @@
 # WooCommerce Run my Accounts
-Contributors: codestylist, openstream
-Tags: Run my Accounts, WooCommerce, Billing
-Requires at least: 4.7
-Tested up to: 5.2.2
-Requires PHP: 5.6
-License: GPLv3
-License URI: https://www.gnu.org/licenses/gpl-3.0.html
+* Contributors: codestylist, openstream
+* Tags: Run my Accounts, WooCommerce, Billing
+* Requires at least: 4.7
+* Tested up to: 5.2.2
+* Requires PHP: 5.6
+* License: GPLv3
+* License URI: https://www.gnu.org/licenses/gpl-3.0.html
 
 This plug-in connects WooCommerce with Run my Accounts.
 The main features are:
-- create invoices automatically in Run My Accounts after an order is placed in WooCommerce
-- create customers automatically in Run My Accounts after a new user is created in WooCommerce
+* create invoices automatically in Run My Accounts after an order is placed in WooCommerce
+* create customers automatically in Run My Accounts after a new user is created in WooCommerce
 
 Please note, you need a paid account with Run my Accounts to use this plugin.
 
