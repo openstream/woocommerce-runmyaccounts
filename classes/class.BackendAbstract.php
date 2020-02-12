@@ -15,7 +15,7 @@ if ( !class_exists('WC_RMA_BACKEND_ABSTRACT') ) {
 
     abstract class WC_RMA_BACKEND_ABSTRACT {
 
-        const VERSION = '1.3.1';
+        const VERSION = '1.3.2';
         const DB_VERSION = '1.1.0';
 
         private static function _table_log() {
@@ -83,18 +83,19 @@ if ( !class_exists('WC_RMA_BACKEND_ABSTRACT') ) {
 
 	    public function delete() {
 
-		    $settings = get_option('wc_rma_settings'); // get settings
+		    $settings = get_option( 'wc_rma_settings' ); // get settings
 
-		    if ( 'yes' == $settings['rma-delete-settings'] ) {
+		    if ( 'yes' == $settings[ 'rma-delete-settings' ] ) {
 			    global $wpdb;
 
 			    // drop table
 			    $wpdb->query('DROP TABLE IF EXISTS ' . self::_table_log() . ';');
 
-			    // clean all option
+			    // delete all options
 			    delete_option('wc_rma_db_version');
 			    delete_option('wc_rma_version');
 			    delete_option('wc_rma_settings');
+                delete_option('wc_rma_settings_accounting');
 		    }
 	    }
 

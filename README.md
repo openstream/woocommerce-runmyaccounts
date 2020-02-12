@@ -2,8 +2,8 @@
 * Contributors: codestylist, openstream
 * Tags: Run my Accounts, WooCommerce, Billing
 * Requires at least: 4.7
-* Tested up to: 5.2.2
-* Requires PHP: 5.6
+* Tested up to: 5.3.2
+* Requires PHP: 7.2
 * License: GPLv3
 * License URI: https://www.gnu.org/licenses/gpl-3.0.html
 
@@ -41,6 +41,11 @@ Please send a request to the Openstream Internet Solutions. We provide customiza
 * Create an invoice, if client does not register on checkout page, does not work.
 
 ## Changelog
+### 1.3.2
+* Bug Fix - added delete a missing option group when plugin will be de-installed
+* Compatibility - tested with WordPress 5.3.2 and WooCommerce 3.9.1
+* Compatibility - pre-tested with WooCommerce 4.0.0 Beta
+
 ### 1.3.1
 * Bug Fix - opened the wrong settings page when activating the plugin for the very first time
 
