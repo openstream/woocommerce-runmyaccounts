@@ -22,7 +22,7 @@ Activate the plugin, enter the API key and check the settings page.
 
 ### Can I use this plugin without WooCommerce?
 
-No. WooCommerce Run My Accounts requires WooCommerce to provide all features.
+No. Run my Accounts for WooCommerce requires WooCommerce to provide all features.
 
 ### Do I need a paid account with Run My Accounts?
 
@@ -41,6 +41,10 @@ Please send a request to the Openstream Internet Solutions. We provide customiza
 * Create an invoice, if client does not register on checkout page, does not work.
 
 ## Changelog
+### 1.3.3
+* Tweak - optimized code to publish on wordpress.org
+* Localization - added Swiss and Swiss (formal) translation
+
 ### 1.3.2
 * Bug Fix - added delete a missing option group when plugin will be de-installed
 * Compatibility - tested with WordPress 5.3.2 and WooCommerce 3.9.1

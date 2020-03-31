@@ -1,9 +1,9 @@
-=== WooCommerce Run my Accounts ===
+=== Run my Accounts for WooCommerce===
 * Contributors: codestylist, openstream
 * Tags: Run my Accounts, WooCommerce, Billing
 * Requires at least: 4.7
 * Tested up to: 5.3.2
-* Stable tag: 1.3.2
+* Stable tag: 1.3.3
 * Requires PHP: 7.2
 * License: GPLv3
 * License URI: https://www.gnu.org/licenses/gpl-3.0.html
@@ -27,7 +27,7 @@ Activate the plugin, enter the API key and check the settings page.
 
 = Can I use this plugin without WooCommerce? =
 
-No. WooCommerce Run My Accounts requires WooCommerce to provide all features.
+No. Run my Accounts for WooCommerce requires WooCommerce to provide all features.
 
 = Do I need a paid account with Run My Accounts? =
 
@@ -46,12 +46,15 @@ Please send a request to the Openstream Internet Solutions. We provide customiza
 2. Settings for dedicated receivable account for each payment gateway.
 3. Settings on user page.
 
-
 == Known issues ==
 * Update customer in Run My Accounts if user data was updated in WooCommerce is not working yet.
 * Create an invoice, if client does not register on checkout page, does not work.
 
 == Changelog ==
+= 1.3.3 =
+* Tweak - optimized code to publish on wordpress.org
+* Localization - added Swiss and Swiss (formal) translation
+
 = 1.3.2 =
 * Bug Fix - added delete a missing option group when plugin will be de-installed
 * Compatibility - tested up to WordPress 5.3.2 and WooCommerce 3.9.1
@@ -92,4 +95,4 @@ version 1.0 is the initial version
 With version 1.3 we have added dedicated receivable account for each payment gateway
 
 = 1.2.0 =
-With version 1.2 we have pushed WooCommerce Run My Accounts to your B2C business.
+With version 1.2 we have pushed Run my Accounts for WooCommerce to your B2C business.

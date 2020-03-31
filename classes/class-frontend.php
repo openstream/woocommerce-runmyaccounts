@@ -1,19 +1,19 @@
 <?php
 /**
- * class.Frontend.php 
+ * class-frontend.php
  * 
  * @author      Sandro Lucifora
  * @copyright   (c) 2020, Openstream Internet Solutions
  * @link        https://www.openstream.ch/
- * @package     WooCommerceRunMyAccounts
+ * @package     RunmyAccountsforWooCommerce
  * @since       1.0
  */
 
 if ( !defined('ABSPATH' ) ) exit;
 
-if ( ! class_exists('WC_RMA_FRONTEND' ) ) {
+if ( ! class_exists('RMA_WC_FRONTEND' ) ) {
 
-    class WC_RMA_FRONTEND {
+    class RMA_WC_FRONTEND {
 
         private $locale = '';
 
@@ -58,14 +58,14 @@ if ( ! class_exists('WC_RMA_FRONTEND' ) ) {
         public function woocommerce_billing_fields( $fields ) {
 
             $fields['billing_title'] = array(
-                'label'       => __('Title', 'woocommerce-rma'),
+                'label'       => __('Title', 'rma-wc'),
                 'type'        => 'select',
                 'class'       => array ( 'form-row-wide', 'address-field' ),
                 'options'     => apply_filters(
                     'woocommerce_rma_title_options',
                     array(
-                        1 => __('Mr.', 'woocommerce-rma'),
-                        2 => __('Ms.', 'woocommerce-rma')
+                        1 => __('Mr.', 'rma-wc'),
+                        2 => __('Ms.', 'rma-wc')
                     )
                 ),
                 'required' => true,
@@ -93,7 +93,7 @@ if ( ! class_exists('WC_RMA_FRONTEND' ) ) {
              * apply_filters() WP Since: 0.71
              * https://developer.wordpress.org/reference/functions/apply_filters/
              */
-            $this->locale = apply_filters('plugin_locale', get_locale(), 'woocommerce-rma');
+            $this->locale = apply_filters('plugin_locale', get_locale(), 'rma-wc');
         }
 
         /**
@@ -101,7 +101,7 @@ if ( ! class_exists('WC_RMA_FRONTEND' ) ) {
          */
         public function plugins_loaded() {
 
-            $this->load_textdomain();
+            self::load_textdomain();
 
             // Display the admin notification
 	        add_action( 'admin_notices', array( $this, 'admin_notices' ) ) ;
@@ -116,13 +116,13 @@ if ( ! class_exists('WC_RMA_FRONTEND' ) ) {
              * load_textdomain() WP Since: 1.5.0
              * https://codex.wordpress.org/Function_Reference/load_textdomain
              */
-            load_textdomain('woocommerce-rma', WP_LANG_DIR . "/plugins/woocommerce-rma/woocommerce-rma-$this->locale.mo");
+            load_textdomain('rma-wc', WP_LANG_DIR . "/plugins/rma-wc/rma-wc-$this->locale.mo");
 
             /**
              * load_plugin_textdomain() WP Since: 1.5.0
              * https://codex.wordpress.org/Function_Reference/load_plugin_textdomain
              */
-            load_plugin_textdomain('woocommerce-rma', false, plugin_basename(WC_RMA_PFAD . 'languages/'));
+            load_plugin_textdomain('rma-wc', false, plugin_basename(RMA_WC_PFAD . 'languages/'));
         }
 
 	    /**
@@ -138,8 +138,8 @@ if ( ! class_exists('WC_RMA_FRONTEND' ) ) {
 
 		        $html = '<div class="notice notice-error">';
 		        $html .= '<p>';
-		        $html .= '<b>'.__( 'Warning', 'woocommerce-rma' ).'&nbsp;</b>';
-		        $html .= __( 'Please enter your live client and live API key before start using WooCommerce Run my Accounts.', 'woocommerce-rma' );
+		        $html .= '<b>'.__( 'Warning', 'rma-wc' ).'&nbsp;</b>';
+		        $html .= __( 'Please enter your live client and live API key before start using WooCommerce Run my Accounts.', 'rma-wc' );
 		        $html .= '</p>';
 		        $html .= '</div>';
 
@@ -150,56 +150,30 @@ if ( ! class_exists('WC_RMA_FRONTEND' ) ) {
 	        if( ( isset($rma_settings['rma-active']) && $rma_settings['rma-active']=='') || !isset($rma_settings['rma-active'] ))  {
 
 		        $html = '<div class="update-nag">';
-		        $html .= __( 'WooCommerce Run my Accounts is not activated. No invoice will be created.', 'woocommerce-rma' );
+		        $html .= __( 'WooCommerce Run my Accounts is not activated. No invoice will be created.', 'rma-wc' );
 		        $html .= '</div>';
 
 		        echo $html;
 
 	        }
 
-            // Check if cCURL is installed. Is needed for POST requests to RMA
-            if ( !self::is_extension_loaded('curl') ) {
-
-                $html = '<div class="notice notice-error">';
-                $html .= '<p>';
-                $html .= '<b>'.__( 'Warning', 'woocommerce-rma' ).'&nbsp;</b>';
-                $html .= sprintf( esc_html__( '%s is not loaded. This php extension is needed to connect to the Run My Accounts server.', 'woocommerce-rma' ), '<a href="https://www.php.net/manual/en/book.curl.php">curl</a>' );
-                $html .= '</p>';
-                $html .= '</div>';
-
-                echo $html;
-
-            }
-
-
         }
 
         /**
-         * check if a given php extension is loaded/enabled
+         * Create new invoice in Run My Accounts when new order came in
          *
-         * @param $extension_name
-         *
-         * @return bool
-         */
-        private function is_extension_loaded($extension_name){
-
-            return extension_loaded($extension_name);
-
-        }
-
-        /**
 	     * @param $order_id
 	     *
 	     * @return bool|string
 	     */
 	    public function create_rma_invoice_at_new_order( $order_id ) {
 
-		    if (class_exists('WC_RMA_API')) {
-		    	$WC_RMA_API = new WC_RMA_API();
+		    if (class_exists('RMA_WC_API')) {
+		    	$RMA_WC_API = new RMA_WC_API();
 
-			    $result = $WC_RMA_API->create_invoice( $order_id );
+			    $result = $RMA_WC_API->create_invoice( $order_id );
 
-                unset( $WC_RMA_API );
+                unset( $RMA_WC_API );
 		    }
 
 		    return ( !empty( $result) ? $result : '' );
@@ -216,12 +190,12 @@ if ( ! class_exists('WC_RMA_FRONTEND' ) ) {
          */
         public function create_rma_customer_on_registration( $user_id ) {
 
-            if ( class_exists('WC_RMA_API') ) {
+            if ( class_exists('RMA_WC_API') ) {
 
-                $WC_RMA_API = new WC_RMA_API();
-                $result = $WC_RMA_API->create_customer( $user_id );
+                $RMA_WC_API = new RMA_WC_API();
+                $result = $RMA_WC_API->create_customer( $user_id );
 
-                unset( $WC_RMA_API );
+                unset( $RMA_WC_API );
             }
 
             return ( !empty( $result) ? $result : true );

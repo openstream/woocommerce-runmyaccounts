@@ -6,7 +6,7 @@
  * @author      Sandro Lucifora
  * @copyright   (c) 2020, Openstream Internet Solutions
  * @link        https://www.openstream.ch/
- * @package     WooCommerceRunMyAccounts
+ * @package     RunmyAccountsforWooCommerce
  * @since       1.0
  */
 if ( !defined('ABSPATH' ) ) exit;

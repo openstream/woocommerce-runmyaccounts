@@ -1,24 +1,24 @@
 <?php
 /**
- * class.Backend.php  
+ * class-backend.php
  *  
  * @author      Sandro Lucifora
  * @copyright   (c) 2018, Openstream Internet Solutions
  * @link        https://www.openstream.ch/
- * @package     WooCommerceRunMyAccounts
+ * @package     RunmyAccountsforWooCommerce
  * @since       1.0  
  */
 
 if ( !defined('ABSPATH' ) ) exit;
 
-require_once 'class.BackendAbstract.php';
+require_once 'class-backend-abstract.php';
 
-if (!class_exists('WC_RMA_BACKEND')) {
+if (!class_exists('RMA_WC_BACKEND')) {
 
     /**
      * Create class and extends it
      */
-    class WC_RMA_BACKEND extends WC_RMA_BACKEND_ABSTRACT {
+    class RMA_WC_BACKEND extends RMA_WC_BACKEND_ABSTRACT {
 
         /**
          * Construct  
@@ -32,26 +32,26 @@ if (!class_exists('WC_RMA_BACKEND')) {
         }
 
         /**
-         * Activate - is triggered when calling register_activation_hook(), but we do this in woocommerce-rma.php
+         * Activate - is triggered when calling register_activation_hook(), but we do this in rma-wc.php
          */
-        public function activate() {
+        static function activate() {
             /**
              * set_transient() WP Since: 2.8  
              * https://codex.wordpress.org/Function_Reference/set_transient  
              */
-            set_transient('woocommerce-rma-page-activated', 1, 30);
+            set_transient('rma-wc-page-activated', 1, 30);
 
         }
 
         /**
-         * Deactivate - is triggered when register_deactivation_hook() is called, but we do this in the woocommerce-rma.php
+         * Deactivate - is triggered when register_deactivation_hook() is called, but we do this in the rma-wc.php
          */
-        public function deactivate() {
+        static function deactivate() {
 
         }
 
 	    /**
-	     * Uninstall - is triggered when register_uninstall_hook() is called, but we do it already in woocommerce-rma.php
+	     * Uninstall - is triggered when register_uninstall_hook() is called, but we do it already in rma-wc.php
 	     */
 	    public function uninstall() {
 
@@ -64,7 +64,7 @@ if (!class_exists('WC_RMA_BACKEND')) {
          */
         public function settings() {
 
-            require_once WC_RMA_PFAD . 'admin/html/settings.php';
+            require_once RMA_WC_PFAD . 'admin/html/settings.php';
         }
 
         /**
@@ -96,7 +96,7 @@ if (!class_exists('WC_RMA_BACKEND')) {
              * get_transient() WP Since: 2.8 
              * https://codex.wordpress.org/Function_Reference/get_transient 
              */
-            if (!get_transient('woocommerce-rma-page-activated')) {
+            if (!get_transient('rma-wc-page-activated')) {
                 return;
             }
 
@@ -105,7 +105,7 @@ if (!class_exists('WC_RMA_BACKEND')) {
              * delete_transient() WP Since: 2.8 
              * https://codex.wordpress.org/Function_Reference/delete_transient 
              */
-            delete_transient('woocommerce-rma-page-activated');
+            delete_transient('rma-wc-page-activated');
 
             /**
              * here we redirect to the settings page
@@ -117,7 +117,7 @@ if (!class_exists('WC_RMA_BACKEND')) {
                      * admin_url() WP Since:2.6.0 
                      * https://codex.wordpress.org/Function_Reference/admin_url 
                      */
-                    admin_url('admin.php?page=woocommerce-rma')
+                    admin_url('admin.php?page=rma-wc')
             );
 
             exit;

@@ -1,26 +1,26 @@
 <?php
 /**
- * class.BackendAbstract.php 
+ * class-backend-abstract.php
  * 
  * @author      Sandro Lucifora
  * @copyright   (c) 2020, Openstream Internet Solutions
  * @link        https://www.openstream.ch/
- * @package     WooCommerceRunMyAccounts
+ * @package     RunmyAccountsforWooCommerce
  * @since       1.0  
  */
 
 if ( !defined('ABSPATH' ) ) exit;
 
-if ( !class_exists('WC_RMA_BACKEND_ABSTRACT') ) {
+if ( !class_exists('RMA_WC_BACKEND_ABSTRACT') ) {
 
-    abstract class WC_RMA_BACKEND_ABSTRACT {
+    abstract class RMA_WC_BACKEND_ABSTRACT {
 
-        const VERSION = '1.3.2';
+        const VERSION = '1.3.3';
         const DB_VERSION = '1.1.0';
 
         private static function _table_log() {
 		    global $wpdb;
-		    return $wpdb->prefix . WC_RMA_LOG_TABLE;
+		    return $wpdb->prefix . RMA_WC_LOG_TABLE;
 	    }
 
         public function create() {
@@ -56,7 +56,7 @@ if ( !class_exists('WC_RMA_BACKEND_ABSTRACT') ) {
 
         /**
          * Update Custom Tables
-         * is called in class.Backend.php with plugins_loaded()
+         * is called in class-backend.php with plugins_loaded()
          */
         public function update() {
             /**
@@ -140,7 +140,7 @@ if ( !class_exists('WC_RMA_BACKEND_ABSTRACT') ) {
             $return = $input;
 
             if ( !empty( $_POST ) &&
-                 check_admin_referer('woocommerce-rma-nonce-action', 'woocommerce-rma-nonce' ) ) {
+                 check_admin_referer('rma-wc-nonce-action', 'rma-wc-nonce' ) ) {
 
                 /**
                  * https://codex.wordpress.org/Function_Reference/current_user_can
@@ -168,59 +168,59 @@ if ( !class_exists('WC_RMA_BACKEND_ABSTRACT') ) {
             // if WooCommerce Germanized is not active add our own billing title
             if ( ! defined( 'WC_GERMANIZED_VERSION' ) ) {
                 $fields['billing']['fields']['billing_title'] = array(
-                    'label'       => __('Title', 'woocommerce-rma'),
+                    'label'       => __('Title', 'rma-wc'),
                     'type'        => 'select',
                     'options'     => apply_filters( 'woocommerce_rma_title_options',
                         array(
-                            1 => __('Mr.', 'woocommerce-rma'),
-                            2 => __('Ms.', 'woocommerce-rma')
+                            1 => __('Mr.', 'rma-wc'),
+                            2 => __('Ms.', 'rma-wc')
                         )
                     )
                 );
             }
 
-		    $fields[ 'rma' ][ 'title' ] = __( 'Settings Run my Accounts', 'woocommerce-rma' );
+		    $fields[ 'rma' ][ 'title' ] = __( 'Settings Run my Accounts', 'rma-wc' );
 
-		    if ( class_exists('WC_RMA_API') ) {
+		    if ( class_exists('RMA_WC_API') ) {
 
-		        $WC_RMA_API = new WC_RMA_API();
-                $options = $WC_RMA_API->get_customers();
+		        $RMA_WC_API = new RMA_WC_API();
+                $options = $RMA_WC_API->get_customers();
 
             }
 
 		    if( !$options ) {
 
 			    $fields[ 'rma' ][ 'fields' ][ 'rma_customer' ] = array(
-				    'label'       => __( 'Customer', 'woocommerce-rma' ),
+				    'label'       => __( 'Customer', 'rma-wc' ),
 				    'type'		  => 'select',
-				    'options'	  => array('' => __( 'Error while connecting to RMA. Please check your settings.', 'woocommerce-rma' )),
-				    'description' => __( 'Select the corresponding RMA customer for this account.', 'woocommerce-rma' )
+				    'options'	  => array('' => __( 'Error while connecting to RMA. Please check your settings.', 'rma-wc' )),
+				    'description' => __( 'Select the corresponding RMA customer for this account.', 'rma-wc' )
 			    );
 
 			    return $fields;
 		    }
 
-		    $options = array('' => __( 'Select customer...', 'woocommerce-rma' )) + $options;
+		    $options = array('' => __( 'Select customer...', 'rma-wc' )) + $options;
 
 		    $fields[ 'rma' ][ 'fields' ][ 'rma_customer' ] = array(
-			    'label'       => __( 'Customer', 'woocommerce-rma' ),
+			    'label'       => __( 'Customer', 'rma-wc' ),
 			    'type'		  => 'select',
 			    'options'	  => $options,
-			    'description' => __( 'Select the corresponding RMA customer for this account.', 'woocommerce-rma' )
+			    'description' => __( 'Select the corresponding RMA customer for this account.', 'rma-wc' )
 		    );
 
-		    if ( !empty( $WC_RMA_API )) unset( $WC_RMA_API );
+		    if ( !empty( $RMA_WC_API )) unset( $RMA_WC_API );
 
 		    $fields[ 'rma' ][ 'fields' ][ 'rma_billing_account' ] = array(
-			    'label'       => __( 'Receivables Account', 'woocommerce-rma' ),
+			    'label'       => __( 'Receivables Account', 'rma-wc' ),
 			    'type'		  => 'input',
-			    'description' => __( 'The receivables account has to be available in RMA. Leave it blank to use default value 1100.', 'woocommerce-rma' )
+			    'description' => __( 'The receivables account has to be available in RMA. Leave it blank to use default value 1100.', 'rma-wc' )
 		    );
 
 		    $fields[ 'rma' ][ 'fields' ][ 'rma_payment_period' ] = array(
-			    'label'       => __( 'Payment Period', 'woocommerce-rma' ),
+			    'label'       => __( 'Payment Period', 'rma-wc' ),
 			    'type'		  => 'input',
-			    'description' => __( 'How many days has this customer to pay your invoice?', 'woocommerce-rma' )
+			    'description' => __( 'How many days has this customer to pay your invoice?', 'rma-wc' )
 		    );
 
 		    return $fields;
