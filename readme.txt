@@ -53,6 +53,7 @@ Please send a request to the Openstream Internet Solutions. We provide customiza
 
 == Changelog ==
 = 1.4.0 =
+* Feature - added option for sending email on error
 * Bug Fix - fixed error with wrong PHP version
 * Tweak - added output for log information
 * Tweak - improve error handling

@@ -56,13 +56,16 @@ if ( !class_exists('RMA_WC_API') ) {
                 DEFINE( 'LOGLEVEL' , 'error' );
             }
 
-            // if rma-logemail ist not set, LOGEMAIL is set to false by default
-            if( isset ($settings['rma-logemail'] ) &&
-                'yes' == $settings['rma-logemail'] &&
-                !empty( $settings['rma-logemail'] )) {
-                DEFINE( 'LOGEMAIL' , true );
+            // if rma-log-send-email ist not set, SENDLOGEMAIL is set to false by default
+            if( isset ( $settings['rma-log-send-email'] ) &&
+                'yes' == $settings['rma-log-send-email'] ) {
+                DEFINE( 'SENDLOGEMAIL' , true );
+
+                // who will get email on error
+                DEFINE( 'LOGEMAIL', ( !empty( $settings['rma-log-email'] ) ? $settings['rma-log-email'] : get_option( 'admin_email' ) ) );
+
             } else {
-                DEFINE( 'LOGEMAIL' , false );
+                DEFINE( 'SENDLOGEMAIL' , false );
             }
 
         }
@@ -90,13 +93,48 @@ if ( !class_exists('RMA_WC_API') ) {
 		 * @return mixed
 		 */
 		public function get_customers() {
+
+		    if(!RMA_MANDANT || !RMA_APIKEY) {
+
+                $log_values = array(
+                    'status' => 'error',
+                    'section_id' => '',
+                    'section' => __( 'Get Customer', 'rma-wc'),
+                    'mode' => self::rma_mode(),
+                    'message' => esc_html__('Missing client data', 'rma-wc') );
+
+                self::write_log($log_values);
+
+                return false;
+
+            }
+
 			$url       = self::get_caller_url() . RMA_MANDANT . '/customers?api_key=' . RMA_APIKEY;
             $response  = wp_remote_get( $url );
 
             // Check response code
 			if ( 200 <> wp_remote_retrieve_response_code( $response ) ){
 
-				return false;
+			    $message = esc_html__( 'Response Code', 'rma-wc') . ' '. wp_remote_retrieve_response_code( $response );
+                $message .= ' '. wp_remote_retrieve_response_message( $response );
+
+                $response = (array) $response['http_response'];
+
+                foreach ( $response as $object ) {
+                    $message .= ' ' . $object->url;
+                    break;
+                }
+
+                $log_values = array(
+                    'status' => 'error',
+                    'section_id' => '',
+                    'section' => __( 'Get Customer', 'rma-wc'),
+                    'mode' => self::rma_mode(),
+                    'message' => $message );
+
+                self::write_log($log_values);
+
+                return false;
 
 			}
 			else {
@@ -377,7 +415,7 @@ if ( !class_exists('RMA_WC_API') ) {
                 self::write_log($log_values);
 
 				// send email on error
-				if ( 'error' == $status && LOGEMAIL ) $this->send_log_email($log_values);
+				if ( 'error' == $status && SENDLOGEMAIL ) $this->send_log_email($log_values);
 
 			}
 
@@ -471,9 +509,6 @@ if ( !class_exists('RMA_WC_API') ) {
 
                 self::write_log($log_values);
 
-                // send email on error
-                if ( 'error' == $status && LOGEMAIL ) $this->send_log_email($log_values);
-
             }
 
 			return 'error'==$status ? 'false' : 'true';
@@ -529,7 +564,7 @@ if ( !class_exists('RMA_WC_API') ) {
 
 				self::write_log($log_values);
 				// send email with log details
-				if ( LOGEMAIL ) self::send_log_email($log_values);
+				if ( SENDLOGEMAIL ) self::send_log_email($log_values);
 			}
 
 			return $is_active;
@@ -579,7 +614,10 @@ if ( !class_exists('RMA_WC_API') ) {
 				)
 			);
 
-			return true;
+            // send email on error
+            if ( 'error' == $values['status'] && SENDLOGEMAIL ) $this->send_log_email($values);
+
+            return true;
 		}
 
 		/**
@@ -590,7 +628,36 @@ if ( !class_exists('RMA_WC_API') ) {
 		 * @return bool
 		 */
 		public function send_log_email(&$values) {
-			// ToDo: send email out
+
+            ob_start();
+            include( plugin_dir_path( __FILE__ ) . '../templates/email/error-email-template.php');
+            $email_content = ob_get_contents();
+            ob_end_clean();
+
+            $headers = array('Content-Type: text/html; charset=UTF-8');
+            if ( !wp_mail( LOGEMAIL, esc_html_x('An error occurred while connection with Run My Accounts API', 'email', 'rma-wc'), $email_content, $headers) ) {
+
+                $log_values = array(
+                    'status'     => 'failed',
+                    'section_id' => LOGEMAIL,
+                    'section'    => esc_html__( 'Email', 'woocommerce-ram' ),
+                    'mode'       => self::rma_mode(),
+                    'message'    => esc_html_x( 'Failed to send email.' , 'Log', 'rma-wc') );
+
+                self::write_log($log_values);
+
+            } elseif ( 'complete' == LOGLEVEL) {
+
+                $log_values = array(
+                    'status'     => 'send',
+                    'section_id' => LOGEMAIL,
+                    'section'    => esc_html__( 'Email', 'woocommerce-ram' ),
+                    'mode'       => self::rma_mode(),
+                    'message'    => esc_html_x( 'Email sent successfully.' , 'Log', 'rma-wc') );
+
+                self::write_log($log_values);
+
+            }
 
 			return true;
 		}

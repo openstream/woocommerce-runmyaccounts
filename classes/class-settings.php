@@ -115,6 +115,8 @@ if ( !class_exists('RMA_SETTINGS_PAGE') ) {
 
             $this->options_general_customer();
 
+            $this->options_general_log();
+
             $this->options_general_misc();
 
             register_setting(
@@ -351,13 +353,13 @@ if ( !class_exists('RMA_SETTINGS_PAGE') ) {
         /**
          * Page General, Section Misc
          */
-        public function options_general_misc() {
+        public function options_general_log() {
 
-            $section = 'general_settings_misc';
+            $section = 'general_settings_log';
 
             add_settings_section(
                 $section, // ID
-                esc_html__('Misc', 'rma-wc'),
+                esc_html__('Error Log', 'rma-wc'),
                 '', // Callback
                 $this->option_page_general // Page
             );
@@ -378,6 +380,59 @@ if ( !class_exists('RMA_SETTINGS_PAGE') ) {
                         'complete' => esc_html__('complete','rma-wc'),
                     )
                 )
+            );
+
+            $id = 'rma-log-send-email';
+            add_settings_field(
+                $id,
+                esc_html__('Send email on error', 'rma-wc'),
+                array( $this, 'option_select_cb'),
+                $this->option_page_general,
+                $section,
+                array(
+                    'option_group' => $this->option_group_general,
+                    'id'           => $id,
+                    'value'        => isset( $this->options_general[ $id ] ) ? $this->options_general[ $id ] : '',
+                    'options'      => array(
+                        'no'       => esc_html__('no','rma-wc'),
+                        'yes'      => esc_html__('yes','rma-wc'),
+                    ),
+                    'description'  => esc_html__('Send email on error with Run My Accounts API.', 'rma-wc' )
+
+                )
+            );
+
+            $id = 'rma-log-email';
+            add_settings_field(
+                $id,
+                esc_html__('email', 'rma-wc'),
+                array( $this, 'option_input_text_cb'),
+                $this->option_page_general,
+                $section,
+                array(
+                    'option_group' => $this->option_group_general,
+                    'id'           => $id,
+                    'value'        => isset( $this->options_general[ $id ] ) ? $this->options_general[ $id ] : get_option( 'admin_email' ),
+                    'description'  => esc_html__('Send email to this recipient. By default administrators email.', 'rma-wc' )
+                )
+            );
+
+
+        }
+
+
+        /**
+         * Page General, Section Misc
+         */
+        public function options_general_misc() {
+
+            $section = 'general_settings_misc';
+
+            add_settings_section(
+                $section, // ID
+                esc_html__('Misc', 'rma-wc'),
+                '', // Callback
+                $this->option_page_general // Page
             );
 
             $id = 'rma-delete-settings';
@@ -655,6 +710,8 @@ if ( !class_exists('RMA_SETTINGS_PAGE') ) {
                 foreach ( $result as $key => $value ) {
 
                     $value = str_replace('error','<span style="color: red;">error</span>',$value);
+                    $value = str_replace('failed','<span style="color: red;">failed</span>',$value);
+                    $value = str_replace('success','<span style="color: green;">success</span>',$value);
 
                     $output .= '<td>' . $value . '</td>';
                 }
