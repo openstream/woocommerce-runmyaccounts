@@ -101,12 +101,14 @@ if ( !class_exists('RMA_WC_API') ) {
 			}
 			else {
 
+                libxml_use_internal_errors( true );
+
                 $body = wp_remote_retrieve_body( $response );
-                $xml  = simplexml_load_string($body);
+                $xml  = simplexml_load_string( $body );
 
 				if ( !$xml ) {
 					// ToDO: Add this information to error log
-					foreach(libxml_get_errors() as $error) {
+					foreach( libxml_get_errors() as $error ) {
 						echo "\t", $error->message;
 					}
 
@@ -568,12 +570,12 @@ if ( !class_exists('RMA_WC_API') ) {
 
 			$wpdb->insert( $table_name,
 				array(
-					'time' => current_time( 'mysql' ),
-					'status' => $values['status'],
+					'time'       => current_time( 'mysql' ),
+					'status'     => $values['status'],
 					'section_id' => $values['section_id'],
-                    'section' => $values['section'],
-					'mode' => $values['mode'],
-					'message' => $values['message']
+                    'section'    => $values['section'],
+					'mode'       => $values['mode'],
+					'message'    => $values['message']
 				)
 			);
 
