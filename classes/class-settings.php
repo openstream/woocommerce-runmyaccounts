@@ -568,6 +568,7 @@ if ( !class_exists('RMA_SETTINGS_PAGE') ) {
                 $RMA_WC_API = new RMA_WC_API();
                 // Retrieve customers to check connection
                 $options = $RMA_WC_API->get_customers();
+                unset( $RMA_WC_API );
 
                 if ( ! $options )
                     echo '&nbsp;<span style="color: red; font-weight: bold">' . __('No connection. Please check your settings.', 'rma-wc') . '</span>';
@@ -613,14 +614,18 @@ if ( !class_exists('RMA_SETTINGS_PAGE') ) {
             return $new_input;
         }
 
-
+        /**
+         * Read log information from database
+         *
+         * @return string
+         */
         private function get_log_from_database() {
 
             global $wpdb;
 
             $table_name = $wpdb->prefix . RMA_WC_LOG_TABLE;
 
-            $results = $wpdb->get_results( "SELECT SQL_CALC_FOUND_ROWS * FROM $table_name LIMIT 0, 100;", ARRAY_A );
+            $results = $wpdb->get_results( "SELECT SQL_CALC_FOUND_ROWS * FROM $table_name ORDER BY id DESC;", ARRAY_A );
 
             if ( 0 == count( $results ) ) {
 
@@ -648,6 +653,9 @@ if ( !class_exists('RMA_SETTINGS_PAGE') ) {
 
                 $output .= '<tr>';
                 foreach ( $result as $key => $value ) {
+
+                    $value = str_replace('error','<span style="color: red;">error</span>',$value);
+
                     $output .= '<td>' . $value . '</td>';
                 }
                 $output .= '</tr>';
@@ -659,6 +667,9 @@ if ( !class_exists('RMA_SETTINGS_PAGE') ) {
 
         }
 
+        /**
+         * Add flush table button below table
+         */
         private function flush_log_button() {
 
             if ( 0 < $this->rma_log_count || !empty( $this->rma_log_count ) || !isset( $this->rma_log_count )) {
@@ -704,7 +715,6 @@ if ( !class_exists('RMA_SETTINGS_PAGE') ) {
 
             wp_die(); // this is required to terminate immediately and return a proper response
         }
-
 
     }
 
