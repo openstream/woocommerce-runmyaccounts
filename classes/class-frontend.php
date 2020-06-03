@@ -22,6 +22,14 @@ if ( ! class_exists('RMA_WC_FRONTEND' ) ) {
          */
         public function __construct() {
 
+            if ( !defined('PHP_VERSION_ID') ) {
+                $version = explode('.', PHP_VERSION);
+
+                define( 'PHP_VERSION_ID', ( $version[0] * 10000 + $version[1] * 100 + $version[2] ) );
+
+                unset( $version );
+            }
+
             /**
              * add_action() WP Since: 1.2.0
              * https://developer.wordpress.org/reference/functions/add_action/
@@ -133,6 +141,20 @@ if ( ! class_exists('RMA_WC_FRONTEND' ) ) {
 	        $rma_settings = get_option('wc_rma_settings');
 	        $rma_client = ( isset ($rma_settings['rma-live-client']) ? $rma_settings['rma-live-client'] : '');
 	        $rma_apikey = ( isset ($rma_settings['rma-live-apikey']) ? $rma_settings['rma-live-apikey'] : '');
+
+	        if ( 70300 > PHP_VERSION_ID ) {
+                $html = '<div class="notice notice-error">';
+                $html .= '<p>';
+                $html .= '<b>'.__( 'Run My Accounts for WooCommerce', 'rma-wc' ).'&nbsp;</b>';
+                $html .= __( 'You are using a wrong PHP version. You need to install PHP 7.3 or higher.', 'rma-wc' );
+                $html .= '&nbsp;';
+                $html .= sprintf( __( 'The current PHP version is %s.', 'rma-wc' ), PHP_VERSION);
+                $html .= '</p>';
+                $html .= '</div>';
+
+                echo $html;
+
+            }
 
 	        if( ( !$rma_client || !$rma_apikey ) ) {
 
