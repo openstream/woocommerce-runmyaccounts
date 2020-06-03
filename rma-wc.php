@@ -8,19 +8,19 @@
  * @package              RunmyAccountsforWooCommerce
  * @author               Sandro Lucifora
  * @copyright            2020 Openstream Internet Solutions
- * @license              GPL-2.0-or-later
+ * @license              GPL-3.0-or-later
  *
  * Plugin Name:          Run my Accounts for WooCommerce
- * Version:              1.3.3
+ * Version:              1.4.0
  * Description:          This plug-in connects WooCommerce to <a href="https://www.runmyaccounts.ch/">Run my Accounts</a>. Create customers and invoices as soon as you get an order in your WooCommerce shop.
  * Requires at least:    4.7
- * Requires PHP:         7.2
+ * Requires PHP:         7.3
  * Author:               Openstream Internet Solutions
  * Author URI:           https://www.openstream.ch
  * Text Domain:          rma-wc
  * Domain Path:          /languages/
  * WC requires at least: 3.2
- * WC tested up to:      4.0.1
+ * WC tested up to:      4.1.0
  * License:              GPL v2 or later
  * License URI:          https://www.gnu.org/licenses/gpl-2.0.html
  */

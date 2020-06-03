@@ -22,6 +22,8 @@ if ( !class_exists('RMA_SETTINGS_PAGE') ) {
         private $options_accounting;
         private $option_page_general;
         private $option_page_accounting;
+        private $option_page_log;
+        private $rma_log_count;
 
         public function __construct() {
 
@@ -30,11 +32,21 @@ if ( !class_exists('RMA_SETTINGS_PAGE') ) {
             $this->option_group_accounting = 'wc_rma_settings_accounting';
             $this->option_page_general     = 'settings-general';
             $this->option_page_accounting  = 'settings-accounting';
+            $this->option_page_accounting  = 'settings-log';
 
             $this->options_general    = get_option( $this->option_group_general );
             $this->options_accounting = get_option( $this->option_group_accounting );
 
+            add_action( 'wp_ajax_rma_log_table', array( $this, 'ajax_handle_database_log_table') );
+
+            add_action( 'admin_enqueue_scripts', array( $this, 'admin_enqueue' ) );
+
             add_action( 'admin_menu', array( $this, 'add_plugin_page' ) );
+        }
+
+        public function admin_enqueue() {
+
+            wp_enqueue_script( 'rma-admin-script', plugins_url( '../assets/js/admin.js', __FILE__ ), array('jquery'), get_option( 'wc_rma_version' ), 'true' );
 
         }
 
@@ -62,6 +74,7 @@ if ( !class_exists('RMA_SETTINGS_PAGE') ) {
                 <h2 class="nav-tab-wrapper">
                     <a href="<?php echo admin_url( $this->admin_url ); ?>" class="nav-tab<?php echo ( 'general' == $active_page ? ' nav-tab-active' : '' ); ?>"><?php esc_html_e('General', 'rma-wc'); ?></a>
                     <a href="<?php echo esc_url( add_query_arg( array( 'tab' => 'accounting' ), admin_url( $this->admin_url ) ) ); ?>" class="nav-tab<?php echo ( 'accounting' == $active_page ? ' nav-tab-active' : '' ); ?>"><?php esc_html_e('Accounting', 'rma-wc'); ?></a>
+                    <a href="<?php echo esc_url( add_query_arg( array( 'tab' => 'log' ), admin_url( $this->admin_url ) ) ); ?>" class="nav-tab<?php echo ( 'log' == $active_page ? ' nav-tab-active' : '' ); ?>"><?php esc_html_e('Log', 'rma-wc'); ?></a>
                 </h2>
 
                 <form method="post" action="options.php"><?php //   settings_fields( $this->option_group_general );
@@ -70,6 +83,11 @@ if ( !class_exists('RMA_SETTINGS_PAGE') ) {
                             settings_fields( $this->option_group_accounting );
                             do_settings_sections( $this->option_page_accounting );
                             submit_button();
+                            break;
+                        case 'log':
+                            do_settings_sections( $this->option_page_log );
+                            $this->flush_log_button();
+
                             break;
                         default:
                             settings_fields( $this->option_group_general );
@@ -106,6 +124,8 @@ if ( !class_exists('RMA_SETTINGS_PAGE') ) {
             );
 
             $this->options_accounting_gateways();
+
+            $this->log();
 
         }
 
@@ -421,6 +441,35 @@ if ( !class_exists('RMA_SETTINGS_PAGE') ) {
         }
 
         /**
+         * Page Error Log, Section Log
+         */
+        public function log() {
+
+            $section = 'log';
+
+            add_settings_section(
+                $section, // ID
+                esc_html__('Error Log', 'rma-wc'),
+                array( $this, 'section_info_log' ), // Callback
+                $this->option_page_log // Page
+            );
+
+            $id = 'rma-error-log';
+            add_settings_field(
+                $id,
+                '',
+                array( $this, 'output_log'), // general callback for checkbox
+                $this->option_page_log,
+                $section
+            );
+
+        }
+
+        public function section_info_log() {
+            esc_html_e('This page shows you the error logs.', 'rma-wc');
+        }
+
+        /**
          * General Input Field Checkbox
          *
          * @param array $args
@@ -529,6 +578,21 @@ if ( !class_exists('RMA_SETTINGS_PAGE') ) {
         }
 
         /**
+         * Output the error log from database
+         */
+        public function output_log() {
+
+            $output = $this->get_log_from_database();
+
+            echo '<style>[scope=row]{ display:none; }.form-table th { padding: 8px 10px; width: unset; font-weight: unset; }#textarea td {border: 1px solid #ddd; border-width: 0 1px 1px 0; }</style>';
+
+            echo '<div id="textarea" contenteditable>';
+            echo $output;
+            echo '</div>';
+
+        }
+
+        /**
          * Sanitizes a string from user input
          * Checks for invalid UTF-8, Converts single < characters to entities, Strips all tags, Removes line breaks, tabs, and extra whitespace, Strips octets
          *
@@ -548,6 +612,99 @@ if ( !class_exists('RMA_SETTINGS_PAGE') ) {
 
             return $new_input;
         }
+
+
+        private function get_log_from_database() {
+
+            global $wpdb;
+
+            $table_name = $wpdb->prefix . RMA_WC_LOG_TABLE;
+
+            $results = $wpdb->get_results( "SELECT SQL_CALC_FOUND_ROWS * FROM $table_name LIMIT 0, 100;", ARRAY_A );
+
+            if ( 0 == count( $results ) ) {
+
+                $this->rma_log_count = 0;
+
+                return esc_html__('No error data was found.', 'rma-wc');
+
+            }
+
+            $output = '<table class="widefat">';
+
+            $table_header = true;
+
+            foreach ( $results as $result ) {
+
+                if ( $table_header ) {
+                    $output .= '<thead><tr>';
+                    foreach ( array_keys( ( $result ) ) as $key ) {
+                        $output .= '<th>' . $key . '</th>';
+                    }
+                    $output .= '</tr></thead>';
+
+                    $table_header = false;
+                }
+
+                $output .= '<tr>';
+                foreach ( $result as $key => $value ) {
+                    $output .= '<td>' . $value . '</td>';
+                }
+                $output .= '</tr>';
+            }
+
+            $output .= '</table>';
+
+            return $output;
+
+        }
+
+        private function flush_log_button() {
+
+            if ( 0 < $this->rma_log_count || !empty( $this->rma_log_count ) || !isset( $this->rma_log_count )) {
+                echo sprintf(
+                    '<a href="#" id="flush-table" class="button-primary">%s</a>&nbsp;<span class="spinner">',
+                    esc_html__('Flush Table', 'rma-wc')
+                );
+            }
+
+        }
+
+        /**
+         * WP ajax request to flush error table
+         */
+        public function ajax_handle_database_log_table() {
+            global $wpdb; // this is how you get access to the database
+
+            $db_action = $_POST['db_action'];
+
+            switch ( $db_action ) {
+                case 'flush':
+
+                    $table_name = $wpdb->prefix . RMA_WC_LOG_TABLE;
+
+                    $wpdb->query("TRUNCATE TABLE $table_name");
+
+                    if($wpdb->last_error !== '') {
+
+                        esc_html_e( 'An error occurred while flushing the error log.', 'rma-wc');
+
+                        $wpdb->print_error();
+
+                        break;
+
+                    }
+
+                    $this->rma_log_count = 0;
+
+                    break;
+                default:
+                    break;
+            }
+
+            wp_die(); // this is required to terminate immediately and return a proper response
+        }
+
 
     }
 

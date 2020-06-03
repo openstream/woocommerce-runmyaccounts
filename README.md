@@ -1,14 +1,10 @@
-# WooCommerce Run my Accounts
-* Contributors: codestylist, openstream
-* Tags: Run my Accounts, WooCommerce, Billing
-* Requires at least: 4.7
-* Tested up to: 5.3.2
-* Requires PHP: 7.2
-* License: GPLv3
-* License URI: https://www.gnu.org/licenses/gpl-3.0.html
+# Run my Accounts for WooCommerce#
+[![License](https://img.shields.io/badge/license-GPL%203.0%2B-lightgrey.svg?style=flat-square)](https://github.com/openstream/woocommerce-runmyaccounts/blob/master/LICENSE)
 
-This plug-in connects WooCommerce with Run my Accounts.
+Run my Accounts for WooCommerce is a powerfull WooCommerce solution to create customers and invoice in Run My Account when a order is placed.
+
 The main features are:
+
 * create invoices automatically in Run My Accounts after an order is placed in WooCommerce
 * create customers automatically in Run My Accounts after a new user is created in WooCommerce
 
@@ -40,41 +36,18 @@ Please send a request to the Openstream Internet Solutions. We provide customiza
 * Update customer in Run My Accounts if user data was updated in WooCommerce is not working yet.
 * Create an invoice, if client does not register on checkout page, does not work.
 
-## Changelog
-### 1.3.3
-* Tweak - optimized code to publish on wordpress.org
-* Localization - added Swiss and Swiss (formal) translation
+## Translations
 
-### 1.3.2
-* Bug Fix - added delete a missing option group when plugin will be de-installed
-* Compatibility - tested with WordPress 5.3.2 and WooCommerce 3.9.1
-* Compatibility - pre-tested with WooCommerce 4.0.0 Beta
+* Swiss (de_CH)
+* German (de_DE)
 
-### 1.3.1
-* Bug Fix - fixed the wrong settings page when activating the plugin for the very first time
+POT file with text strings is included. If you would like to add a translation and see your name here, please [get in touch](mailto:info@openstream.ch).
 
-### 1.3.0
-* Feature - added dedicated receivable account for each payment gateway
-* Enhancement - use settings API for settings page
-* Enhancement - added order note if invoice is created
-* Enhancement - check if user_id is already linked to a Run My Accounts customer id before creating customer in Run My Accounts
+## Contribution
 
-### 1.2.0
-* Feature - create customer in Run my Accounts when new WooCommerce user is created on checkout page
-* Enhancement - added title to billing address if no WooCommerce Germanized is active
-* Enhancement - added compatibility with WooCommerce Germanized and use the same user meta for billing title (e.g. billing_title)
-* Enhancement - added warning if php extension curl is not loaded (is required for communication with Run my Accounts API)
+You are warmly welcome to contribute to Run My Accounts for WooCommerce. No matter if you find a typo or a bug, if you want to suggest a cool new feature or if you want to help us to translate it... we would like to hear you. Here's how you could get started.
 
-### 1.1.1
-* Tweak - new Run My Accounts API url
-
-### 1.1
-* Feature - added logging feature for RMA results
-* Feature - added connection test on settings page
-* Feature - added handling for different access data for live and test
-* Enhancement - improved error handling
-* Enhancement - improved security of files
-* Localization - added German and German (formal) translation   
-
-### 1.0
-version 1.0 is the initial version
+1. [Report](https://github.com/openstream/woocommerce-runmyaccounts/issues) a minor issue or a major bug
+2. [Provide feedback](https://github.com/openstream/woocommerce-runmyaccounts/issues?direction=desc&labels=Enhancement&page=1&sort=created&state=open) on enhancements
+3. [Submit](mailto:info@openstream.ch) a translation of your language
+4. Send pull requests with fixes and improvements

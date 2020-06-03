@@ -25,9 +25,9 @@ if (!class_exists('RMA_WC_BACKEND')) {
          */
         public function __construct() {
 
-            add_action( 'admin_init', array($this, 'admin_init')); // admin_init diese action wird benötigt um z.B. option, settings und filter zusetzen
-            add_action( 'plugins_loaded', array($this, 'plugins_loaded')); // plugins_loaded diese action wird bei jedem aufruf der Seite ausgeführt
-            add_action( 'plugins_loaded', array($this, 'plugins_loaded_settings'), 1); // plugins_loaded diese action begrenzen wir auf ein einmaligen aufruf, der hier beim aktivieren des plugins genutzt wird
+            add_action( 'admin_init', array($this, 'admin_init'));
+            add_action( 'plugins_loaded', array($this, 'plugins_loaded'));
+            add_action( 'plugins_loaded', array($this, 'plugins_loaded_settings'), 1);
 
         }
 
@@ -58,14 +58,6 @@ if (!class_exists('RMA_WC_BACKEND')) {
 		    $this->delete(); // Delete
 
 	    }
-
-        /**
-         * plugin settings page, is called by add_menu()
-         */
-        public function settings() {
-
-            require_once RMA_WC_PFAD . 'admin/html/settings.php';
-        }
 
         /**
          * Admin Init - we initiate everything we need

@@ -54,6 +54,7 @@ Please send a request to the Openstream Internet Solutions. We provide customiza
 == Changelog ==
 = 1.4.0 =
 * Bug Fix - fixed error with wrong PHP version
+* Tweak - added output for log information
 * Tweak - improve error handling
 * Tweak - added warning if PHP version is too low
 * Compatibility - tested up to WordPress 5.4.1 and WooCommerce 4.2.0
