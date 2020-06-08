@@ -712,6 +712,8 @@ if ( !class_exists('RMA_SETTINGS_PAGE') ) {
                     $value = str_replace('error','<span style="color: red;">error</span>',$value);
                     $value = str_replace('failed','<span style="color: red;">failed</span>',$value);
                     $value = str_replace('success','<span style="color: green;">success</span>',$value);
+                    $value = str_replace('created','<span style="color: green;">created</span>',$value);
+                    $value = str_replace('invoiced','<span style="color: green;">invoiced</span>',$value);
 
                     $output .= '<td>' . $value . '</td>';
                 }
