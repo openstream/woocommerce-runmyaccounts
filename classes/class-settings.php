@@ -174,7 +174,7 @@ if ( !class_exists('RMA_SETTINGS_PAGE') ) {
             $id = 'rma-live-client';
             add_settings_field(
                 $id,
-                esc_html__('Live Client', 'rma-wc'),
+                esc_html__('Production Client', 'rma-wc'),
                 array( $this, 'option_input_text_cb'), // general call back for input text
                 $this->option_page_general,
                 $section,
@@ -188,7 +188,7 @@ if ( !class_exists('RMA_SETTINGS_PAGE') ) {
             $id = 'rma-live-apikey';
             add_settings_field(
                 $id,
-                esc_html__('Live API key', 'rma-wc'),
+                esc_html__('Production API key', 'rma-wc'),
                 array( $this, 'option_input_text_cb'),
                 $this->option_page_general,
                 $section,
@@ -202,7 +202,7 @@ if ( !class_exists('RMA_SETTINGS_PAGE') ) {
             $id = 'rma-test-client';
             add_settings_field(
                 $id,
-                esc_html__('Test Client', 'rma-wc'),
+                esc_html__('Sandbox Client', 'rma-wc'),
                 array( $this, 'option_input_text_cb'), // general call back for input text
                 $this->option_page_general,
                 $section,
@@ -216,7 +216,7 @@ if ( !class_exists('RMA_SETTINGS_PAGE') ) {
             $id = 'rma-test-apikey';
             add_settings_field(
                 $id,
-                esc_html__('Test API key', 'rma-wc'),
+                esc_html__('Sandbox API key', 'rma-wc'),
                 array( $this, 'option_input_text_cb'),
                 $this->option_page_general,
                 $section,
@@ -348,6 +348,48 @@ if ( !class_exists('RMA_SETTINGS_PAGE') ) {
                 )
             );
 
+            $id = 'rma-create-guest-customer';
+            add_settings_field(
+                $id,
+                esc_html__('Create Account for Guests', 'rma-wc'),
+                array( $this, 'option_input_checkbox_cb'),
+                $this->option_page_general,
+                $section,
+                array(
+                    'option_group' => $this->option_group_general,
+                    'id'           => $id,
+                    'value'        => isset( $this->options_general[ $id ] ) ? $this->options_general[ $id ] : '',
+                    'description'  => esc_html__('Tick this if you want to create unique customer account in Run my Accounts for guest orders. Otherwise the guest orders will be booked on a pre-defined catch-all customer account.', 'rma-wc' )
+                )
+            );
+
+            $id = 'rma-guest-customer-prefix';
+            add_settings_field(
+                $id,
+                esc_html__('Guest Customer Number Prefix', 'rma-wc'),
+                array( $this, 'option_input_text_cb'),
+                $this->option_page_general,
+                $section,
+                array(
+                    'option_group' => $this->option_group_general,
+                    'id'           => $id,
+                    'value'        => isset( $this->options_general[ $id ] ) ? $this->options_general[ $id ] : '',
+                    'description'  => esc_html__('Prefix followed by order id will be the customer number in Run my Accounts.', 'rma-wc' )
+                )
+            );
+
+            $id = 'rma-guest-catch-all';
+            add_settings_field(
+                $id,
+                esc_html__('Catch-All Account', 'rma-wc'),
+                array( $this, 'rma_customer_accounts_cb'), // individual callback
+                $this->option_page_general,
+                $section,
+                array( 'option_group' => $this->option_group_general,
+                       'id'           => $id
+                )
+            );
+
         }
 
         /**
@@ -397,7 +439,7 @@ if ( !class_exists('RMA_SETTINGS_PAGE') ) {
                         'no'       => esc_html__('no','rma-wc'),
                         'yes'      => esc_html__('yes','rma-wc'),
                     ),
-                    'description'  => esc_html__('Send email on error with Run My Accounts API.', 'rma-wc' )
+                    'description'  => esc_html__('Send email on error with Run my Accounts API.', 'rma-wc' )
 
                 )
             );
@@ -419,7 +461,6 @@ if ( !class_exists('RMA_SETTINGS_PAGE') ) {
 
 
         }
-
 
         /**
          * Page General, Section Misc
@@ -610,8 +651,8 @@ if ( !class_exists('RMA_SETTINGS_PAGE') ) {
                 'id'           => $id,
                 'value'        => isset( $this->options_general[ $id ] ) ? $this->options_general[ $id ] : '',
                 'options'      => array(
-                    'test' => esc_html__('Test','rma-wc'),
-                    'live' => esc_html__('Live','rma-wc'),
+                    'test' => esc_html__('Sandbox Test','rma-wc'),
+                    'live' => esc_html__('Production','rma-wc'),
                 )
             );
 
@@ -631,6 +672,47 @@ if ( !class_exists('RMA_SETTINGS_PAGE') ) {
                     echo '&nbsp;<span style="color: green">' . __('Connection successful.', 'rma-wc') . '</span>';
 
             }
+        }
+
+        /**
+         * Pull down with RMA customer list
+         *
+         * @param array $args
+         */
+        public function rma_customer_accounts_cb( $args ) {
+            $option_group = ( isset( $args['option_group'] ) ) ? $args['option_group'] : '';
+            $id           = ( isset( $args['id'] ) ) ? $args['id'] : '';
+
+            if ( class_exists('RMA_WC_API') ) {
+
+                $RMA_WC_API = new RMA_WC_API();
+                $options = $RMA_WC_API->get_customers();
+
+                if ( !empty( $RMA_WC_API ) ) unset( $RMA_WC_API );
+
+            }
+
+            if( !isset( $options ) || !$options ) {
+
+                $options = array('' => __( 'Error while connecting to RMA. Please check your settings.', 'rma-wc' ) );
+
+            }
+            else {
+
+                $options = array('' => __( 'Select...', 'rma-wc' ) ) + $options;
+
+            }
+
+            $select_args  = array (
+                'option_group' => $option_group,
+                'id'           => $id,
+                'value'        => isset( $this->options_general[ $id ] ) ? $this->options_general[ $id ] : '',
+                'options'      => $options
+            );
+
+            // create select
+            self::option_select_cb( $select_args );
+
         }
 
         /**

@@ -23,6 +23,7 @@ if ( ! class_exists('RMA_WC_FRONTEND' ) ) {
         public function __construct() {
 
             if ( !defined('PHP_VERSION_ID') ) {
+
                 $version = explode('.', PHP_VERSION);
 
                 define( 'PHP_VERSION_ID', ( $version[0] * 10000 + $version[1] * 100 + $version[2] ) );
@@ -40,19 +41,24 @@ if ( ! class_exists('RMA_WC_FRONTEND' ) ) {
             if ( in_array( 'woocommerce/woocommerce.php', apply_filters( 'active_plugins', get_option( 'active_plugins' ) ) ) ) {
 
                 // fire when new customer was saved on checkout page
-                add_action('woocommerce_checkout_update_user_meta', array( $this, 'create_rma_customer_on_registration'), 10, 1 );
-                // ToDo: update RMA customer on user data update
+                add_action( 'woocommerce_checkout_update_user_meta', array( $this, 'create_rma_customer_on_registration'), 10, 1 );
+                // fire when  customer was updated
+                add_action( 'woocommerce_update_customer', array( $this, 'update_customer' ) );
 
                 // fire when a new order comes in ro create new invoice in RMA
                 add_action('woocommerce_checkout_order_processed', array( $this, 'create_rma_invoice_at_new_order'), 10, 1 );
 
-                // add title field to woocommerce billing address only, if WooCommerce Germanized is not activ
+                // add title field to woocommerce billing address only, if WooCommerce Germanized is not active
                 if ( ! defined( 'WC_GERMANIZED_VERSION' ) ) {
-                    add_filter('woocommerce_billing_fields', array($this, 'woocommerce_billing_fields'), 10, 1);
-                    add_filter('woocommerce_checkout_fields', array($this, 'woocommerce_billing_fields'), 10, 1);
+                    add_filter('woocommerce_billing_fields', array( $this, 'woocommerce_billing_fields'), 10, 1);
+                    add_filter('woocommerce_checkout_fields', array( $this, 'woocommerce_billing_fields'), 10, 1);
+                    add_filter('woocommerce_checkout_update_order_meta', array( $this, 'woocommerce_save_billing_fields'), 10, 1);
                 }
 
             }
+
+            add_filter( 'manage_users_columns', array( $this, 'add_column_to_user_table' ) );
+            add_filter( 'manage_users_custom_column', array( $this, 'add_value_to_user_table_row' ), 10, 3 );
 
         }
 
@@ -66,7 +72,7 @@ if ( ! class_exists('RMA_WC_FRONTEND' ) ) {
         public function woocommerce_billing_fields( $fields ) {
 
             $fields['billing_title'] = array(
-                'label'       => __('Title', 'rma-wc'),
+                'label'       => esc_html__('Title', 'rma-wc'),
                 'type'        => 'select',
                 'class'       => array ( 'form-row-wide', 'address-field' ),
                 'options'     => apply_filters(
@@ -82,6 +88,74 @@ if ( ! class_exists('RMA_WC_FRONTEND' ) ) {
 
             return $fields;
 
+        }
+
+        /**
+         * Save custom billing fields to order
+         *
+         * @param int $order_id
+         *
+         */
+        public function woocommerce_save_billing_fields( $order_id  ) {
+
+            if ( ! empty( $_POST['billing_title'] ) ) {
+                update_post_meta( $order_id, '_billing_title', sanitize_text_field( $_POST['billing_title'] ) );
+            }
+
+        }
+
+        /**
+         * Add column to user table
+         *
+         * @param $column
+         *
+         * @return array
+         */
+        public function add_column_to_user_table( $column ) {
+
+            $column = self::array_insert( $column, 'email', 'rma_customer_id', __( 'RMA Customer # ', 'rma-wc') );
+
+            return $column;
+        }
+
+        /**
+         * Add value to new column on user table
+         *
+         * @param $val
+         * @param $column_name
+         * @param $user_id
+         *
+         * @return string
+         */
+        public function add_value_to_user_table_row( $val, $column_name, $user_id ) {
+            switch ( $column_name ) {
+                case 'rma_customer_id' :
+                    return get_the_author_meta( 'rma_customer', $user_id );
+                default:
+            }
+            return $val;
+        }
+
+        /**
+         * Insert key/value in array after a given key
+         *
+         * @param $array
+         * @param $after_key
+         * @param $key
+         * @param $value
+         *
+         * @return array
+         */
+        static function array_insert( $array, $after_key, $key, $value ){
+
+            $pos   = array_search( $after_key, array_keys( $array ) ) ;
+            $pos ++;
+
+            return array_merge(
+                array_slice( $array, 0, $pos, $preserve_keys = true),
+                array( $key=>$value ),
+                array_slice( $array, $pos, $preserve_keys = true )
+            );
         }
 
         /**
@@ -121,13 +195,13 @@ if ( ! class_exists('RMA_WC_FRONTEND' ) ) {
         public function load_textdomain() {
 
             /**
-             * load_textdomain() WP Since: 1.5.0
+             * load_textdomain() WP Since: 1.0.0
              * https://codex.wordpress.org/Function_Reference/load_textdomain
              */
             load_textdomain('rma-wc', WP_LANG_DIR . "/plugins/rma-wc/rma-wc-$this->locale.mo");
 
             /**
-             * load_plugin_textdomain() WP Since: 1.5.0
+             * load_plugin_textdomain() WP Since: 1.0.0
              * https://codex.wordpress.org/Function_Reference/load_plugin_textdomain
              */
             load_plugin_textdomain('rma-wc', false, plugin_basename(RMA_WC_PFAD . 'languages/'));
@@ -145,10 +219,10 @@ if ( ! class_exists('RMA_WC_FRONTEND' ) ) {
 	        if ( 70300 > PHP_VERSION_ID ) {
                 $html = '<div class="notice notice-error">';
                 $html .= '<p>';
-                $html .= '<b>'.__( 'Run My Accounts for WooCommerce', 'rma-wc' ).'&nbsp;</b>';
-                $html .= __( 'You are using a wrong PHP version. You need to install PHP 7.3 or higher.', 'rma-wc' );
+                $html .= '<b>'.esc_html__( 'Run my Accounts for WooCommerce', 'rma-wc' ).'&nbsp;</b>';
+                $html .= esc_html__( 'You are using a wrong PHP version. You need to install PHP 7.3 or higher.', 'rma-wc' );
                 $html .= '&nbsp;';
-                $html .= sprintf( __( 'The current PHP version is %s.', 'rma-wc' ), PHP_VERSION);
+                $html .= sprintf( esc_html__( 'The current PHP version is %s.', 'rma-wc' ), PHP_VERSION);
                 $html .= '</p>';
                 $html .= '</div>';
 
@@ -160,8 +234,8 @@ if ( ! class_exists('RMA_WC_FRONTEND' ) ) {
 
 		        $html = '<div class="notice notice-error">';
 		        $html .= '<p>';
-		        $html .= '<b>'.__( 'Warning', 'rma-wc' ).'&nbsp;</b>';
-		        $html .= __( 'Please enter your live client and live API key before start using WooCommerce Run my Accounts.', 'rma-wc' );
+		        $html .= '<b>'.esc_html__( 'Warning', 'rma-wc' ).'&nbsp;</b>';
+		        $html .= esc_html__('Please enter your Production Client and Production API Key before using Run my Accounts for WooCommerce in production mode.', 'rma-wc' );
 		        $html .= '</p>';
 		        $html .= '</div>';
 
@@ -172,7 +246,7 @@ if ( ! class_exists('RMA_WC_FRONTEND' ) ) {
 	        if( ( isset($rma_settings['rma-active']) && $rma_settings['rma-active']=='') || !isset($rma_settings['rma-active'] ))  {
 
 		        $html = '<div class="update-nag">';
-		        $html .= __( 'WooCommerce Run my Accounts is not activated. No invoice will be created.', 'rma-wc' );
+		        $html .= esc_html__( 'WooCommerce Run my Accounts is not activated. No invoice will be created.', 'rma-wc' );
 		        $html .= '</div>';
 
 		        echo $html;
@@ -182,7 +256,7 @@ if ( ! class_exists('RMA_WC_FRONTEND' ) ) {
         }
 
         /**
-         * Create new invoice in Run My Accounts when new order came in
+         * Create new invoice in Run my Accounts when new order came in
          *
 	     * @param $order_id
 	     *
@@ -203,26 +277,51 @@ if ( ! class_exists('RMA_WC_FRONTEND' ) ) {
 	    }
 
         /**
-         * Create customer in Run My Accounts when user is registered in WooCommerce
+         * Create customer in Run my Accounts when user is registered in WooCommerce
          *
          * @param $user_id
+         * @param $data
          *
          * @return bool|string
          * @throws Exception
          */
         public function create_rma_customer_on_registration( $user_id ) {
 
-            if ( class_exists('RMA_WC_API') ) {
+            // create new customer in RMA if user was created in WordPress before
+            if ( 0 <> $user_id ) {
 
-                $RMA_WC_API = new RMA_WC_API();
-                $result = $RMA_WC_API->create_customer( $user_id );
+                if ( class_exists('RMA_WC_API') ) {
 
-                unset( $RMA_WC_API );
+                    $RMA_WC_API = new RMA_WC_API();
+
+                    $result = $RMA_WC_API->create_rma_customer( 'user', $user_id );
+
+                    unset( $RMA_WC_API );
+                }
             }
 
-            return ( !empty( $result) ? $result : true );
+            return ( isset ( $result) && !empty( $result) ? $result : true );
 
         }
+
+        /**
+         * Update customer in Run my Accounts when data are updated at the front end
+         *
+         * @param $user_id
+         */
+        public function update_customer( $user_id ) {
+
+            if ( class_exists('RMA_WC_API') && !empty( $user_id ) && 0 != $user_id) {
+
+                $RMA_WC_API = new RMA_WC_API();
+                $RMA_WC_API->create_rma_customer( 'user', $user_id, 'update' );
+
+                unset( $RMA_WC_API );
+
+            }
+
+        }
+
     }
 
 }

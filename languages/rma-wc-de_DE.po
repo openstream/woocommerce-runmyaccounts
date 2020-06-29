@@ -72,8 +72,8 @@ msgid "How many days has this customer to pay your invoice?"
 msgstr "Wie viele Tage hat dieser Kunde um Deine Rechnung zu bezahlen?"
 
 #: classes/class-frontend.php:148
-msgid "Run My Accounts for WooCommerce"
-msgstr "Run My Accounts für WooCommerce"
+msgid "Run my Accounts for WooCommerce"
+msgstr "Run my Accounts für WooCommerce"
 
 #: classes/class-frontend.php:149
 msgid ""
@@ -114,8 +114,8 @@ msgstr "Rechnung %u erstellt"
 #: classes/class-rma-api.php:356
 #, php-format
 msgctxt "Order Note"
-msgid "Invoice %u created in Run My Accounts"
-msgstr "Rechnung %u in Run My Accounts angelegt."
+msgid "Invoice %u created in Run my Accounts"
+msgstr "Rechnung %u in Run my Accounts angelegt."
 
 #: classes/class-rma-api.php:373
 msgid "Invoice"
@@ -214,7 +214,7 @@ msgid ""
 "Prefix followed by order number will be the invoice number in Run my "
 "Accounts."
 msgstr ""
-"Der Prefix gefolgt von der Bestellnummer ist die Rechnungsnummer in Run My "
+"Der Prefix gefolgt von der Bestellnummer ist die Rechnungsnummer in Run my "
 "Accounts"
 
 #: classes/class-settings.php:276
@@ -257,7 +257,7 @@ msgstr "Kundennummer-Präfix"
 msgid ""
 "Prefix followed by user id will be  the customer number in Run my Accounts."
 msgstr ""
-"Der Präfix gefolgt von der User ID ist die Kundennummer in Run My Accounts"
+"Der Präfix gefolgt von der User ID ist die Kundennummer in Run my Accounts"
 
 #. ID
 #: classes/class-settings.php:360

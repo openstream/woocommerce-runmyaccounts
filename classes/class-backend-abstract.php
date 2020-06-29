@@ -60,7 +60,7 @@ if ( !class_exists('RMA_WC_BACKEND_ABSTRACT') ) {
          */
         public function update() {
             /**
-             * get_option() WP Since: 1.5.0
+             * get_option() WP Since: 1.0.0
              * https://codex.wordpress.org/Function_Reference/get_option
              */
             if ( self::DB_VERSION > get_option( 'wc_rma_db_version' ) ) { // update option if value is different
@@ -113,17 +113,113 @@ if ( !class_exists('RMA_WC_BACKEND_ABSTRACT') ) {
 
             // fire if woocommerce is enabled
             if ( in_array( 'woocommerce/woocommerce.php', apply_filters( 'active_plugins', get_option( 'active_plugins' ) ) ) ) {
+
 		        // Add RMA fields to user profile
 		        add_filter('woocommerce_customer_meta_fields', array( $this, 'usermeta_profile_fields' ), 10, 1 );
+
+		        // update user data in Run My Accounts
+                add_action( 'profile_update', array( $this, 'update_profile' ), 99 );
+
+                // add order action
+                add_action( 'woocommerce_order_actions', array( $this, 'order_meta_box_action' ) );
+                add_action( 'woocommerce_order_action_create_rma_invoice', array( $this, 'process_order_meta_box_action' ) );
+
+                // add invoice column to order page
+                add_filter( 'manage_edit-shop_order_columns', array( $this, 'add_column_to_order_table' ) );
+                add_action( 'manage_shop_order_posts_custom_column', array( $this, 'add_value_to_order_table_row' ) );
+
             }
 
             // if WooCommerce Germanized is not active add our own custom meta field title
             if ( ! defined( 'WC_GERMANIZED_VERSION' ) ) {
 
-                add_action( 'edit_user_profile', array( $this, 'usermeta_form_field_title' ) ); // add the field to user's own profile editing screen
-                add_action( 'show_user_profile', array( $this, 'usermeta_form_field_title' ) ); // add the field to user profile editing screen
                 add_action( 'personal_options_update', array( $this, 'usermeta_form_field_update' ) ); // add the save action to user's own profile editing screen update
                 add_action( 'edit_user_profile_update', array( $this, 'usermeta_form_field_update' ) ); // add the save action to user profile editing screen update
+
+            }
+
+        }
+
+        /**
+         * Add a custom action to order actions select box on edit order page
+         * Only added for not paid orders and when invoice is not created yet
+         *
+         * @param array $actions order actions array to display
+         *
+         * @return array - updated actions
+         */
+        public function order_meta_box_action( $actions ) {
+
+            global $theorder;
+
+            // bail if the order has been paid for or invoice was already created
+            if ( $theorder->is_paid() || !empty( get_post_meta( $theorder->get_id(), '_rma_invoice', true ) ) ){
+                return $actions;
+            }
+
+            $actions['create_rma_invoice'] = __( 'Create invoice in Run my Accounts', 'rma-wc' );
+            return $actions;
+
+        }
+
+        /**
+         * Create invoice when custom action is clicked
+         *
+         * @param WC_Order $order
+         */
+        public function process_order_meta_box_action( $order ) {
+
+            if ( class_exists('RMA_WC_API') ) {
+
+                $RMA_WC_API = new RMA_WC_API();
+                $result = $RMA_WC_API->create_invoice(  $order->get_id() );
+
+                unset( $RMA_WC_API );
+
+            }
+
+        }
+
+        /**
+         * Add column to order table
+         *
+         * @param $columns
+         *
+         * @return array
+         */
+        public function add_column_to_order_table( $columns ) {
+
+            $columns = RMA_WC_FRONTEND::array_insert( $columns, 'order_total', 'rma_invoice', __( 'Invoice #', 'rma-wc'));
+
+            return $columns;
+        }
+
+        public function add_value_to_order_table_row( $column ) {
+
+            global $post;
+
+            switch ( $column ) {
+                case 'rma_invoice' :
+                    echo get_post_meta( $post->ID, '_rma_invoice', true );
+                default:
+            }
+
+
+        }
+
+        /**
+         * Update user profile in Run my Accounts
+         *
+         * @param $user_id
+         */
+        public function update_profile( $user_id ) {
+
+            if ( class_exists('RMA_WC_API') ) {
+
+                $RMA_WC_API = new RMA_WC_API();
+                $options = $RMA_WC_API->create_rma_customer( 'user', $user_id, 'update' );
+
+                unset( $RMA_WC_API );
 
             }
 

@@ -5,8 +5,8 @@ Run my Accounts for WooCommerce is a powerfull WooCommerce solution to create cu
 
 The main features are:
 
-* create invoices automatically in Run My Accounts after an order is placed in WooCommerce
-* create customers automatically in Run My Accounts after a new user is created in WooCommerce
+* create invoices automatically in Run my Accounts after an order is placed in WooCommerce
+* create customers automatically in Run my Accounts after a new user is created in WooCommerce
 
 Please note, you need a paid account with Run my Accounts to use this plugin.
 
@@ -20,21 +20,17 @@ Activate the plugin, enter the API key and check the settings page.
 
 No. Run my Accounts for WooCommerce requires WooCommerce to provide all features.
 
-### Do I need a paid account with Run My Accounts?
+### Do I need a paid account with Run my Accounts?
 
-Yes. Without the paid account you are not able to set up your company within Run My Accounts.
+Yes. Without the paid account you are not able to set up your company within Run my Accounts.
 
 ### Is the plugin for free?
 
-The source code is freely available, but you need a Run My Accounts API key. Openstream and Run my Accounts agreed that plugin users will be charged CHF 200.- yearly for plugin maintenance, i.e. for making sure that the plugin works with new versions of WordPress and WooCommerce.
+The source code is freely available, but you need a Run my Accounts API key. Openstream and Run my Accounts agreed that plugin users will be charged CHF 200.- yearly for plugin maintenance, i.e. for making sure that the plugin works with new versions of WordPress and WooCommerce.
 
 ### I miss a feature. What to do?
 
 Please send a request to the Openstream Internet Solutions. We provide customization on an hourly rate. Otherwise you can fork the plugin on GitHub and develop the missing feature yourself. We only ask to send a pull request so, each user can benefit from your extension.
-
-## Known issues
-* Update customer in Run My Accounts if user data was updated in WooCommerce is not working yet.
-* Create an invoice, if client does not register on checkout page, does not work.
 
 ## Translations
 
@@ -45,7 +41,7 @@ POT file with text strings is included. If you would like to add a translation a
 
 ## Contribution
 
-You are warmly welcome to contribute to Run My Accounts for WooCommerce. No matter if you find a typo or a bug, if you want to suggest a cool new feature or if you want to help us to translate it... we would like to hear you. Here's how you could get started.
+You are warmly welcome to contribute to Run my Accounts for WooCommerce. No matter if you find a typo or a bug, if you want to suggest a cool new feature or if you want to help us to translate it... we would like to hear you. Here's how you could get started.
 
 1. [Report](https://github.com/openstream/woocommerce-runmyaccounts/issues) a minor issue or a major bug
 2. [Provide feedback](https://github.com/openstream/woocommerce-runmyaccounts/issues?direction=desc&labels=Enhancement&page=1&sort=created&state=open) on enhancements

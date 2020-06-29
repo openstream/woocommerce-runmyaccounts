@@ -2,7 +2,7 @@
 * Contributors: openstream, codestylist
 * Tags: Run my Accounts, WooCommerce, Billing
 * Requires at least: 4.7
-* Tested up to: 5.4.1
+* Tested up to: 5.4.2
 * Stable tag: 1.3.4
 * Requires PHP: 7.2
 * License: GPLv3
@@ -15,8 +15,8 @@ This plug-in connects WooCommerce with Run my Accounts.
 Run my Accounts for WooCommerce is a powerfull WooCommerce solution to create customers and invoice in Run My Account when a order is placed.
 
 The main features are:
-* create invoices automatically in Run My Accounts after an order is placed in WooCommerce
-* create customers automatically in Run My Accounts after a new user is created in WooCommerce
+* create invoices automatically in Run my Accounts after an order is placed in WooCommerce
+* create customers automatically in Run my Accounts after a new user is created in WooCommerce
 
 Please note, you need a paid account with Run my Accounts to use this plugin.
 
@@ -30,13 +30,13 @@ Activate the plugin, enter the API key and check the settings page.
 
 No. Run my Accounts for WooCommerce requires WooCommerce to provide all features.
 
-= Do I need a paid account with Run My Accounts? =
+= Do I need a paid account with Run my Accounts? =
 
-Yes. Without the paid account you are not able to set up your company within Run My Accounts.
+Yes. Without the paid account you are not able to set up your company within Run my Accounts.
 
 = Is the plugin for free? =
 
-The source code is freely available, but you need a Run My Accounts API key. Openstream and Run my Accounts agreed that plugin users will be charged CHF 200.- yearly for plugin maintenance, i.e. for making sure that the plugin works with new versions of WordPress and WooCommerce.
+The source code is freely available, but you need a Run my Accounts API key. Openstream and Run my Accounts agreed that plugin users will be charged CHF 200.- yearly for plugin maintenance, i.e. for making sure that the plugin works with new versions of WordPress and WooCommerce.
 
 = I miss a feature. What to do? =
 
@@ -48,17 +48,21 @@ Please send a request to the Openstream Internet Solutions. We provide customiza
 3. Settings on user page.
 
 == Known issues ==
-* Update customer in Run My Accounts if user data was updated in WooCommerce is not working yet.
-* Create an invoice, if client does not register on checkout page, does not work.
+* none
 
 == Changelog ==
 = 1.4.0 =
+* Feature - added handling for WooCommerce guest order
+* Feature - added update customer in Run my Accounts when user data is updated in WooCommerce
+* Feature - added option for creating invoice on admin order page as long as no invoice was created
 * Feature - added option for sending email on error
-* Bug Fix - fixed error with wrong PHP version
+* Bug Fix - fixed error with wrong PHP version (min. requirement PHP 7.3)
+* Tweak - added Run my Accounts customer number as column to admin user page
+* Tweak - added Run my Accounts invoice number as column to admin oder page
 * Tweak - added output for log information
 * Tweak - improve error handling
 * Tweak - added warning if PHP version is too low
-* Compatibility - tested up to WordPress 5.4.1 and WooCommerce 4.2.0
+* Compatibility - tested up to WordPress 5.4.2 and WooCommerce 4.2.2
 
 = 1.3.3 =
 * Tweak - optimized code to publish on wordpress.org
@@ -76,7 +80,7 @@ Please send a request to the Openstream Internet Solutions. We provide customiza
 * Feature - added dedicated receivable account for each payment gateway
 * Enhancement - use settings API for settings page
 * Enhancement - added order note if invoice is created
-* Enhancement - check if user_id is already linked to a Run My Accounts customer id before creating customer in Run My Accounts
+* Enhancement - check if user_id is already linked to a Run my Accounts customer id before creating customer in Run my Accounts
 
 = 1.2.0 =
 * Feature - create customer in Run my Accounts when new WooCommerce user is created on checkout page
@@ -85,7 +89,7 @@ Please send a request to the Openstream Internet Solutions. We provide customiza
 * Enhancement - added warning if php extension curl is not loaded (is required for communication with Run my Accounts API)
 
 = 1.1.1 =
-* Tweak - new Run My Accounts API url
+* Tweak - new Run my Accounts API url
 
 = 1.1 =
 * Feature - added logging feature for RMA results

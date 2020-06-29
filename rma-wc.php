@@ -20,7 +20,7 @@
  * Text Domain:          rma-wc
  * Domain Path:          /languages/
  * WC requires at least: 3.2
- * WC tested up to:      4.2.0
+ * WC tested up to:      4.2.2
  * License:              GPL v2 or later
  * License URI:          https://www.gnu.org/licenses/gpl-2.0.html
  */
@@ -66,7 +66,7 @@ if ( is_admin() ) {
 
 // We include our frontend class
 require_once RMA_WC_PFAD . 'classes/class-frontend.php';
-// We include our Run My Accounts class
+// We include our Run my Accounts class
 require_once RMA_WC_PFAD . 'classes/class-rma-api.php';
 
 // Does the frontend class exist?

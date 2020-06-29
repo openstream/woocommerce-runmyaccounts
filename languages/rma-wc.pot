@@ -70,7 +70,7 @@ msgid "How many days has this customer to pay your invoice?"
 msgstr ""
 
 #: classes/class-frontend.php:148
-msgid "Run My Accounts for WooCommerce"
+msgid "Run my Accounts for WooCommerce"
 msgstr ""
 
 #: classes/class-frontend.php:149
@@ -107,7 +107,7 @@ msgstr ""
 #: classes/class-rma-api.php:356
 #, php-format
 msgctxt "Order Note"
-msgid "Invoice %u created in Run My Accounts"
+msgid "Invoice %u created in Run my Accounts"
 msgstr ""
 
 #: classes/class-rma-api.php:373

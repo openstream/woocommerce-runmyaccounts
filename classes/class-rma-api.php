@@ -10,7 +10,9 @@ if ( !class_exists('RMA_WC_API') ) {
 		 */
 		public function __construct() {
 
-		    self::define_constants();
+		    // define constants only if they are not defined yez
+		    if ( !defined( 'RMA_MANDANT' ) )
+		        self::define_constants();
 
 		}
 
@@ -94,14 +96,14 @@ if ( !class_exists('RMA_WC_API') ) {
 		 */
 		public function get_customers() {
 
-		    if(!RMA_MANDANT || !RMA_APIKEY) {
+		    if( !RMA_MANDANT || !RMA_APIKEY ) {
 
                 $log_values = array(
                     'status' => 'error',
                     'section_id' => '',
-                    'section' => __( 'Get Customer', 'rma-wc'),
+                    'section' => esc_html_x('Get Customer', 'Log Section', 'rma-wc'),
                     'mode' => self::rma_mode(),
-                    'message' => esc_html__('Missing client data', 'rma-wc') );
+                    'message' => esc_html__('Missing API data', 'rma-wc') );
 
                 self::write_log($log_values);
 
@@ -128,7 +130,7 @@ if ( !class_exists('RMA_WC_API') ) {
                 $log_values = array(
                     'status' => 'error',
                     'section_id' => '',
-                    'section' => __( 'Get Customer', 'rma-wc'),
+                    'section' => esc_html_x('Get Customer', 'Log Section', 'rma-wc'),
                     'mode' => self::rma_mode(),
                     'message' => $message );
 
@@ -158,7 +160,7 @@ if ( !class_exists('RMA_WC_API') ) {
 					$array = json_decode( json_encode( (array)$xml ), TRUE);
 
 					// Transform into array
-					foreach ($array as $value) {
+					foreach ( $array as $value ) {
 
 						foreach ($value as $key => $customer ) {
                             $number = $customer['customernumber'];
@@ -170,7 +172,7 @@ if ( !class_exists('RMA_WC_API') ) {
                                     $name = '';
                                 }
                                 else {
-                                    $name   = $customer['firstname'] . ' ' . $customer['lastname'];
+                                    $name = $customer['firstname'] . ' ' . $customer['lastname'];
                                 }
 
                             }
@@ -189,7 +191,7 @@ if ( !class_exists('RMA_WC_API') ) {
 		}
 
 		/**
-		 * Create data for invoice
+		 * Collect data for invoice
 		 *
 		 * @param $order_id
          *
@@ -239,14 +241,14 @@ if ( !class_exists('RMA_WC_API') ) {
 		}
 
         /**
-         * Prepare data of a customer for sending to Run my Accounts
+         * Prepare data of a customer by user id for sending to Run my Accounts
          *
          * @param $user_id
          *
          * @return array
          * @throws Exception
          */
-		private function get_customer_values( $user_id ) {
+		private function get_customer_values_by_user_id( $user_id ) {
 
             $settings        = get_option( 'wc_rma_settings' );
             $customer_prefix = isset( $settings[ 'rma-customer-prefix' ] ) ? $settings[ 'rma-customer-prefix' ] : '';
@@ -287,12 +289,62 @@ if ( !class_exists('RMA_WC_API') ) {
 
 		}
 
+        /**
+         * Prepare data of a customer by order id for sending to Run my Accounts
+         *
+         * @param $order_id
+         *
+         * @return array
+         * @throws Exception
+         */
+        private function get_customer_values_by_order_id( $order_id ) {
+
+            $settings        = get_option( 'wc_rma_settings' );
+            $customer_prefix = isset( $settings[ 'rma-guest-customer-prefix' ] ) ? $settings[ 'rma-guest-customer-prefix' ] : '';
+            unset( $settings );
+
+            $order           = new WC_Order( $order_id );
+
+            $is_company      = !empty( $order->get_billing_company() );
+
+            return array(
+                'customernumber'    => $customer_prefix . $order_id,
+                'name'              => ( $is_company ? $order->get_billing_company() : $order->get_billing_first_name() . ' ' . $order->get_billing_last_name() ),
+                'created'           => date('Y-m-d') . 'T00:00:00+01:00',
+                'salutation'        => ( 1 == get_post_meta( $order_id, '_billing_title', true ) ? 'Mr.' : 'Ms.' ),
+                'firstname'         => $order->get_billing_first_name(),
+                'lastname'          => $order->get_billing_last_name(),
+                'address1'          => $order->get_billing_address_1(),
+                'address2'          => $order->get_billing_address_2(),
+                'zipcode'           => $order->get_billing_postcode(),
+                'city'              => $order->get_billing_city(),
+                'state'             => $order->get_billing_state(),
+                'country'           => WC()->countries->countries[ $order->get_billing_country() ],
+                'phone'             => $order->get_billing_phone(),
+                'fax'               => '',
+                'mobile'            => '',
+                'email'             => $order->get_billing_email(),
+                'cc'                => '',
+                'bcc'               => '',
+                'language_code'     => '',
+                'remittancevoucher' => 'false',
+                'arap_accno'        => '', // Default accounts receivable account number - 1100
+                'payment_accno'     => '', // Default payment account number	1020
+                'notes'             => '',
+                'terms'             => '0',
+                'typeofcontact'     => ( $is_company ? 'company' : 'person' ),
+                'gender'            => ( 1 == $order->get_meta( '_billing_title' ) ? 'M' : 'F' ),
+
+            );
+
+        }
+
 		/**
 		 * get WooCommerce order details
 		 *
 		 * @param $order_id
 		 *
-		 * @return array
+		 * @return bool|array
 		 */
 		private function get_wc_order_details( $order_id ) {
 
@@ -300,10 +352,49 @@ if ( !class_exists('RMA_WC_API') ) {
 			$option_accounting               = get_option( 'wc_rma_settings_accounting' );
             $order_payment_method            = $order->get_payment_method();
 
+            // if order is done without...
+            if ( 0 == get_post_meta( $order_id, '_customer_user', true ) ) {
+
+                $settings                    = get_option('wc_rma_settings');
+
+                if ( 1 == $settings['rma-create-guest-customer'] ) {
+
+                    $rma_customer_id         = $this->create_rma_customer( 'order', $order_id );
+
+                    if ( false == $rma_customer_id ) {
+
+                        $log_values = array(
+                            'status' => 'error',
+                            'section_id' => $order_id,
+                            'section' => esc_html_x('Customer', 'Log Section', 'rma-wc'),
+                            'mode' => self::rma_mode(),
+                            'message' => __( 'Could not create RMA customer dedicated guest account', 'rma-wc' )
+                        );
+
+                        self::write_log($log_values);
+
+                    }
+
+                }
+                else {
+
+                    // customer id is equal to predefined catch all guest account
+                    $rma_customer_id         = $settings['rma-guest-catch-all'];
+
+                }
+
+            }
+            // ...or with user account
+            else {
+
+                $rma_customer_id             = get_user_meta( $order->get_customer_id(), 'rma_customer', true );
+
+            }
+
 			$order_details['currency']       = $order->get_currency();
 			$order_details['orderdate']      = wc_format_datetime($order->get_date_created(),'d.m.Y');
 			$order_details['taxincluded']    = $order->get_prices_include_tax() ? 'true' : 'false';
-			$order_details['customernumber'] = get_user_meta( $order->get_customer_id(), 'rma_customer', true );
+			$order_details['customernumber'] = $rma_customer_id;
             $order_details['ar_accno']       = isset ( $option_accounting[ $order_payment_method ] ) && !empty( $option_accounting[ $order_payment_method ] ) ? $option_accounting[ $order_payment_method ] : '';
 
             // Calculate due date
@@ -328,11 +419,12 @@ if ( !class_exists('RMA_WC_API') ) {
 
 			}
 
-			return array($order_details, $order_details_products);
+			return array( $order_details, $order_details_products );
+
 		}
 
 		/**
-         * Create invoice in Run My Accounts
+         * Create invoice in Run my Accounts
          *
 		 * @param string $order_id
 		 *
@@ -387,12 +479,15 @@ if ( !class_exists('RMA_WC_API') ) {
                 $status         = 'invoiced';
 
                 $invoice_number = $data['invoice']['invnumber'];
-                $message        = sprintf( esc_html_x( 'Invoice %u created', 'Log', 'rma-wc'), $invoice_number);
+                $message        = sprintf( esc_html_x( 'Invoice %s created', 'Log', 'rma-wc'), $invoice_number);
 
                 // add order note
                 $order          = wc_get_order(  $order_id );
-                $note           = sprintf( esc_html_x( 'Invoice %u created in Run My Accounts', 'Order Note', 'rma-wc'), $invoice_number);
+                $note           = sprintf( esc_html_x( 'Invoice %s created in Run my Accounts', 'Order Note', 'rma-wc'), $invoice_number);
                 $order->add_order_note( $note );
+
+                update_post_meta( $order_id, '_rma_invoice', $invoice_number );
+
                 unset( $order );
 
             }
@@ -408,7 +503,7 @@ if ( !class_exists('RMA_WC_API') ) {
                 $log_values = array(
 					'status' => $status,
 					'section_id' => $order_id,
-					'section' => __( 'Invoice', 'rma-wc'),
+                    'section' => esc_html_x('Invoice', 'Log Section', 'rma-wc'),
 					'mode' => self::rma_mode(),
 					'message' => $message );
 
@@ -423,34 +518,37 @@ if ( !class_exists('RMA_WC_API') ) {
 		}
 
         /**
-         * Create customer in Run My Accounts
+         * Create customer in Run my Accounts
          *
-         * @param string $user_id
+         * @param string $type
+         * @param string $id
+         * @param string $action new|update
          *
          * @return bool|string
-         * @throws Exception
          */
-		public function create_customer( $user_id='' ) {
+		public function create_rma_customer( $type, $id='', $action = 'new') {
 
-		    // is plugin function activated
-			$is_active          = self::is_activated( '$user_id ' . $user_id );
+            if( !$id || !$type)
+                return false;
 
-			// should a customer be created automatically
-			$do_create_customer = self::do_create_customer();
+            // exit if plugin is not activated
+			if ( !self::is_activated('$user_id ' . $id ) )
+                return false;
 
-            // is user connected with a RMA customer
-            $rma_customer_id    = get_user_meta( $user_id, 'rma_customer', true );
+			// exit if a customer should not be created automatically
+            if ( !self::do_create_customer() )
+                return false;
 
-            if( !$user_id || !$is_active || !$do_create_customer )
-			    return false;
+            // exit if user is already linked to a RMA customer account
+            if ( 'user' == $type &&
+                 'new' == $action &&
+                 get_user_meta( $id, 'rma_customer', true ) )
+                return false;
 
-            // user_id ias already linked to a RMA customer
-            if( $rma_customer_id )
-                return true;
+            $method = 'get_customer_values_by_' . $type . '_id';
+            $data = self::$method( $id );
 
-			$data = self::get_customer_values( $user_id );
-
-			// build REST api url for Run My Accounts
+			// build REST api url for Run my Accounts
 			$caller_url_customer = self::get_caller_url() . RMA_MANDANT . '/customers?api_key=' . RMA_APIKEY;
 
 			//create the xml document
@@ -488,7 +586,8 @@ if ( !class_exists('RMA_WC_API') ) {
                 $status         = 'created';
                 $message        = sprintf( esc_html_x( 'Customer %s created', 'Log', 'rma-wc'), $data['customernumber']);
 
-                update_user_meta( $user_id, 'rma_customer', $data['customernumber'] ); // return (int|bool) Meta ID if the key didn't exist, true on successful update, false on failure.
+                if ( 'user' == $type )
+                    update_user_meta( $id, 'rma_customer', $data[ 'customernumber' ] );
 
             }
             else {
@@ -502,8 +601,8 @@ if ( !class_exists('RMA_WC_API') ) {
 
                 $log_values = array(
                     'status' => $status,
-                    'section_id' => $user_id,
-                    'section' => __( 'Customer', 'woocommerce-ram' ),
+                    'section_id' => $id,
+                    'section' => sprintf( esc_html_x('Customer by %s id', 'Log Section', 'rma-wc'), $type),
                     'mode' => self::rma_mode(),
                     'message' => $message );
 
@@ -511,7 +610,7 @@ if ( !class_exists('RMA_WC_API') ) {
 
             }
 
-			return 'error'==$status ? 'false' : 'true';
+			return 'error' == $status ? 'false' : $data[ 'customernumber' ];
 		}
 
         /**
@@ -558,7 +657,7 @@ if ( !class_exists('RMA_WC_API') ) {
 				$log_values = array(
 					'status'     => 'deactivated',
 					'section_id' => $section_id,
-                    'section'    => esc_html__( 'Activation', 'woocommerce-ram' ),
+                    'section'    => esc_html_x( 'Activation', 'Log Section', 'rma-wc' ),
 					'mode'       => self::rma_mode(),
 					'message'    => esc_html_x('Plugin was not activated', 'Log', 'rma-wc') );
 
@@ -571,7 +670,7 @@ if ( !class_exists('RMA_WC_API') ) {
 		}
 
         /**
-         * Check if the customer should be created in Run My Accounts
+         * Check if the customer should be created in Run my Accounts
          *
          * @param $id
          *
@@ -635,12 +734,12 @@ if ( !class_exists('RMA_WC_API') ) {
             ob_end_clean();
 
             $headers = array('Content-Type: text/html; charset=UTF-8');
-            if ( !wp_mail( LOGEMAIL, esc_html_x('An error occurred while connection with Run My Accounts API', 'email', 'rma-wc'), $email_content, $headers) ) {
+            if ( !wp_mail( LOGEMAIL, esc_html_x('An error occurred while connection with Run my Accounts API', 'email', 'rma-wc'), $email_content, $headers) ) {
 
                 $log_values = array(
                     'status'     => 'failed',
                     'section_id' => LOGEMAIL,
-                    'section'    => esc_html__( 'Email', 'woocommerce-ram' ),
+                    'section'    => esc_html_x( 'Email', 'Log Section', 'rma-wc' ),
                     'mode'       => self::rma_mode(),
                     'message'    => esc_html_x( 'Failed to send email.' , 'Log', 'rma-wc') );
 
@@ -651,7 +750,7 @@ if ( !class_exists('RMA_WC_API') ) {
                 $log_values = array(
                     'status'     => 'send',
                     'section_id' => LOGEMAIL,
-                    'section'    => esc_html__( 'Email', 'woocommerce-ram' ),
+                    'section'    => esc_html_x( 'Email', 'Log Section', 'rma-wc' ),
                     'mode'       => self::rma_mode(),
                     'message'    => esc_html_x( 'Email sent successfully.' , 'Log', 'rma-wc') );
 
