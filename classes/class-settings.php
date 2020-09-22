@@ -661,8 +661,9 @@ if ( !class_exists('RMA_SETTINGS_PAGE') ) {
             $id           = (isset($args['id'])) ? $args['id'] : '';
             $options      = (isset($args['options'])) ? $args['options'] : array();
             $description  = (isset($args['description'])) ? $args['description'] : '';
+            $class        = (isset($args['class'])) ? $args['class'] : '';
 
-            echo '<select name="' . $option_group . '[' . $id . ']" class="select2">';
+            echo '<select name="' . $option_group . '[' . $id . ']"' . ( !empty( $class) ? 'class="' . $class . '"' : '' ) . '>';
 
             foreach ($options as $value => $text) {
                 printf(
@@ -750,7 +751,8 @@ if ( !class_exists('RMA_SETTINGS_PAGE') ) {
                 'option_group' => $option_group,
                 'id'           => $id,
                 'value'        => isset( $this->options_general[ $id ] ) ? $this->options_general[ $id ] : '',
-                'options'      => $options
+                'options'      => $options,
+                'class'        => 'select2'
             );
 
             // create select
@@ -795,7 +797,8 @@ if ( !class_exists('RMA_SETTINGS_PAGE') ) {
                 'id'           => $id,
                 'value'        => isset( $this->options_general[ $id ] ) ? $this->options_general[ $id ] : '',
                 'options'      => $options,
-                'description'  => $description
+                'description'  => $description,
+                'class'        => 'select2'
             );
 
             // create select
