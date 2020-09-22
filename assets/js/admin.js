@@ -1,5 +1,7 @@
 jQuery(document).ready(function(){
 
+    jQuery('.select2').select2();
+
     show_guest_input();
 
     jQuery("#rma-create-guest-customer").click( function( event ) {

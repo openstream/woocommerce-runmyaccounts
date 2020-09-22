@@ -44,7 +44,15 @@ if ( !class_exists('RMA_SETTINGS_PAGE') ) {
             add_action( 'admin_menu', array( $this, 'add_plugin_page' ) );
         }
 
-        public function admin_enqueue() {
+        public function admin_enqueue( $hook ) {
+
+            if( 'woocommerce_page_rma-wc' != $hook )
+                return;
+
+            // enqueue script and style for autocomplete on admin page
+            wp_enqueue_script( 'select2', plugins_url( '../assets/js/select2.min.js', __FILE__ ), array('jquery'), '4.0.13', 'true' );
+            wp_register_style( 'select2', plugins_url( '../assets/css/select2.min.css', __FILE__ ), false, '4.0.13' );
+            wp_enqueue_style( 'select2' );
 
             wp_enqueue_script( 'rma-admin-script', plugins_url( '../assets/js/admin.js', __FILE__ ), array('jquery'), get_option( 'wc_rma_version' ), 'true' );
 
@@ -97,6 +105,7 @@ if ( !class_exists('RMA_SETTINGS_PAGE') ) {
                     } ?>
                 </form>
             </div> <?php
+
         }
 
         /**
@@ -114,6 +123,8 @@ if ( !class_exists('RMA_SETTINGS_PAGE') ) {
             $this->options_general_billing();
 
             $this->options_general_customer();
+
+            $this->options_general_product();
 
             $this->options_general_log();
 
@@ -393,6 +404,38 @@ if ( !class_exists('RMA_SETTINGS_PAGE') ) {
         }
 
         /**
+         * Page General, Section Product
+         */
+        public function options_general_product() {
+
+            $section = 'general_settings_product';
+
+            add_settings_section(
+                $section, // ID
+                esc_html__('Product', 'rma-wc'),
+                '', // Callback
+                $this->option_page_general // Page
+            );
+
+            $id = 'rma-product-fallback_id';
+            add_settings_field(
+                $id,
+                esc_html__('Fallback product sku', 'rma-wc'),
+                array( $this, 'rma_parts_cb'), // individual callback
+                $this->option_page_general,
+                $section,
+                array(
+                    'option_group' => $this->option_group_general,
+                    'id'           => $id,
+                    'value'        => isset( $this->options_general[ $id ] ) ? $this->options_general[ $id ] : '',
+                    'description'  => esc_html__('This is a fallback sku in Run My Accounts which will be used to create an invoice if the WooCommerce sku of a product is not available in Run My Accounts. Leave it empty if you do not want to use it. In this case the invoice cannot be created if the sku is not available in Run My Accounts.', 'rma-wc' )
+                )
+            );
+
+        }
+
+
+        /**
          * Page General, Section Misc
          */
         public function options_general_log() {
@@ -619,7 +662,7 @@ if ( !class_exists('RMA_SETTINGS_PAGE') ) {
             $options      = (isset($args['options'])) ? $args['options'] : array();
             $description  = (isset($args['description'])) ? $args['description'] : '';
 
-            echo '<select name="' . $option_group . '[' . $id . ']">';
+            echo '<select name="' . $option_group . '[' . $id . ']" class="select2">';
 
             foreach ($options as $value => $text) {
                 printf(
@@ -677,7 +720,7 @@ if ( !class_exists('RMA_SETTINGS_PAGE') ) {
         /**
          * Pull down with RMA customer list
          *
-         * @param array $args
+         * @param $args
          */
         public function rma_customer_accounts_cb( $args ) {
             $option_group = ( isset( $args['option_group'] ) ) ? $args['option_group'] : '';
@@ -714,6 +757,52 @@ if ( !class_exists('RMA_SETTINGS_PAGE') ) {
             self::option_select_cb( $select_args );
 
         }
+
+        /**
+         * Pull down with RMA parts list
+         *
+         * @param $args
+         *
+         * @since 1.5.0
+         */
+        public function rma_parts_cb( $args ) {
+            $option_group = ( isset( $args['option_group'] ) ) ? $args['option_group'] : '';
+            $id           = ( isset( $args['id'] ) ) ? $args['id'] : '';
+            $description  = ( isset( $args['description'] ) ) ? $args['description'] : '';
+
+            if ( class_exists('RMA_WC_API') && ( !isset( $parts ) || empty( $parts ) ) ) {
+
+                $rma_api = new RMA_WC_API();
+                $parts   = $rma_api->get_parts();
+
+                if ( !empty( $RMA_WC_API ) ) unset( $RMA_WC_API );
+
+            }
+
+            if( !isset( $parts ) || !$parts ) {
+
+                $options = array('' => __( 'Error while connecting to RMA. Please check your settings.', 'rma-wc' ) );
+
+            }
+            else {
+
+                $options = array('' => __( 'No SKU', 'rma-wc' ) ) + $parts;
+
+            }
+
+            $select_args  = array (
+                'option_group' => $option_group,
+                'id'           => $id,
+                'value'        => isset( $this->options_general[ $id ] ) ? $this->options_general[ $id ] : '',
+                'options'      => $options,
+                'description'  => $description
+            );
+
+            // create select
+            self::option_select_cb( $select_args );
+
+        }
+
 
         /**
          * Output the error log from database
