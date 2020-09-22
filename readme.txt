@@ -2,8 +2,8 @@
 * Contributors: openstream, codestylist
 * Tags: Run my Accounts, WooCommerce, Billing
 * Requires at least: 4.7
-* Tested up to: 5.4.2
-* Stable tag: 1.3.4
+* Tested up to: 5.5.1
+* Stable tag: 1.5.0
 * Requires PHP: 7.2
 * License: GPLv3
 * License URI: https://www.gnu.org/licenses/gpl-3.0.html
@@ -51,6 +51,10 @@ Please send a request to the Openstream Internet Solutions. We provide customiza
 * none
 
 == Changelog ==
+= 1.5.0 =
+* Feature - added configuration for a fallback sku if WC sku does not exist in Run My Accounts
+* Compatibility - tested up to WordPress 5.5.1 and WooCommerce 4.5.2
+
 = 1.4.0 =
 * Feature - added handling for WooCommerce guest order
 * Feature - added update customer in Run my Accounts when user data is updated in WooCommerce

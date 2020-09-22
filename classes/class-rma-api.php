@@ -285,6 +285,13 @@ if ( !class_exists('RMA_WC_API') ) {
 		 */
 		private function get_invoice_values( $order_id ) {
 
+            $settings     = get_option( 'wc_rma_settings' );
+            $fallback_sku = $settings[ 'rma-product-fallback_id' ];
+            unset( $settings );
+
+            if ( !empty( $fallback_sku ) )
+                $rma_part_numbers = self::get_parts();
+
 			list( $order_details, $order_details_products ) = self::get_wc_order_details( $order_id );
 
 			// ToDo: add notes to invoice from notes field WC order
@@ -309,7 +316,14 @@ if ( !class_exists('RMA_WC_API') ) {
 
             // Add parts
 			if ( count( $order_details_products ) > 0 ) :
+
 				foreach ( $order_details_products as $partnumber => $part ) :
+
+                    // check if fallback sku exist and part number does not exist in list of RMA part numbers
+                    if( !empty( $fallback_sku ) &&
+                        !array_key_exists( $partnumber, $rma_part_numbers ) )
+                        $partnumber = $fallback_sku;
+
 					$data['part'][] = array (
 						'partnumber'   => $partnumber,
 						'description'  => $part['name'],
@@ -321,6 +335,7 @@ if ( !class_exists('RMA_WC_API') ) {
 						'price_update' => '',
 					);
 				endforeach;
+
 			endif;
 
 			return $data;

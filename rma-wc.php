@@ -20,7 +20,7 @@
  * Text Domain:          rma-wc
  * Domain Path:          /languages/
  * WC requires at least: 3.2
- * WC tested up to:      4.2.2
+ * WC tested up to:      4.5.2
  * License:              GPL v2 or later
  * License URI:          https://www.gnu.org/licenses/gpl-2.0.html
  */
