@@ -788,7 +788,7 @@ if ( !class_exists('RMA_SETTINGS_PAGE') ) {
             }
             else {
 
-                $options = array('' => __( 'No SKU', 'rma-wc' ) ) + $parts;
+                $options = array('' => __( 'Select...', 'rma-wc' ) ) + $parts;
 
             }
 
