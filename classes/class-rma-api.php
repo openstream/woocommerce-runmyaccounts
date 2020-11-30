@@ -735,9 +735,9 @@ if ( !class_exists('RMA_WC_API') ) {
             );
 
             $response_code    = wp_remote_retrieve_response_code( $response );
-            $response_message = wp_remote_retrieve_response_message( $response );
+            $response_body    = wp_remote_retrieve_body( $response );
 
-            return array( $response_code => $response_message );
+            return array( $response_code => $response_body );
 
         }
 
