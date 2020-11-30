@@ -3,7 +3,7 @@ msgstr ""
 "Project-Id-Version: WooCommerce RMA\n"
 "Report-Msgid-Bugs-To: \n"
 "POT-Creation-Date: 2020-09-23 17:44+0000\n"
-"PO-Revision-Date: 2020-09-23 17:46+0000\n"
+"PO-Revision-Date: 2020-11-30 18:28+0000\n"
 "Last-Translator: \n"
 "Language-Team: German (Formal)\n"
 "Language: de_CH_formal\n"
@@ -12,14 +12,13 @@ msgstr ""
 "Content-Type: text/plain; charset=UTF-8\n"
 "Content-Transfer-Encoding: 8bit\n"
 "X-Generator: Loco https://localise.biz/\n"
-"X-Loco-Version: 2.4.3; wp-5.5.1"
+"X-Loco-Version: 2.4.6; wp-5.6-RC1"
 
 #: classes/class-backend-abstract.php:160
 msgid "Create invoice in Run my Accounts"
 msgstr ""
 
 #: classes/class-backend-abstract.php:192
-#, fuzzy
 #| msgid "Invoice"
 msgid "Invoice #"
 msgstr "Rechnung"
@@ -147,21 +146,20 @@ msgid "Could not create RMA customer dedicated guest account"
 msgstr ""
 
 #: classes/class-rma-api.php:583
-#, fuzzy, php-format
+#, php-format
 #| msgid "Invoice %u created"
 msgctxt "Log"
 msgid "Invoice %s created"
-msgstr "Rechnung %u erstellt"
+msgstr "Rechnung %s erstellt"
 
 #: classes/class-rma-api.php:587
-#, fuzzy, php-format
+#, php-format
 #| msgid "Invoice %u created in Run my Accounts"
 msgctxt "Order Note"
 msgid "Invoice %s created in Run my Accounts"
-msgstr "Rechnung %u in Run my Accounts angelegt."
+msgstr "Rechnung %s in Run my Accounts angelegt."
 
 #: classes/class-rma-api.php:607
-#, fuzzy
 msgctxt "Log Section"
 msgid "Invoice"
 msgstr "Rechnung"
