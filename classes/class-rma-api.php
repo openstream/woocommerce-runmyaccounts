@@ -574,8 +574,8 @@ if ( !class_exists('RMA_WC_API') ) {
 			$response = self::send_xml_content( $xml_str, $url );
 
             // $response empty == no errors
-			if ( 200 == array_key_first( $response ) ||
-                 204 == array_key_first( $response )) {
+			if ( 200 == self::first_key_of_array( $response ) ||
+                 204 == self::first_key_of_array( $response )) {
 
                 $status         = 'invoiced';
 
@@ -595,7 +595,7 @@ if ( !class_exists('RMA_WC_API') ) {
 			else {
 
                 $status  = 'error';
-                $message = '[' . array_key_first( $response ) . '] ' . reset( $response ); // get value of first key = return message
+                $message = '[' . self::first_key_of_array( $response ) . '] ' . reset( $response ); // get value of first key = return message
 
             }
 
@@ -680,8 +680,8 @@ if ( !class_exists('RMA_WC_API') ) {
             $response = self::send_xml_content( $xml_str, $caller_url_customer );
 
             // $response empty == no errors
-            if ( 200 == array_key_first( $response ) ||
-                 204 == array_key_first( $response )) {
+            if ( 200 == self::first_key_of_array( $response ) ||
+                 204 == self::first_key_of_array( $response )) {
 
                 // add RMA customer number to user_meta
                 $status         = 'created';
@@ -694,7 +694,7 @@ if ( !class_exists('RMA_WC_API') ) {
             else {
 
                 $status  = 'error';
-                $message = '[' . array_key_first( $response ) . '] ' . reset( $response ); // get value of first key = return message
+                $message = '[' . self::first_key_of_array( $response ) . '] ' . reset( $response ); // get value of first key = return message
 
             }
 
@@ -713,6 +713,26 @@ if ( !class_exists('RMA_WC_API') ) {
 
 			return 'error' == $status ? 'false' : $data[ 'customernumber' ];
 		}
+
+        /**
+         * Return first key of an array
+         * can be replaced by array_key_first() when min. PHP is 7.3
+         *
+         * @param $array
+         *
+         * @return string
+         *
+         * @since 1.5.2
+         */
+		private function first_key_of_array( $array ) {
+
+		    // set point of the array
+            reset( $array );
+
+            // return the key
+            return key( $array );
+
+        }
 
         /**
          * Send xml content to RMA with curl

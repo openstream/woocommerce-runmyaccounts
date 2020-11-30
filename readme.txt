@@ -3,7 +3,7 @@
 * Tags: Run my Accounts, WooCommerce, Billing
 * Requires at least: 4.7
 * Tested up to: 5.6.0
-* Stable tag: 1.5.1
+* Stable tag: 1.5.2
 * Requires PHP: 7.3
 * License: GPLv3
 * License URI: https://www.gnu.org/licenses/gpl-3.0.html
@@ -51,8 +51,13 @@ Please send a request to the Openstream Internet Solutions. We provide customiza
 * none
 
 == Changelog ==
+= 1.5.2 =
+* Tweak - fixed log error message
+* Tweak - required PHP version reduced to 7.2
+
 = 1.5.1 =
 * Tweak - improved output error message
+* Compatibility - tested up to WordPress 5.6.0 and WooCommerce 4.7.1
 
 = 1.5.0 =
 * Feature - added configuration for a fallback sku if WC sku does not exist in Run My Accounts
