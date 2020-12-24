@@ -505,14 +505,24 @@ if ( !class_exists('RMA_WC_API') ) {
 			// Calculate duedate (now + payment period)
 			$order_details['duedate']        = date( DateTime::RFC3339, time() + ($payment_period*60*60*24) );
 
-			$_order = $order->get_items(); //to get info about product
-            $order_details_products = array();
+			$_order                          = $order->get_items(); //to get info about product
+            $order_details_products          = array();
 
-			foreach($_order as $order_product_detail){
+			foreach( $_order as $order_product_detail ){
 
-				$_product = wc_get_product( $order_product_detail['product_id'] );
+                // check if the product is a variation and get the right id
+                if ( $order_product_detail[ 'variation_id' ] ) {
 
-				$order_details_products[$_product->get_sku()] = array(
+                    $_product = wc_get_product( $order_product_detail[ 'variation_id' ] );
+
+                }
+                else {
+
+                    $_product = wc_get_product( $order_product_detail[ 'product_id' ] );
+
+                }
+
+				$order_details_products[ $_product->get_sku() ] = array(
 					'name'     => $order_product_detail['name'],
 					'quantity' => $order_product_detail['quantity'],
 					'price'    => $_product->get_price()

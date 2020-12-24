@@ -3,7 +3,7 @@
 * Tags: Run my Accounts, WooCommerce, Billing
 * Requires at least: 4.7
 * Tested up to: 5.6.0
-* Stable tag: 1.5.2
+* Stable tag: 1.5.3
 * Requires PHP: 7.3
 * License: GPLv3
 * License URI: https://www.gnu.org/licenses/gpl-3.0.html
@@ -49,6 +49,11 @@ Please send a request to the Openstream Internet Solutions. We provide customiza
 
 == Known issues ==
 * none
+
+== Changelog ==
+= 1.5.3 =
+* Bug Fix - fixed issue with sku if a product has variation with different sku
+* Compatibility - tested up to WooCommerce 4.8.0
 
 == Changelog ==
 = 1.5.2 =
