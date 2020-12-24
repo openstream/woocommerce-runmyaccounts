@@ -55,7 +55,6 @@ Please send a request to the Openstream Internet Solutions. We provide customiza
 * Bug Fix - fixed issue with sku if a product has variation with different sku
 * Compatibility - tested up to WooCommerce 4.8.0
 
-== Changelog ==
 = 1.5.2 =
 * Tweak - fixed log error message
 * Tweak - required PHP version reduced to 7.2
