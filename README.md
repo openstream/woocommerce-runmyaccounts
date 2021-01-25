@@ -1,4 +1,4 @@
-# Run my Accounts for WooCommerce#
+# Run my Accounts for WooCommerce
 [![License](https://img.shields.io/badge/license-GPL%203.0%2B-lightgrey.svg?style=flat-square)](https://github.com/openstream/woocommerce-runmyaccounts/blob/master/LICENSE)
 
 Run my Accounts for WooCommerce is a powerfull WooCommerce solution to create customers and invoice in Run My Account when a order is placed.
@@ -34,8 +34,8 @@ Please send a request to the Openstream Internet Solutions. We provide customiza
 
 ## Translations
 
-* Swiss (de_CH)
-* German (de_DE)
+* German/Switzerland (de_CH)
+* German/Germany (de_DE)
 
 POT file with text strings is included. If you would like to add a translation and see your name here, please [get in touch](mailto:info@openstream.ch).
 
