@@ -15,7 +15,7 @@ if ( !class_exists('RMA_WC_BACKEND_ABSTRACT') ) {
 
     abstract class RMA_WC_BACKEND_ABSTRACT {
 
-        const VERSION = '1.5.0';
+        const VERSION = '1.6.0';
         const DB_VERSION = '1.1.0';
 
         private static function _table_log() {
@@ -138,6 +138,113 @@ if ( !class_exists('RMA_WC_BACKEND_ABSTRACT') ) {
 
             }
 
+            add_filter( 'bulk_actions-edit-shop_order', array( $this, 'create_invoice_bulk_actions_edit_product'), 20, 1 );
+            add_filter( 'handle_bulk_actions-edit-shop_order', array( $this, 'create_invoice_handle_bulk_action_edit_shop_order'), 10, 3 );
+            add_action( 'admin_notices', array( $this, 'create_invoice_bulk_action_admin_notice' ) );
+
+        }
+
+        /**
+         * Adding to admin order list bulk create invoice a custom action 'rma_create_invoice'
+         *
+         * @param $actions
+         *
+         * @return mixed
+         *
+         * @since 1.6.0
+         *
+         * @author Sandro Lucifora
+         */
+        public function create_invoice_bulk_actions_edit_product( $actions ) {
+            $actions['rma_create_invoice'] = __( 'Create Invoice', 'rma-wc' );
+            return $actions;
+        }
+
+        /**
+         * Make the bulk action create invoice from selected orders
+         *
+         * @param $redirect_to
+         * @param $action
+         * @param $post_ids
+         *
+         * @return string
+         * @since 1.6.0
+         *
+         * @author Sandro Lucifora
+         */
+        public function create_invoice_handle_bulk_action_edit_shop_order( $redirect_to, $action, $post_ids ) {
+
+            // Exit if...
+            // ...wrong action
+            // ...no posts selected
+            // ...class RMA_WC_API does not exist
+            if( 'rma_create_invoice' !== $action || 0 == count( $post_ids ) || !class_exists('RMA_WC_API') )
+                return $redirect_to;
+
+            $processed_ids       = array();
+            $success_invoice_ids = array();
+            $no_invoice_ids      = array();
+
+            $RMA_WC_API = new RMA_WC_API();
+
+            foreach ( $post_ids as $post_id ) {
+
+                $invoice_number = get_post_meta( $post_id, '_rma_invoice' );
+
+                // order has already an invoice
+                if( !empty( $invoice_number ) ) {
+
+                    $processed_ids[]  = $no_invoice_ids[] = $post_id;
+
+                }
+                else {
+
+                    $result = $RMA_WC_API->create_invoice( $post_id );
+
+                    $processed_ids[] = $post_id;
+
+                    if( 200 == $result || 204 == $result ) {
+                        $success_invoice_ids[] = $post_id;
+                    }
+                    else {
+                        $no_invoice_ids[] = $post_id;
+                    }
+
+                }
+
+            }
+
+            unset( $RMA_WC_API );
+
+            return $redirect_to = add_query_arg( array(
+                                                     'rma_create_invoice' => '1',
+                                                     'success_count'      => count( $success_invoice_ids ),
+                                                     'failed_count'       => count( $no_invoice_ids ),
+                                                     'processed_count'    => count( $processed_ids ),
+                                                     'processed_ids'      => implode( ',', $processed_ids ),
+                                                 ), $redirect_to );
+        }
+
+        /**
+         * The results notice from bulk action create invoice on orders
+         *
+         * @since 1.6.0
+         *
+         * @author Sandro Lucifora
+         */
+        public function create_invoice_bulk_action_admin_notice() {
+            if ( empty( $_REQUEST['rma_create_invoice'] ) ) return; // Exit
+
+            $success_count   = intval( $_REQUEST['success_count'] );
+            $processed_count = intval( $_REQUEST['processed_count'] );
+
+            printf( '<div id="message" class="updated fade"><p>' .
+                    _n( 'Created %s invoice',
+                        'Created %s invoices',
+                        $success_count,
+                        'rma-wc'
+                    ) . '</p></div>', number_format_i18n( $success_count ) );
+
         }
 
         /**
@@ -165,7 +272,7 @@ if ( !class_exists('RMA_WC_BACKEND_ABSTRACT') ) {
         /**
          * Create invoice when custom action is clicked
          *
-         * @param WC_Order $order
+         * @param $order
          */
         public function process_order_meta_box_action( $order ) {
 
