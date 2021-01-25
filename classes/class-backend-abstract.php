@@ -128,6 +128,11 @@ if ( !class_exists('RMA_WC_BACKEND_ABSTRACT') ) {
                 add_filter( 'manage_edit-shop_order_columns', array( $this, 'add_column_to_order_table' ) );
                 add_action( 'manage_shop_order_posts_custom_column', array( $this, 'add_value_to_order_table_row' ) );
 
+                // add bulk action to order page
+                add_filter( 'bulk_actions-edit-shop_order', array( $this, 'create_invoice_bulk_actions_edit_product'), 20, 1 );
+                add_filter( 'handle_bulk_actions-edit-shop_order', array( $this, 'create_invoice_handle_bulk_action_edit_shop_order'), 10, 3 );
+                add_action( 'admin_notices', array( $this, 'create_invoice_bulk_action_admin_notice' ) );
+
             }
 
             // if WooCommerce Germanized is not active add our own custom meta field title
@@ -137,10 +142,6 @@ if ( !class_exists('RMA_WC_BACKEND_ABSTRACT') ) {
                 add_action( 'edit_user_profile_update', array( $this, 'usermeta_form_field_update' ) ); // add the save action to user profile editing screen update
 
             }
-
-            add_filter( 'bulk_actions-edit-shop_order', array( $this, 'create_invoice_bulk_actions_edit_product'), 20, 1 );
-            add_filter( 'handle_bulk_actions-edit-shop_order', array( $this, 'create_invoice_handle_bulk_action_edit_shop_order'), 10, 3 );
-            add_action( 'admin_notices', array( $this, 'create_invoice_bulk_action_admin_notice' ) );
 
         }
 
