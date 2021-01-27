@@ -120,6 +120,8 @@ if ( !class_exists('RMA_SETTINGS_PAGE') ) {
 
             $this->options_general_api();
 
+            $this->options_general_trigger();
+
             $this->options_general_billing();
 
             $this->options_general_customer();
@@ -235,6 +237,41 @@ if ( !class_exists('RMA_SETTINGS_PAGE') ) {
                     'option_group' => $this->option_group_general,
                     'id'           => $id,
                     'value'        => isset( $this->options_general[ $id ] ) ? $this->options_general[ $id ] : ''
+                )
+            );
+        }
+
+        /**
+         * Page General, Section Trigger
+         */
+        public function options_general_trigger() {
+
+            $section = 'general_settings_trigger';
+
+            add_settings_section(
+                $section, // ID
+                esc_html__('Trigger', 'rma-wc'),
+                array( $this, 'section_info_trigger' ), // Callback
+                $this->option_page_general // Page
+            );
+
+            $id = 'rma-create-trigger';
+            add_settings_field(
+                $id,
+                esc_html__('Trigger', 'rma-wc'),
+                array( $this, 'option_select_cb'),
+                $this->option_page_general,
+                $section,
+                array(
+                    'option_group' => $this->option_group_general,
+                    'id'           => $id,
+                    'value'        => isset( $this->options_general[ $id ] ) ? $this->options_general[ $id ] : '',
+                    'options'      => array(
+                        'immediately' => esc_html__('Immediately when the order is created','rma-wc'),
+                        'completed'   => esc_html__('On order status change Completed','rma-wc'),
+                    ),
+                    'description'  => esc_html__('Select when a customer and invoice are created in Run My Accounts', 'rma-wc' ),
+
                 )
             );
         }
@@ -606,6 +643,10 @@ if ( !class_exists('RMA_SETTINGS_PAGE') ) {
 
         public function section_info_log() {
             esc_html_e('This page shows you the error logs.', 'rma-wc');
+        }
+
+        public function section_info_trigger( $args ) {
+            esc_html_e('In this section, you set up when a customer and invoice are created in Run My Accounts.', 'rma-wc');
         }
 
         /**

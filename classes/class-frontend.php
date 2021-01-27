@@ -40,13 +40,29 @@ if ( ! class_exists('RMA_WC_FRONTEND' ) ) {
 
             if ( in_array( 'woocommerce/woocommerce.php', apply_filters( 'active_plugins', get_option( 'active_plugins' ) ) ) ) {
 
-                // fire when new customer was saved on checkout page
-                add_action( 'woocommerce_checkout_update_user_meta', array( $this, 'create_rma_customer_on_registration'), 10, 1 );
-                // fire when  customer was updated
-                add_action( 'woocommerce_update_customer', array( $this, 'update_customer' ) );
+                $settings = get_option( 'wc_rma_settings' );
+                $trigger  = ( isset( $settings['rma-create-trigger'] ) ? $settings['rma-create-trigger'] : '' );
 
-                // fire when a new order comes in ro create new invoice in RMA
-                add_action('woocommerce_checkout_order_processed', array( $this, 'create_rma_invoice_at_new_order'), 10, 1 );
+                switch ( $trigger ) :
+                    // trigger invoice and customer creation on order status change
+                    case 'completed':
+                        add_action('woocommerce_order_status_changed', array( $this,
+                            'create_invoice_on_status_change'
+                        ), 99, 3);
+                        break;
+
+                    // trigger invoice creation when trigger is set 'immediately' or no selection was done on settings page
+                    case 'immediately':
+                    default:
+                        // fire when new customer was saved on checkout page
+                        add_action('woocommerce_checkout_update_user_meta', array( $this, 'create_rma_customer'), 10, 1 );
+                        // fire when a new order comes in and create new invoice in RMA
+                        add_action( 'woocommerce_checkout_order_processed', array( $this, 'create_rma_invoice'), 10, 1 );
+                        break;
+                endswitch;
+
+                // fire when a customer was updated
+                add_action( 'woocommerce_update_customer', array( $this, 'update_customer' ) );
 
                 // add title field to woocommerce billing address only, if WooCommerce Germanized is not active
                 if ( ! defined( 'WC_GERMANIZED_VERSION' ) ) {
@@ -262,7 +278,7 @@ if ( ! class_exists('RMA_WC_FRONTEND' ) ) {
 	     *
 	     * @return bool|string
 	     */
-	    public function create_rma_invoice_at_new_order( $order_id ) {
+	    public function create_rma_invoice( $order_id ) {
 
 		    if (class_exists('RMA_WC_API')) {
 		    	$RMA_WC_API = new RMA_WC_API();
@@ -277,6 +293,47 @@ if ( ! class_exists('RMA_WC_FRONTEND' ) ) {
 	    }
 
         /**
+         * Create new invoice in Run my Accounts on status change
+         *
+         * @param $order_id
+         * @param $old_status
+         * @param $new_status
+         *
+         * @return bool|string
+         * @throws Exception
+         *
+         * @since 1.6.0
+         *
+         * @author Sandro Lucifora
+         */
+        public function create_invoice_on_status_change( $order_id, $old_status, $new_status ) {
+
+            $invoice_number = get_post_meta( $order_id, '_rma_invoice', true );
+
+            if( !empty( $invoice_number ) || 'completed' != $new_status || !class_exists('RMA_WC_API') )
+                return '';
+
+            $RMA_WC_API = new RMA_WC_API();
+
+            // get user_id from order_id to create customer
+            $order           = wc_get_order( $order_id );
+            $customer_id     = $order->get_customer_id();
+            unset( $order );
+            $rma_customer_id = get_user_meta( $customer_id, 'rma_customer', true );
+
+            // If the customer_id has not already a rma_customer_id, create the customer
+            $customer_result = ( !empty( $rma_customer_id ) ? true : self::create_rma_customer( $customer_id ) );
+
+            // create invoice if customer creation was successfully
+            $result = ( true === $customer_result ? $RMA_WC_API->create_invoice( $order_id ) : '' );
+
+            unset( $RMA_WC_API );
+
+            return ( !empty( $result) ? $result : '' );
+
+        }
+
+        /**
          * Create customer in Run my Accounts when user is registered in WooCommerce
          *
          * @param $user_id
@@ -285,7 +342,7 @@ if ( ! class_exists('RMA_WC_FRONTEND' ) ) {
          * @return bool|string
          * @throws Exception
          */
-        public function create_rma_customer_on_registration( $user_id ) {
+        public function create_rma_customer( $user_id ) {
 
             // create new customer in RMA if user was created in WordPress before
             if ( 0 <> $user_id ) {

@@ -53,7 +53,7 @@ Please send a request to the Openstream Internet Solutions. We provide customiza
 == Changelog ==
 = 1.6.0 =
 * Feature - added bulk creation for invoice on backend order page
-* Compatibility - tested up to WooCommerce 4.9.1
+* Compatibility - tested up to WooCommerce 4.9.2
 
 = 1.5.3 =
 * Bug Fix - fixed issue with sku if a product has variation with different sku
