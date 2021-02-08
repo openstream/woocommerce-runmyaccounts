@@ -126,6 +126,8 @@ if ( !class_exists('RMA_SETTINGS_PAGE') ) {
 
             $this->options_general_product();
 
+            $this->options_general_shipping();
+
             $this->options_general_log();
 
             $this->options_general_misc();
@@ -454,6 +456,36 @@ if ( !class_exists('RMA_SETTINGS_PAGE') ) {
 
         }
 
+        /**
+         * Page General, Section Shipping
+         */
+        public function options_general_shipping() {
+
+            $section = 'general_settings_shipping';
+
+            add_settings_section(
+                $section, // ID
+                esc_html__('Shipping', 'rma-wc'),
+                '', // Callback
+                $this->option_page_general // Page
+            );
+
+            $id = 'rma-shipping-id';
+            add_settings_field(
+                $id,
+                esc_html__('Shipping', 'rma-wc'),
+                array( $this, 'rma_parts_cb'), // individual callback
+                $this->option_page_general,
+                $section,
+                array(
+                    'option_group' => $this->option_group_general,
+                    'id'           => $id,
+                    'value'        => isset( $this->options_general[ $id ] ) ? $this->options_general[ $id ] : '',
+                    'description'  => esc_html__('To book the shipping costs, you have to select a dedicated product in Run my Accounts. The shipping costs will be booked on this product id.', 'rma-wc' )
+                )
+            );
+
+        }
 
         /**
          * Page General, Section Misc

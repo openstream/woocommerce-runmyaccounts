@@ -2,7 +2,7 @@
 * Contributors: openstream, codestylist
 * Tags: Run my Accounts, WooCommerce, Billing
 * Requires at least: 4.7
-* Tested up to: 5.6.0
+* Tested up to: 5.6.1
 * Stable tag: 1.6.0
 * Requires PHP: 7.3
 * License: GPLv3
@@ -53,6 +53,8 @@ Please send a request to the Openstream Internet Solutions. We provide customiza
 == Changelog ==
 = 1.6.0 =
 * Feature - added bulk creation for invoice on backend order page
+* Feature - added handling of shipping costs as a dedicated product
+* Compatibility - tested up to WordPress 5.6.1
 * Compatibility - tested up to WooCommerce 4.9.2
 
 = 1.5.3 =

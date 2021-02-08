@@ -450,6 +450,7 @@ if ( !class_exists('RMA_WC_API') ) {
 		private function get_wc_order_details( $order_id ) {
 
 			$order                           = new WC_Order( $order_id );
+            $settings                        = get_option( 'wc_rma_settings' );
 			$option_accounting               = get_option( 'wc_rma_settings_accounting' );
             $order_payment_method            = $order->get_payment_method();
 
@@ -467,7 +468,7 @@ if ( !class_exists('RMA_WC_API') ) {
                         $log_values = array(
                             'status' => 'error',
                             'section_id' => $order_id,
-                            'section' => esc_html_x('Customer', 'Log Section', 'rma-wc'),
+                            'section' => esc_html_x( 'Customer', 'Log Section', 'rma-wc'),
                             'mode' => self::rma_mode(),
                             'message' => __( 'Could not create RMA customer dedicated guest account', 'rma-wc' )
                         );
@@ -492,6 +493,7 @@ if ( !class_exists('RMA_WC_API') ) {
 
             }
 
+            // Set order header
 			$order_details['currency']       = $order->get_currency();
 			$order_details['orderdate']      = wc_format_datetime($order->get_date_created(),'d.m.Y');
 			$order_details['taxincluded']    = $order->get_prices_include_tax() ? 'true' : 'false';
@@ -529,6 +531,38 @@ if ( !class_exists('RMA_WC_API') ) {
 				);
 
 			}
+
+			// Add Shipping costs
+            // @since 1.6.0
+            $order_shipping_total      = $order->get_shipping_total();
+			$shipping_costs_product_id = isset( $settings[ 'rma-shipping-id' ] ) ? $settings[ 'rma-shipping-id' ] : '';
+
+			// Do we have shipping costs and a product id to use for?
+			if( 0 < $order_shipping_total && !empty( $shipping_costs_product_id ) ) {
+
+                $order_details_products[ $shipping_costs_product_id ] = array(
+                    'name'     => $order->get_shipping_method(),
+                    'quantity' => 1,
+                    'price'    => $order_shipping_total
+                );
+
+            }
+            // Do we have shipping costs but not set up a product id?
+			elseif ( 0 < $order_shipping_total && empty( $shipping_costs_product_id ) ) {
+
+                $log_values = array(
+                    'status' => 'error',
+                    'section_id' => $order_id,
+                    'section' => esc_html_x( 'Invoice', 'Log Section', 'rma-wc'),
+                    'mode' => self::rma_mode(),
+                    'message' => __( 'Could not add shipping costs to invoice because of missing shipping costs product sku', 'rma-wc' )
+                );
+
+                self::write_log($log_values);
+
+            }
+
+			error_log( print_r( $order_details_products) );
 
 			return array( $order_details, $order_details_products );
 
