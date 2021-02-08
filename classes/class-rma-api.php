@@ -305,7 +305,7 @@ if ( !class_exists('RMA_WC_API') ) {
                     'transdate'      => date( DateTime::RFC3339, time() ),
                     'duedate'        => $order_details['duedate'], //date( DateTime::RFC3339, time() ),
                     'description'    => str_replace('[orderdate]',$order_details['orderdate'], RMA_INVOICE_DESCRIPTION),
-                    'notes'          => '',
+                    'notes'          => $order_details['notes'],
                     'intnotes'       => '',
                     'taxincluded'    => $order_details['taxincluded'],
                     'dcn'            => '',
@@ -507,6 +507,10 @@ if ( !class_exists('RMA_WC_API') ) {
 			// Calculate duedate (now + payment period)
 			$order_details['duedate']        = date( DateTime::RFC3339, time() + ($payment_period*60*60*24) );
 
+			// add shipping address
+            $order_details['notes']          = $order->get_formatted_shipping_address();
+
+            // Add products to order
 			$_order                          = $order->get_items(); //to get info about product
             $order_details_products          = array();
 
