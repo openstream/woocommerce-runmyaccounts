@@ -10,7 +10,7 @@ if ( !class_exists('RMA_WC_API') ) {
 		 */
 		public function __construct() {
 
-		    // define constants only if they are not defined yez
+		    // define constants only if they are not defined yet
 		    if ( !defined( 'RMA_MANDANT' ) )
 		        self::define_constants();
 
@@ -77,7 +77,8 @@ if ( !class_exists('RMA_WC_API') ) {
          *
 		 * @return string
 		 */
-		public function get_caller_url() {
+		public static function get_caller_url(): string
+        {
 			// Set caller URL
 			if( RMA_CALLERSANDBOX ) { // Caller URL for sandbox
 				$url = 'https://service-swint.runmyaccounts.com/api/latest/clients/'; // End with / !
@@ -294,7 +295,6 @@ if ( !class_exists('RMA_WC_API') ) {
 
 			list( $order_details, $order_details_products ) = self::get_wc_order_details( $order_id );
 
-			// ToDo: add notes to invoice from notes field WC order
             $data = array(
                 'invoice' => array(
                     'invnumber'      => RMA_INVOICE_PREFIX . str_pad( $order_id, max(intval(RMA_INVOICE_DIGITS) - strlen(RMA_INVOICE_PREFIX ), 0 ), '0', STR_PAD_LEFT ),
@@ -648,7 +648,7 @@ if ( !class_exists('RMA_WC_API') ) {
             }
 
 			if ( ( 'error' == LOGLEVEL && 'error' == $status ) || 'complete' == LOGLEVEL ) {
-			    
+
                 $log_values = array(
 					'status' => $status,
 					'section_id' => $order_id,
@@ -772,7 +772,8 @@ if ( !class_exists('RMA_WC_API') ) {
          *
          * @since 1.5.2
          */
-		private function first_key_of_array( $array ) {
+		public static function first_key_of_array( $array ): string
+        {
 
 		    // set point of the array
             reset( $array );
@@ -790,7 +791,8 @@ if ( !class_exists('RMA_WC_API') ) {
          *
          * @return array
          */
-		private function send_xml_content( $xml, $url ) {
+		public static function send_xml_content( string $xml, string $url ): array
+        {
 
             $response = wp_safe_remote_post(
                 $url,
@@ -828,7 +830,7 @@ if ( !class_exists('RMA_WC_API') ) {
 					'section_id' => $section_id,
                     'section'    => esc_html_x( 'Activation', 'Log Section', 'rma-wc' ),
 					'mode'       => self::rma_mode(),
-					'message'    => esc_html_x('Plugin was not activated', 'Log', 'rma-wc') );
+					'message'    => esc_html_x( 'Plugin was not activated', 'Log', 'rma-wc' ) );
 
 				self::write_log($log_values);
 				// send email with log details
@@ -855,7 +857,8 @@ if ( !class_exists('RMA_WC_API') ) {
         /**
          * @return string
          */
-        private function rma_mode() {
+        public function rma_mode(): string
+        {
             return RMA_CALLERSANDBOX ? 'Test' : 'Live' ;
         }
 
@@ -866,7 +869,7 @@ if ( !class_exists('RMA_WC_API') ) {
 		 *
 		 * @return bool
 		 */
-		private function write_log(&$values) {
+		public function write_log(&$values) {
 			global $wpdb;
 
 			$table_name = $wpdb->prefix . RMA_WC_LOG_TABLE;
@@ -895,7 +898,8 @@ if ( !class_exists('RMA_WC_API') ) {
 		 *
 		 * @return bool
 		 */
-		public function send_log_email(&$values) {
+		public function send_log_email(&$values): bool
+        {
 
             ob_start();
             include( plugin_dir_path( __FILE__ ) . '../templates/email/error-email-template.php');

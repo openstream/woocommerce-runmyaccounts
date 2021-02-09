@@ -140,6 +140,8 @@ if ( !class_exists('RMA_SETTINGS_PAGE') ) {
 
             $this->options_accounting_gateways();
 
+            $this->options_payment_gateways();
+
             $this->log();
 
         }
@@ -605,7 +607,6 @@ if ( !class_exists('RMA_SETTINGS_PAGE') ) {
             );
 
             // add  settings fields for all payment gateways
-
             $available_gateways = WC()->payment_gateways->payment_gateways();
 
             foreach ( $available_gateways as $gateway_key => $values ) {
@@ -627,9 +628,50 @@ if ( !class_exists('RMA_SETTINGS_PAGE') ) {
 
         }
 
+        public function options_payment_gateways() {
+
+            $section = 'accounting_settings_payment_account';
+
+            add_settings_section(
+                $section, // ID
+                'Payment Account', // Title
+                array( $this, 'section_info_payment' ), // Callback
+                $this->option_page_accounting // Page
+            );
+
+            // add  settings fields for all payment gateways
+            $available_gateways = WC()->payment_gateways->payment_gateways();
+
+            foreach ( $available_gateways as $gateway_key => $values ) {
+
+                $field_id = $gateway_key . '_payment_account';
+
+                add_settings_field(
+                    $field_id,
+                    $values->title,
+                    array( $this, 'option_input_text_cb'),
+                    $this->option_page_accounting,
+                    $section,
+                    array(
+                        'option_group' => $this->option_group_accounting,
+                        'id'           => $field_id,
+                        'value'        => isset( $this->options_accounting[ $field_id ] ) ? $this->options_accounting[ $field_id ] : '',
+                        'placeholder'  => '1020'
+                    )
+                );
+
+            }
+
+        }
+
         public function section_info_accounting() {
             esc_html_e('You can specify a dedicated receivable account for each payment gateway.', 'rma-wc');
         }
+
+        public function section_info_payment() {
+            esc_html_e('You can specify a dedicated payment account for each payment gateway.', 'rma-wc');
+        }
+
 
         /**
          * Page Error Log, Section Log
@@ -692,11 +734,12 @@ if ( !class_exists('RMA_SETTINGS_PAGE') ) {
             $option_group = ( isset( $args['option_group'] ) ) ? $args['option_group'] : '';
             $id           = ( isset( $args['id'] ) ) ? $args['id'] : '';
             $value        = ( isset( $args['value'] ) ) ? $args['value'] : '';
+            $placeholder  = ( isset( $args['placeholder'] ) ) ? $args['placeholder'] : '';
             $description  = ( isset( $args['description'] ) ) ? $args['description'] : '';
 
             printf(
-                '<input type="text" id="%1$s" name="%3$s[%1$s]" value="%2$s" />',
-                $id, $value, $option_group
+                '<input type="text" id="%1$s" name="%3$s[%1$s]" value="%2$s" placeholder="%4$s" />',
+                $id, $value, $option_group, $placeholder
             );
 
             if ( !empty( $description) )
@@ -932,6 +975,7 @@ if ( !class_exists('RMA_SETTINGS_PAGE') ) {
                     $value = str_replace('error','<span style="color: red;">error</span>',$value);
                     $value = str_replace('failed','<span style="color: red;">failed</span>',$value);
                     $value = str_replace('success','<span style="color: green;">success</span>',$value);
+                    $value = str_replace('paid','<span style="color: green;">paid</span>',$value);
                     $value = str_replace('created','<span style="color: green;">created</span>',$value);
                     $value = str_replace('invoiced','<span style="color: green;">invoiced</span>',$value);
 
