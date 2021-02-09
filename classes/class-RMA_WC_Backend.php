@@ -11,8 +11,6 @@
 
 if ( !defined('ABSPATH' ) ) exit;
 
-require_once 'class-backend-abstract.php';
-
 if (!class_exists('RMA_WC_BACKEND')) {
 
     /**

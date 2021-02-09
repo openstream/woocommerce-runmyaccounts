@@ -280,13 +280,11 @@ if ( ! class_exists('RMA_WC_FRONTEND' ) ) {
 	     */
 	    public function create_rma_invoice( $order_id ) {
 
-		    if (class_exists('RMA_WC_API')) {
-		    	$RMA_WC_API = new RMA_WC_API();
+	    	$RMA_WC_API = new RMA_WC_API();
 
-			    $result = $RMA_WC_API->create_invoice( $order_id );
+            $result = $RMA_WC_API->create_invoice( $order_id );
 
-                unset( $RMA_WC_API );
-		    }
+            unset( $RMA_WC_API );
 
 		    return ( !empty( $result) ? $result : '' );
 
@@ -346,15 +344,11 @@ if ( ! class_exists('RMA_WC_FRONTEND' ) ) {
 
             // create new customer in RMA if user was created in WordPress before
             if ( 0 <> $user_id ) {
+                $RMA_WC_API = new RMA_WC_API();
 
-                if ( class_exists('RMA_WC_API') ) {
+                $result = $RMA_WC_API->create_rma_customer( 'user', $user_id );
 
-                    $RMA_WC_API = new RMA_WC_API();
-
-                    $result = $RMA_WC_API->create_rma_customer( 'user', $user_id );
-
-                    unset( $RMA_WC_API );
-                }
+                unset( $RMA_WC_API );
             }
 
             return ( isset ( $result) && !empty( $result) ? $result : true );
@@ -368,7 +362,7 @@ if ( ! class_exists('RMA_WC_FRONTEND' ) ) {
          */
         public function update_customer( $user_id ) {
 
-            if ( class_exists('RMA_WC_API') && !empty( $user_id ) && 0 != $user_id) {
+            if ( !empty( $user_id ) && 0 != $user_id) {
 
                 $RMA_WC_API = new RMA_WC_API();
                 $RMA_WC_API->create_rma_customer( 'user', $user_id, 'update' );

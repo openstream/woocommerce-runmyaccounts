@@ -32,47 +32,36 @@ if (!defined('RMA_WC_PFAD')) { define('RMA_WC_PFAD', plugin_dir_path(__FILE__));
 
 if (!defined('RMA_WC_LOG_TABLE')) { define('RMA_WC_LOG_TABLE', 'rma_wc_log'); }
 
+/**
+ * Class autoload for plugin classes which contains RMA in the class name
+ *
+ * @param $class_name
+ */
+function rma_wc_autoloader($class_name)
+{
+    if (false !== strpos($class_name, 'RMA')) {
+        include plugin_dir_path(__FILE__) . 'classes/class-' . $class_name . '.php';
+    }
+}
+
+spl_autoload_register('rma_wc_autoloader');
+
 // LOAD BACKEND ////////////////////////////////////////////////////////////////
 
 if ( is_admin() ) {
 
-    if ( is_file( RMA_WC_PFAD . 'classes/class-backend.php' )) {
-        // We include our backend class
-        require_once RMA_WC_PFAD . 'classes/class-backend.php';
+    // Instantiate backend class
+    $RMA_WC_BACKEND = new RMA_WC_BACKEND();
 
-        // Does the backend class exist?
-        if (class_exists('RMA_WC_BACKEND')) {
-            // Instantiate backend class
-            $RMA_WC_BACKEND = new RMA_WC_BACKEND();
+    register_activation_hook(__FILE__, array('RMA_WC_BACKEND', 'activate'));
+    register_deactivation_hook(__FILE__, array('RMA_WC_BACKEND', 'deactivate'));
 
-            register_activation_hook(__FILE__, array('RMA_WC_BACKEND', 'activate'));
-            register_deactivation_hook(__FILE__, array('RMA_WC_BACKEND', 'deactivate'));
-        }
-    }
+    $my_settings_page = new RMA_SETTINGS_PAGE();
 
-    // We include our settings page class
-    if ( is_file( RMA_WC_PFAD . 'classes/class-settings.php' )) {
-        require_once RMA_WC_PFAD . 'classes/class-settings.php';
-
-        if ( class_exists('RMA_SETTINGS_PAGE')  ) {
-
-            $my_settings_page = new RMA_SETTINGS_PAGE();
-
-        }
-    }
 }
 
 // LOAD FRONTEND ///////////////////////////////////////////////////////////////
 
-// We include our frontend class
-require_once RMA_WC_PFAD . 'classes/class-frontend.php';
-// We include our Run my Accounts class
-require_once RMA_WC_PFAD . 'classes/class-rma-api.php';
-
-// Does the frontend class exist?
-if (class_exists('RMA_WC_FRONTEND')) {
-
-    // Instantiate backend class
-    $RMA_WC_FRONTEND = new RMA_WC_FRONTEND();
-}
+// Instantiate backend class
+$RMA_WC_FRONTEND = new RMA_WC_FRONTEND();
 

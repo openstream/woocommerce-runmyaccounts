@@ -277,14 +277,10 @@ if ( !class_exists('RMA_WC_BACKEND_ABSTRACT') ) {
          */
         public function process_order_meta_box_action( $order ) {
 
-            if ( class_exists('RMA_WC_API') ) {
+            $RMA_WC_API = new RMA_WC_API();
+            $result = $RMA_WC_API->create_invoice(  $order->get_id() );
 
-                $RMA_WC_API = new RMA_WC_API();
-                $result = $RMA_WC_API->create_invoice(  $order->get_id() );
-
-                unset( $RMA_WC_API );
-
-            }
+            unset( $RMA_WC_API );
 
         }
 
@@ -322,14 +318,10 @@ if ( !class_exists('RMA_WC_BACKEND_ABSTRACT') ) {
          */
         public function update_profile( $user_id ) {
 
-            if ( class_exists('RMA_WC_API') ) {
+            $RMA_WC_API = new RMA_WC_API();
+            $options = $RMA_WC_API->create_rma_customer( 'user', $user_id, 'update' );
 
-                $RMA_WC_API = new RMA_WC_API();
-                $options = $RMA_WC_API->create_rma_customer( 'user', $user_id, 'update' );
-
-                unset( $RMA_WC_API );
-
-            }
+            unset( $RMA_WC_API );
 
         }
 
@@ -385,14 +377,10 @@ if ( !class_exists('RMA_WC_BACKEND_ABSTRACT') ) {
 
 		    $fields[ 'rma' ][ 'title' ] = __( 'Settings Run my Accounts', 'rma-wc' );
 
-		    if ( class_exists('RMA_WC_API') ) {
+            $RMA_WC_API = new RMA_WC_API();
+            $options = $RMA_WC_API->get_customers();
 
-		        $RMA_WC_API = new RMA_WC_API();
-                $options = $RMA_WC_API->get_customers();
-
-            }
-
-		    if( !$options ) {
+    	    if( !$options ) {
 
 			    $fields[ 'rma' ][ 'fields' ][ 'rma_customer' ] = array(
 				    'label'       => __( 'Customer', 'rma-wc' ),

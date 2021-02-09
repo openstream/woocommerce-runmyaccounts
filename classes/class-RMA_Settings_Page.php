@@ -756,18 +756,16 @@ if ( !class_exists('RMA_SETTINGS_PAGE') ) {
             self::option_select_cb( $select_args );
 
             // output connection status
-            if (class_exists('RMA_WC_API')) {
-                $RMA_WC_API = new RMA_WC_API();
-                // Retrieve customers to check connection
-                $options = $RMA_WC_API->get_customers();
-                unset( $RMA_WC_API );
+            $RMA_WC_API = new RMA_WC_API();
+            // Retrieve customers to check connection
+            $options = $RMA_WC_API->get_customers();
+            unset( $RMA_WC_API );
 
-                if ( ! $options )
-                    echo '&nbsp;<span style="color: red; font-weight: bold">' . __('No connection. Please check your settings.', 'rma-wc') . '</span>';
-                else
-                    echo '&nbsp;<span style="color: green">' . __('Connection successful.', 'rma-wc') . '</span>';
+            if ( ! $options )
+                echo '&nbsp;<span style="color: red; font-weight: bold">' . __('No connection. Please check your settings.', 'rma-wc') . '</span>';
+            else
+                echo '&nbsp;<span style="color: green">' . __('Connection successful.', 'rma-wc') . '</span>';
 
-            }
         }
 
         /**
@@ -779,14 +777,10 @@ if ( !class_exists('RMA_SETTINGS_PAGE') ) {
             $option_group = ( isset( $args['option_group'] ) ) ? $args['option_group'] : '';
             $id           = ( isset( $args['id'] ) ) ? $args['id'] : '';
 
-            if ( class_exists('RMA_WC_API') ) {
+            $RMA_WC_API = new RMA_WC_API();
+            $options = $RMA_WC_API->get_customers();
 
-                $RMA_WC_API = new RMA_WC_API();
-                $options = $RMA_WC_API->get_customers();
-
-                if ( !empty( $RMA_WC_API ) ) unset( $RMA_WC_API );
-
-            }
+            if ( !empty( $RMA_WC_API ) ) unset( $RMA_WC_API );
 
             if( !isset( $options ) || !$options ) {
 
@@ -824,7 +818,7 @@ if ( !class_exists('RMA_SETTINGS_PAGE') ) {
             $id           = ( isset( $args['id'] ) ) ? $args['id'] : '';
             $description  = ( isset( $args['description'] ) ) ? $args['description'] : '';
 
-            if ( class_exists('RMA_WC_API') && ( !isset( $parts ) || empty( $parts ) ) ) {
+            if ( !isset( $parts ) || empty( $parts ) ) {
 
                 $rma_api = new RMA_WC_API();
                 $parts   = $rma_api->get_parts();

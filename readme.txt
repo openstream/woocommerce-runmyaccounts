@@ -55,6 +55,7 @@ Please send a request to the Openstream Internet Solutions. We provide customiza
 * Feature - added bulk creation for invoice on backend order page
 * Feature - added handling of shipping costs as a dedicated product
 * Feature - added shipping address to Run My Accounts notes field
+* Tweak - improved class loading handling
 * Compatibility - tested up to WordPress 5.6.1
 * Compatibility - tested up to WooCommerce 4.9.2
 
