@@ -507,8 +507,8 @@ if ( !class_exists('RMA_WC_API') ) {
 			// Calculate duedate (now + payment period)
 			$order_details['duedate']        = date( DateTime::RFC3339, time() + ($payment_period*60*60*24) );
 
-			// add shipping address
-            $order_details['notes']          = $order->get_formatted_shipping_address();
+			// add shipping address; first converts a break tag to a newline – no matter what kind of HTML is being processed.
+            $order_details['notes']          = preg_replace('/<br(\s+)?\/?>/i', "\n", $order->get_formatted_shipping_address());
 
             // Add products to order
 			$_order                          = $order->get_items(); //to get info about product
