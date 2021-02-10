@@ -607,7 +607,7 @@ if ( !class_exists('RMA_SETTINGS_PAGE') ) {
             );
 
             // add  settings fields for all payment gateways
-            $available_gateways = WC()->payment_gateways->payment_gateways();
+            $available_gateways = WC()->payment_gateways->get_available_payment_gateways();
 
             foreach ( $available_gateways as $gateway_key => $values ) {
 
@@ -640,7 +640,7 @@ if ( !class_exists('RMA_SETTINGS_PAGE') ) {
             );
 
             // add  settings fields for all payment gateways
-            $available_gateways = WC()->payment_gateways->payment_gateways();
+            $available_gateways = WC()->payment_gateways->get_available_payment_gateways();
 
             foreach ( $available_gateways as $gateway_key => $values ) {
 
@@ -665,11 +665,11 @@ if ( !class_exists('RMA_SETTINGS_PAGE') ) {
         }
 
         public function section_info_accounting() {
-            esc_html_e('You can specify a dedicated receivable account for each payment gateway.', 'rma-wc');
+            esc_html_e('You can specify a dedicated receivable account for each active payment gateway.', 'rma-wc');
         }
 
         public function section_info_payment() {
-            esc_html_e('You can specify a dedicated payment account for each payment gateway.', 'rma-wc');
+            esc_html_e('You can specify a dedicated payment account for each active payment gateway.', 'rma-wc');
         }
 
 

@@ -18,14 +18,16 @@ class RMA_WC_Payment {
         if ( !defined( 'RMA_MANDANT' ) )
             self::define_constants();
 
-        self::init();
-
     }
 
     /**
      * define default constants
+     *
+     * @since 1.6.0
      */
     private function define_constants() {
+        //ToDO: create a central definition which can be used by all classes
+
         // read rma settings
         $settings = get_option('wc_rma_settings');
 
@@ -62,25 +64,24 @@ class RMA_WC_Payment {
     }
 
     /**
-     * Initialization
+     * Send payment
+     *
+     * @return array|bool
      *
      * @since 1.6.0
      */
-    private function init() {
-    }
-
-    /**
-     * Send payment
-     */
     public function send_payment() {
 
-        // Continue only if an order_id is available
+        // continue only if an order_id is available
         if( !$this->order_id ) return false;
 
+        // get order details
         $order = new WC_Order( $this->order_id );
 
+        // continue only if the order is paid
         if( !$order->is_paid() ) return false;
 
+        // get the Run My Accounts invoice number
         $this->invoice = get_post_meta( $this->order_id, '_rma_invoice', true );
 
         $data = self::get_payment_details();
@@ -97,10 +98,10 @@ class RMA_WC_Payment {
                 $payment->appendChild( $xml->createElement( $key, $value ) );
         }
 
-        //make the output pretty
+        // make the output pretty
         $xml->formatOutput = true;
 
-        //create xml content
+        // create xml content
         $xml_str = $xml->saveXML() . "\n";
 
         // send xml content to RMA

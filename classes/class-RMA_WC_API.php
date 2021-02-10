@@ -639,6 +639,14 @@ if ( !class_exists('RMA_WC_API') ) {
 
                 unset( $order );
 
+                /*
+                 * send payment
+                 * @since 1.6.0
+                 */
+                $payment = new RMA_WC_Payment();
+                $payment->order_id = $order_id;
+                $payment->send_payment();
+
             }
 			else {
 
