@@ -37,10 +37,10 @@ if (!defined('RMA_WC_LOG_TABLE')) { define('RMA_WC_LOG_TABLE', 'rma_wc_log'); }
  *
  * @param $class_name
  */
-function rma_wc_autoloader($class_name)
+function rma_wc_autoloader( $class_name )
 {
-    if (false !== strpos($class_name, 'RMA')) {
-        include plugin_dir_path(__FILE__) . 'classes/class-' . $class_name . '.php';
+    if ( false !== strpos( $class_name, 'RMA' ) ) {
+        require_once plugin_dir_path(__FILE__) . 'classes/class-' . $class_name . '.php';
     }
 }
 
@@ -51,17 +51,17 @@ spl_autoload_register('rma_wc_autoloader');
 if ( is_admin() ) {
 
     // Instantiate backend class
-    $RMA_WC_BACKEND = new RMA_WC_BACKEND();
+    $RMA_WC_BACKEND = new RMA_WC_Backend();
 
-    register_activation_hook(__FILE__, array('RMA_WC_BACKEND', 'activate'));
-    register_deactivation_hook(__FILE__, array('RMA_WC_BACKEND', 'deactivate'));
+    register_activation_hook(__FILE__, array('RMA_WC_Backend', 'activate'));
+    register_deactivation_hook(__FILE__, array('RMA_WC_Backend', 'deactivate'));
 
-    $my_settings_page = new RMA_SETTINGS_PAGE();
+    $my_settings_page = new RMA_Settings_Page();
 
 }
 
 // LOAD FRONTEND ///////////////////////////////////////////////////////////////
 
 // Instantiate backend class
-$RMA_WC_FRONTEND = new RMA_WC_FRONTEND();
+$RMA_WC_FRONTEND = new RMA_WC_Frontend();
 

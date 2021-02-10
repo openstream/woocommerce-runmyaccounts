@@ -11,12 +11,12 @@
 
 if ( !defined('ABSPATH' ) ) exit;
 
-if (!class_exists('RMA_WC_BACKEND')) {
+if (!class_exists('RMA_WC_Backend')) {
 
     /**
      * Create class and extends it
      */
-    class RMA_WC_BACKEND extends RMA_WC_BACKEND_ABSTRACT {
+    class RMA_WC_Backend extends RMA_WC_Backend_Abstract {
 
         /**
          * Construct  

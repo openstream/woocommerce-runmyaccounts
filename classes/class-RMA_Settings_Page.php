@@ -11,9 +11,9 @@
 
 if ( !defined('ABSPATH' ) ) exit;
 
-if ( !class_exists('RMA_SETTINGS_PAGE') ) {
+if ( !class_exists('RMA_Settings_Page') ) {
 
-    class RMA_SETTINGS_PAGE {
+    class RMA_Settings_Page {
 
         private $admin_url;
         private $option_group_general;

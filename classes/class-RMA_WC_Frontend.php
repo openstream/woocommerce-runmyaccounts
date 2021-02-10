@@ -11,9 +11,9 @@
 
 if ( !defined('ABSPATH' ) ) exit;
 
-if ( ! class_exists('RMA_WC_FRONTEND' ) ) {
+if ( ! class_exists('RMA_WC_Frontend' ) ) {
 
-    class RMA_WC_FRONTEND {
+    class RMA_WC_Frontend {
 
         private $locale = '';
 

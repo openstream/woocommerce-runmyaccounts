@@ -11,9 +11,9 @@
 
 if ( !defined('ABSPATH' ) ) exit;
 
-if ( !class_exists('RMA_WC_BACKEND_ABSTRACT') ) {
+if ( !class_exists('RMA_WC_Backend_Abstract') ) {
 
-    abstract class RMA_WC_BACKEND_ABSTRACT {
+    abstract class RMA_WC_Backend_Abstract {
 
         const VERSION = '1.6.0';
         const DB_VERSION = '1.1.0';
@@ -293,7 +293,7 @@ if ( !class_exists('RMA_WC_BACKEND_ABSTRACT') ) {
          */
         public function add_column_to_order_table( $columns ) {
 
-            $columns = RMA_WC_FRONTEND::array_insert( $columns, 'order_total', 'rma_invoice', __( 'Invoice #', 'rma-wc'));
+            $columns = RMA_WC_Frontend::array_insert( $columns, 'order_total', 'rma_invoice', __( 'Invoice #', 'rma-wc'));
 
             return $columns;
         }
