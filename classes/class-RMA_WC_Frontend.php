@@ -48,7 +48,7 @@ if ( ! class_exists('RMA_WC_Frontend' ) ) {
                     case 'completed':
                         add_action('woocommerce_order_status_changed', array( $this,
                             'create_invoice_on_status_change'
-                        ), 99, 3);
+                        ), 90, 3);
                         break;
 
                     // trigger invoice creation when trigger is set 'immediately' or no selection was done on settings page
@@ -60,6 +60,21 @@ if ( ! class_exists('RMA_WC_Frontend' ) ) {
                         add_action( 'woocommerce_checkout_order_processed', array( $this, 'create_rma_invoice'), 10, 1 );
                         break;
                 endswitch;
+
+                $trigger  = ( isset( $settings['rma-book-payment-trigger'] ) ? $settings['rma-book-payment-trigger'] : '' );
+
+                switch ( $trigger ) :
+                    // trigger payment booking on order status change
+                    case 'completed':
+                        add_action('woocommerce_order_status_changed', array( $this,
+                            'book_payment_on_status_change'
+                        ), 95, 3);
+                        break;
+                    // trigger payment booking when trigger is set Never or no selection was done on settings page
+                    default:
+                        // Do nothing
+                endswitch;
+
 
                 // fire when a customer was updated
                 add_action( 'woocommerce_update_customer', array( $this, 'update_customer' ) );
@@ -127,7 +142,7 @@ if ( ! class_exists('RMA_WC_Frontend' ) ) {
          *
          * @return array
          */
-        public function add_column_to_user_table( $column ) {
+        public function add_column_to_user_table( $column ): array {
 
             $column = self::array_insert( $column, 'email', 'rma_customer_id', __( 'RMA Customer # ', 'rma-wc') );
 
@@ -143,7 +158,7 @@ if ( ! class_exists('RMA_WC_Frontend' ) ) {
          *
          * @return string
          */
-        public function add_value_to_user_table_row( $val, $column_name, $user_id ) {
+        public function add_value_to_user_table_row( $val, $column_name, $user_id ): string {
             switch ( $column_name ) {
                 case 'rma_customer_id' :
                     return get_the_author_meta( 'rma_customer', $user_id );
@@ -162,7 +177,7 @@ if ( ! class_exists('RMA_WC_Frontend' ) ) {
          *
          * @return array
          */
-        static function array_insert( $array, $after_key, $key, $value ){
+        static function array_insert( $array, $after_key, $key, $value ): array {
 
             $pos   = array_search( $after_key, array_keys( $array ) ) ;
             $pos ++;
@@ -248,7 +263,7 @@ if ( ! class_exists('RMA_WC_Frontend' ) ) {
 
 	        if( ( !$rma_client || !$rma_apikey ) ) {
 
-		        $html = '<div class="notice notice-error">';
+		        $html = '<div class="notice notice-warning">';
 		        $html .= '<p>';
 		        $html .= '<b>'.esc_html__( 'Warning', 'rma-wc' ).'&nbsp;</b>';
 		        $html .= esc_html__('Please enter your Production Client and Production API Key before using Run my Accounts for WooCommerce in production mode.', 'rma-wc' );
@@ -328,6 +343,27 @@ if ( ! class_exists('RMA_WC_Frontend' ) ) {
             unset( $RMA_WC_API );
 
             return ( !empty( $result) ? $result : '' );
+
+        }
+
+        /**
+         * Book payment in Run my Accounts on status change
+         *
+         * @param $order_id
+         * @param $old_status
+         * @param $new_status
+         *
+         * @throws Exception
+         *
+         * @since 1.6.0
+         *
+         * @author Sandro Lucifora
+         */
+        public function book_payment_on_status_change( $order_id, $old_status, $new_status ) {
+
+            $payment = new RMA_WC_Payment();
+            $payment->order_id = $order_id;
+            $payment->send_payment();
 
         }
 
