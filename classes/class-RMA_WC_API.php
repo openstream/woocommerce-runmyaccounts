@@ -284,7 +284,8 @@ if ( !class_exists('RMA_WC_API') ) {
          *
 		 * @return array
 		 */
-		private function get_invoice_values( $order_id ) {
+		private function get_invoice_values( $order_id ): array
+        {
 
             $settings     = get_option( 'wc_rma_settings' );
             $fallback_sku = $settings[ 'rma-product-fallback_id' ];
@@ -338,7 +339,7 @@ if ( !class_exists('RMA_WC_API') ) {
 
 			endif;
 
-			return $data;
+            return $data;
 		}
 
         /**
@@ -538,8 +539,17 @@ if ( !class_exists('RMA_WC_API') ) {
 
 			// Add Shipping costs
             // @since 1.6.0
-            $order_shipping_total      = $order->get_shipping_total();
+            $order_shipping_total_net  = (float) $order->get_shipping_total();
+            $order_shipping_tax        = (float) $order->get_shipping_tax();
 			$shipping_costs_product_id = isset( $settings[ 'rma-shipping-id' ] ) ? $settings[ 'rma-shipping-id' ] : '';
+
+			// Calculate shipping costs w/ or wo/ tax
+			if( $order->get_prices_include_tax() ) {
+                $order_shipping_total  = $order_shipping_total_net + $order_shipping_tax;
+            }
+			else {
+                $order_shipping_total  = $order_shipping_total_net;
+            }
 
 			// Do we have shipping costs and a product id to use for?
 			if( 0 < $order_shipping_total && !empty( $shipping_costs_product_id ) ) {
@@ -639,13 +649,21 @@ if ( !class_exists('RMA_WC_API') ) {
 
                 unset( $order );
 
-                /*
-                 * send payment
-                 * @since 1.6.0
-                 */
-                $payment = new RMA_WC_Payment();
-                $payment->order_id = $order_id;
-                $payment->send_payment();
+                $settings = get_option( 'wc_rma_settings' );
+                $trigger  = ( isset( $settings['rma-create-trigger'] ) ? $settings['rma-create-trigger'] : '' );
+
+                // trigger payment booking when trigger is set 'immediately' (means, immediately after invoice creation)
+                if( 'immediately' == $trigger ) {
+
+                    /*
+                     * send payment
+                     * @since 1.6.0
+                     */
+                    $payment = new RMA_WC_Payment();
+                    $payment->order_id = $order_id;
+                    $payment->send_payment();
+
+                }
 
             }
 			else {
