@@ -75,12 +75,6 @@ class RMA_WC_Payment {
         // continue only if an order_id is available
         if( !$this->order_id ) return false;
 
-        // get order details
-        $order = new WC_Order( $this->order_id );
-
-        // continue only if the order is paid
-        if( !$order->is_paid() ) return false;
-
         // get the Run My Accounts invoice number
         $this->invoice = get_post_meta( $this->order_id, '_rma_invoice', true );
 
@@ -167,7 +161,7 @@ class RMA_WC_Payment {
             'payment' => array(
                 'id'             => $this->order_id,
                 'invnumber'      => $this->invoice,
-                'datepaid'       => $order->get_date_paid() ,//date( DateTime::RFC3339, time() ),
+                'datepaid'       => date(DATE_RFC3339), //$order->get_date_paid() ,//date( DateTime::RFC3339, time() ),
                 'amount_paid'    => $order->get_total(),
                 'source'         => 'Shop-Payment',
                 'memo'           => $order->get_payment_method_title(),

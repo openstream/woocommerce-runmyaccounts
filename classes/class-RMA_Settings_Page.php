@@ -32,7 +32,7 @@ if ( !class_exists('RMA_Settings_Page') ) {
             $this->option_group_accounting = 'wc_rma_settings_accounting';
             $this->option_page_general     = 'settings-general';
             $this->option_page_accounting  = 'settings-accounting';
-            $this->option_page_accounting  = 'settings-log';
+            $this->option_page_log         = 'settings-log';
 
             $this->options_general    = get_option( $this->option_group_general );
             $this->options_accounting = get_option( $this->option_group_accounting );
@@ -259,6 +259,26 @@ if ( !class_exists('RMA_Settings_Page') ) {
                 $this->option_page_general // Page
             );
 
+            $id = 'rma-create-trigger';
+            add_settings_field(
+                $id,
+                esc_html__('Trigger', 'rma-wc'),
+                array( $this, 'option_select_cb'),
+                $this->option_page_general,
+                $section,
+                array(
+                    'option_group' => $this->option_group_general,
+                    'id'           => $id,
+                    'value'        => isset( $this->options_general[ $id ] ) ? $this->options_general[ $id ] : '',
+                    'options'      => array(
+                        'immediately' => esc_html__('Immediately after ordering','rma-wc'),
+                        'completed'   => esc_html__('On order status change Completed','rma-wc'),
+                    ),
+                    'description'  => esc_html__('When should customers and invoices be created in Run My Accounts', 'rma-wc' ),
+
+                )
+            );
+
             $id = 'rma-payment-period';
             add_settings_field(
                 $id,
@@ -348,7 +368,7 @@ if ( !class_exists('RMA_Settings_Page') ) {
                     'value'        => isset( $this->options_general[ $id ] ) ? $this->options_general[ $id ] : '',
                     'options'      => array(
                         ''            => esc_html__('Never. Booking is done manually.','rma-wc'),
-                        'immediately' => esc_html__('Immediately when the invoice is created','rma-wc'),
+                        'immediately' => esc_html__('Immediately after ordering','rma-wc'),
                         'completed'   => esc_html__('On order status change Completed','rma-wc'),
                     ),
                     'description'  => esc_html__('When should the payment be booked in Run My Accounts', 'rma-wc' ),
@@ -369,26 +389,6 @@ if ( !class_exists('RMA_Settings_Page') ) {
                 esc_html__('Customer', 'rma-wc'),
                 '', // Callback
                 $this->option_page_general // Page
-            );
-
-            $id = 'rma-create-trigger';
-            add_settings_field(
-                $id,
-                esc_html__('Trigger', 'rma-wc'),
-                array( $this, 'option_select_cb'),
-                $this->option_page_general,
-                $section,
-                array(
-                    'option_group' => $this->option_group_general,
-                    'id'           => $id,
-                    'value'        => isset( $this->options_general[ $id ] ) ? $this->options_general[ $id ] : '',
-                    'options'      => array(
-                        'immediately' => esc_html__('Immediately when the order is created','rma-wc'),
-                        'completed'   => esc_html__('On order status change Completed','rma-wc'),
-                    ),
-                    'description'  => esc_html__('When should customers and invoices be created in Run My Accounts', 'rma-wc' ),
-
-                )
             );
 
             $id = 'rma-create-customer';
