@@ -36,6 +36,13 @@ jQuery(document).ready(function(){
         });
 
     });
+
+    jQuery('select.invoice-trigger, select.payment-trigger').on( 'change', function ( event ){
+
+        set_trigger();
+
+    });
+
 });
 
 function show_guest_input() {
@@ -49,6 +56,37 @@ function show_guest_input() {
     else {
         jQuery("#rma-guest-customer-prefix").parent().parent().css("display", "none");
         jQuery("select[name='wc_rma_settings[rma-guest-catch-all]']").parent().parent().css("display", "");
+
+    }
+
+}
+
+function set_trigger() {
+    let invoiceTrigger ='';
+    let paymentTrigger ='';
+
+    invoiceTrigger = jQuery('select.invoice-trigger').val();
+    paymentTrigger = jQuery('select.payment-trigger').val();
+
+    if( 'completed' === invoiceTrigger ) {
+
+        jQuery(".payment-trigger option[value='immediately']").prop('disabled', true);
+
+        if( 'immediately' === paymentTrigger ) {
+            jQuery('select.payment-trigger').val('completed');
+        }
+
+    }
+
+    if( 'immediately' === invoiceTrigger ) {
+
+        jQuery(".payment-trigger option[value='immediately']").prop('disabled', false);
+
+    }
+
+    if( 'immediately' === paymentTrigger || '' === paymentTrigger) {
+
+        jQuery(".invoice-trigger option[value='immediately']").prop('disabled', false);
 
     }
 

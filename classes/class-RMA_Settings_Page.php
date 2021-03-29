@@ -274,6 +274,7 @@ if ( !class_exists('RMA_Settings_Page') ) {
                         'immediately' => esc_html__('Immediately after ordering','rma-wc'),
                         'completed'   => esc_html__('On order status change Completed','rma-wc'),
                     ),
+                    'class'        => 'invoice-trigger',
                     'description'  => esc_html__('When should customers and invoices be created in Run My Accounts', 'rma-wc' ),
 
                 )
@@ -371,6 +372,7 @@ if ( !class_exists('RMA_Settings_Page') ) {
                         'immediately' => esc_html__('Immediately after ordering','rma-wc'),
                         'completed'   => esc_html__('On order status change Completed','rma-wc'),
                     ),
+                    'class'        => 'payment-trigger',
                     'description'  => esc_html__('When should the payment be booked in Run My Accounts', 'rma-wc' ),
 
                 )
