@@ -259,7 +259,7 @@ if ( !class_exists('RMA_Settings_Page') ) {
                 $this->option_page_general // Page
             );
 
-            $id = 'rma-create-trigger';
+            $id = 'rma-invoice-trigger';
             add_settings_field(
                 $id,
                 esc_html__('Trigger', 'rma-wc'),
@@ -272,7 +272,7 @@ if ( !class_exists('RMA_Settings_Page') ) {
                     'value'        => isset( $this->options_general[ $id ] ) ? $this->options_general[ $id ] : '',
                     'options'      => array(
                         'immediately' => esc_html__('Immediately after ordering','rma-wc'),
-                        'completed'   => esc_html__('On order status change Completed','rma-wc'),
+                        'completed'   => esc_html__('On order status completed','rma-wc'),
                     ),
                     'class'        => 'invoice-trigger',
                     'description'  => esc_html__('When should customers and invoices be created in Run My Accounts', 'rma-wc' ),
@@ -356,7 +356,7 @@ if ( !class_exists('RMA_Settings_Page') ) {
                 $this->option_page_general // Page
             );
 
-            $id = 'rma-book-payment-trigger';
+            $id = 'rma-payment-trigger';
             add_settings_field(
                 $id,
                 esc_html__('Trigger', 'rma-wc'),
@@ -368,9 +368,9 @@ if ( !class_exists('RMA_Settings_Page') ) {
                     'id'           => $id,
                     'value'        => isset( $this->options_general[ $id ] ) ? $this->options_general[ $id ] : '',
                     'options'      => array(
-                        ''            => esc_html__('Never. Booking is done manually.','rma-wc'),
+                        ''            => esc_html__('Booking manually','rma-wc'),
                         'immediately' => esc_html__('Immediately after ordering','rma-wc'),
-                        'completed'   => esc_html__('On order status change Completed','rma-wc'),
+                        'completed'   => esc_html__('On order status completed','rma-wc'),
                     ),
                     'class'        => 'payment-trigger',
                     'description'  => esc_html__('When should the payment be booked in Run My Accounts', 'rma-wc' ),

@@ -450,19 +450,19 @@ if ( !class_exists('RMA_WC_API') ) {
 		 */
 		private function get_wc_order_details( $order_id ) {
 
-			$order                           = new WC_Order( $order_id );
-            $settings                        = get_option( 'wc_rma_settings' );
-			$option_accounting               = get_option( 'wc_rma_settings_accounting' );
-            $order_payment_method            = $order->get_payment_method();
+			$order                = new WC_Order( $order_id );
+            $settings             = get_option( 'wc_rma_settings' );
+			$option_accounting    = get_option( 'wc_rma_settings_accounting' );
+            $order_payment_method = $order->get_payment_method();
 
             // if order is done without...
             if ( 0 == get_post_meta( $order_id, '_customer_user', true ) ) {
 
-                $settings                    = get_option('wc_rma_settings');
+                $settings = get_option('wc_rma_settings');
 
-                if ( 1 == $settings['rma-create-guest-customer'] ) {
+                if ( 1 == $settings[ 'rma-create-guest-customer' ] ) {
 
-                    $rma_customer_id         = $this->create_rma_customer( 'order', $order_id );
+                    $rma_customer_id = $this->create_rma_customer( 'order', $order_id );
 
                     if ( false == $rma_customer_id ) {
 
@@ -576,8 +576,6 @@ if ( !class_exists('RMA_WC_API') ) {
 
             }
 
-			error_log( print_r( $order_details_products) );
-
 			return array( $order_details, $order_details_products );
 
 		}
@@ -649,27 +647,15 @@ if ( !class_exists('RMA_WC_API') ) {
 
                 unset( $order );
 
-                $settings = get_option( 'wc_rma_settings' );
-                $trigger  = ( isset( $settings['rma-create-trigger'] ) ? $settings['rma-create-trigger'] : '' );
-
-                // trigger payment booking when trigger is set 'immediately' (means, immediately after invoice creation)
-                if( 'immediately' == $trigger ) {
-
-                    /*
-                     * send payment
-                     * @since 1.6.0
-                     */
-                    $payment = new RMA_WC_Payment();
-                    $payment->order_id = $order_id;
-                    $payment->send_payment();
-
-                }
+                $return = true;
 
             }
 			else {
 
                 $status  = 'error';
                 $message = '[' . self::first_key_of_array( $response ) . '] ' . reset( $response ); // get value of first key = return message
+
+                $return = false;
 
             }
 
@@ -689,7 +675,7 @@ if ( !class_exists('RMA_WC_API') ) {
 
 			}
 
-			return $response;
+			return $return;
 		}
 
         /**

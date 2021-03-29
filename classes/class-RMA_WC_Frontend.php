@@ -41,7 +41,7 @@ if ( ! class_exists('RMA_WC_Frontend' ) ) {
             if ( in_array( 'woocommerce/woocommerce.php', apply_filters( 'active_plugins', get_option( 'active_plugins' ) ) ) ) {
 
                 $settings = get_option( 'wc_rma_settings' );
-                $trigger  = ( isset( $settings['rma-create-trigger'] ) ? $settings['rma-create-trigger'] : '' );
+                $trigger  = ( isset( $settings['rma-invoice-trigger'] ) ? $settings['rma-invoice-trigger'] : '' );
 
                 switch ( $trigger ) :
                     // trigger invoice and customer creation on order status change
@@ -55,19 +55,19 @@ if ( ! class_exists('RMA_WC_Frontend' ) ) {
                     case 'immediately':
                     default:
                         // fire when new customer was saved on checkout page
-                        add_action('woocommerce_checkout_update_user_meta', array( $this, 'create_rma_customer'), 10, 1 );
+                        add_action( 'woocommerce_checkout_update_user_meta', array( $this, 'create_rma_customer'), 10, 1 );
                         // fire when a new order comes in and create new invoice in RMA
                         add_action( 'woocommerce_checkout_order_processed', array( $this, 'create_rma_invoice'), 10, 1 );
                         break;
                 endswitch;
 
-                $trigger  = ( isset( $settings['rma-book-payment-trigger'] ) ? $settings['rma-book-payment-trigger'] : '' );
+                $trigger  = ( isset( $settings['rma-payment-trigger'] ) ? $settings['rma-payment-trigger'] : '' );
 
                 switch ( $trigger ) :
                     // trigger payment booking on order status change
                     case 'completed':
                         add_action('woocommerce_order_status_changed', array( $this,
-                            'book_payment_on_status_change'
+                            'rma_payment_booking'
                         ), 95, 3);
                         break;
                     // trigger payment booking when trigger is set Never or no selection was done on settings page
@@ -289,17 +289,41 @@ if ( ! class_exists('RMA_WC_Frontend' ) ) {
         /**
          * Create new invoice in Run my Accounts when new order came in
          *
-	     * @param $order_id
-	     *
-	     * @return bool|string
-	     */
+         * @param $order_id
+         *
+         * @return bool|string
+         * @throws Exception
+         */
 	    public function create_rma_invoice( $order_id ) {
+
+	        error_log( 'create_rma_invoice');
 
 	    	$RMA_WC_API = new RMA_WC_API();
 
             $result = $RMA_WC_API->create_invoice( $order_id );
 
             unset( $RMA_WC_API );
+
+            error_log( '$result = ' . ( true == $result ? 'true' : 'false' ) );
+
+            /*
+             * If invoice creation was successful, check for payment booking
+             */
+            if( true === $result ) {
+
+                error_log( 'Payment after invoice');
+                $settings = get_option( 'wc_rma_settings' );
+                $trigger  = ( isset( $settings['rma-payment-trigger'] ) ? $settings['rma-payment-trigger'] : '' );
+                error_log( 'rma-payment-trigger = ' . $trigger );
+                // trigger payment booking when trigger is set 'immediately' (means, immediately after invoice creation)
+                if( 'immediately' == $trigger ) {
+                    error_log( 'Payment booking' );
+                    self::rma_payment_booking( $order_id );
+
+                }
+
+            }
+
 
 		    return ( !empty( $result) ? $result : '' );
 
@@ -324,7 +348,7 @@ if ( ! class_exists('RMA_WC_Frontend' ) ) {
             $invoice_number = get_post_meta( $order_id, '_rma_invoice', true );
 
             if( !empty( $invoice_number ) || 'completed' != $new_status || !class_exists('RMA_WC_API') )
-                return '';
+                return false;
 
             $RMA_WC_API = new RMA_WC_API();
 
@@ -334,7 +358,7 @@ if ( ! class_exists('RMA_WC_Frontend' ) ) {
             unset( $order );
             $rma_customer_id = get_user_meta( $customer_id, 'rma_customer', true );
 
-            // If the customer_id has not already a rma_customer_id, create the customer
+            // If the customer_id has not already a rma_customer_id assigned, create the customer
             $customer_result = ( !empty( $rma_customer_id ) ? true : self::create_rma_customer( $customer_id ) );
 
             // create invoice if customer creation was successfully
@@ -342,12 +366,12 @@ if ( ! class_exists('RMA_WC_Frontend' ) ) {
 
             unset( $RMA_WC_API );
 
-            return ( !empty( $result) ? $result : '' );
+            return ( $result );
 
         }
 
         /**
-         * Book payment in Run my Accounts on status change
+         * Book payment in Run my Accounts
          *
          * @param $order_id
          * @param $old_status
@@ -359,11 +383,13 @@ if ( ! class_exists('RMA_WC_Frontend' ) ) {
          *
          * @author Sandro Lucifora
          */
-        public function book_payment_on_status_change( $order_id, $old_status, $new_status ) {
+        public function rma_payment_booking( $order_id, $old_status = null , $new_status = null ) {
 
             $payment = new RMA_WC_Payment();
             $payment->order_id = $order_id;
             $payment->send_payment();
+
+            unset( $payment );
 
         }
 
