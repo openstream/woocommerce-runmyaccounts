@@ -350,7 +350,7 @@ if ( !class_exists('RMA_WC_API') ) {
          * @return array
          * @throws Exception
          */
-		private function get_customer_values_by_user_id( $user_id ) {
+		private function get_customer_values_by_user_id( $user_id ) :array {
 
             $settings        = get_option( 'wc_rma_settings' );
             $customer_prefix = isset( $settings[ 'rma-customer-prefix' ] ) ? $settings[ 'rma-customer-prefix' ] : '';
@@ -399,7 +399,7 @@ if ( !class_exists('RMA_WC_API') ) {
          * @return array
          * @throws Exception
          */
-        private function get_customer_values_by_order_id( $order_id ) {
+        private function get_customer_values_by_order_id( $order_id ) : array {
 
             $settings        = get_option( 'wc_rma_settings' );
             $customer_prefix = isset( $settings[ 'rma-guest-customer-prefix' ] ) ? $settings[ 'rma-guest-customer-prefix' ] : '';
@@ -413,7 +413,7 @@ if ( !class_exists('RMA_WC_API') ) {
                 'customernumber'    => $customer_prefix . $order_id,
                 'name'              => ( $is_company ? $order->get_billing_company() : $order->get_billing_first_name() . ' ' . $order->get_billing_last_name() ),
                 'created'           => date('Y-m-d') . 'T00:00:00+01:00',
-                'salutation'        => ( 1 == get_post_meta( $order_id, '_billing_title', true ) ? 'Mr.' : 'Ms.' ),
+                'salutation'        => ( 1 == get_post_meta( $order_id, '_billing_title', true ) ? __('Mr.', 'rma-wc') : __('Ms.', 'rma-wc') ),
                 'firstname'         => $order->get_billing_first_name(),
                 'lastname'          => $order->get_billing_last_name(),
                 'address1'          => $order->get_billing_address_1(),
@@ -701,8 +701,8 @@ if ( !class_exists('RMA_WC_API') ) {
                 return false;
 
             // exit if user is already linked to a RMA customer account
-            if ( 'user' == $type &&
-                 'new' == $action &&
+            if ( 'user' == $type   &&
+                 'new'  == $action &&
                  get_user_meta( $id, 'rma_customer', true ) )
                 return false;
 
@@ -803,8 +803,7 @@ if ( !class_exists('RMA_WC_API') ) {
          *
          * @return array
          */
-		public static function send_xml_content( string $xml, string $url ): array
-        {
+		public static function send_xml_content( string $xml, string $url ): array {
 
             $response = wp_safe_remote_post(
                 $url,
@@ -830,7 +829,7 @@ if ( !class_exists('RMA_WC_API') ) {
 		 *
 		 * @return string
 		 */
-		private function is_activated ( $section_id ) {
+		private function is_activated ( $section_id ): string {
 
 			$settings  = get_option( 'wc_rma_settings' );
 			$is_active = ( isset( $settings[ 'rma-active' ] ) ? $settings[ 'rma-active' ] : '');
@@ -855,11 +854,9 @@ if ( !class_exists('RMA_WC_API') ) {
         /**
          * Check if the customer should be created in Run my Accounts
          *
-         * @param $id
-         *
          * @return string
          */
-        private function do_create_customer() {
+        private function do_create_customer(): string {
 
             $settings = get_option( 'wc_rma_settings' );
             return isset( $settings[ 'rma-create-customer' ] ) ? $settings[ 'rma-create-customer' ] : '';
@@ -881,7 +878,7 @@ if ( !class_exists('RMA_WC_API') ) {
 		 *
 		 * @return bool
 		 */
-		public function write_log(&$values) {
+		public function write_log( &$values ): bool {
 			global $wpdb;
 
 			$table_name = $wpdb->prefix . RMA_WC_LOG_TABLE;
@@ -910,8 +907,7 @@ if ( !class_exists('RMA_WC_API') ) {
 		 *
 		 * @return bool
 		 */
-		public function send_log_email(&$values): bool
-        {
+		public function send_log_email( &$values ): bool {
 
             ob_start();
             include( plugin_dir_path( __FILE__ ) . '../templates/email/error-email-template.php');

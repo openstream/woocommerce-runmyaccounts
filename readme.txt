@@ -56,6 +56,7 @@ Please send a request to the Openstream Internet Solutions. We provide customiza
 * Feature - added handling of shipping costs as a dedicated product
 * Feature - added shipping address to Run My Accounts notes field
 * Feature - added payment booking in Run My Accounts
+* Fix - fixed title language when creating customer
 * Tweak - improved class handling
 * Compatibility - tested up to WordPress 5.6.1
 * Compatibility - tested up to WooCommerce 5.0.0
