@@ -915,7 +915,7 @@ if ( !class_exists('RMA_WC_API') ) {
             ob_end_clean();
 
             $headers = array('Content-Type: text/html; charset=UTF-8');
-            if ( !wp_mail( LOGEMAIL, esc_html_x('An error occurred while connection with Run my Accounts API', 'email', 'rma-wc'), $email_content, $headers) ) {
+            if ( !wp_mail( LOGEMAIL, esc_html_x('An error occurred while connecting with Run my Accounts API', 'email', 'rma-wc'), $email_content, $headers) ) {
 
                 $log_values = array(
                     'status'     => 'failed',
