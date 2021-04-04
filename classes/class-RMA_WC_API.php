@@ -306,8 +306,8 @@ if ( !class_exists('RMA_WC_API') ) {
                     'transdate'      => date( DateTime::RFC3339, time() ),
                     'duedate'        => $order_details['duedate'], //date( DateTime::RFC3339, time() ),
                     'description'    => str_replace('[orderdate]',$order_details['orderdate'], RMA_INVOICE_DESCRIPTION),
-                    'notes'          => $order_details['notes'],
-                    'intnotes'       => '',
+                    'notes'          => '',
+                    'intnotes'       => $order_details['notes'],
                     'taxincluded'    => $order_details['taxincluded'],
                     'dcn'            => '',
                     'customernumber' => $order_details['customernumber']

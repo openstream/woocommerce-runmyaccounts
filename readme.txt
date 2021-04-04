@@ -3,8 +3,8 @@
 * Tags: Run my Accounts, WooCommerce, Billing
 * Requires at least: 4.7
 * Tested up to: 5.7
-* Stable tag: 1.6.0
-* Requires PHP: 7.3
+* Stable tag: 1.6.1
+* Requires PHP: 7.2
 * License: GPLv3
 * License URI: https://www.gnu.org/licenses/gpl-3.0.html
 
@@ -51,6 +51,10 @@ Please send a request to the Openstream Internet Solutions. We provide customiza
 * none
 
 == Changelog ==
+= 1.6.1 =
+* Tweak - moved shipping address from notes to internal notes
+
+== Changelog ==
 = 1.6.0 =
 * Feature - added bulk creation for invoice on backend order page
 * Feature - added handling of shipping costs as a dedicated product
@@ -58,8 +62,8 @@ Please send a request to the Openstream Internet Solutions. We provide customiza
 * Feature - added payment booking in Run My Accounts
 * Fix - fixed title language when creating customer
 * Tweak - improved class handling
-* Compatibility - tested up to WordPress 5.6.1
-* Compatibility - tested up to WooCommerce 5.0.0
+* Compatibility - tested up to WordPress 5.7
+* Compatibility - tested up to WooCommerce 5.1
 
 = 1.5.3 =
 * Bug Fix - fixed issue with sku if a product has variation with different sku
