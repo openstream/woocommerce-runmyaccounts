@@ -554,8 +554,11 @@ if ( !class_exists('RMA_WC_API') ) {
 			// Do we have shipping costs and a product id to use for?
 			if( 0 < $order_shipping_total && !empty( $shipping_costs_product_id ) ) {
 
+			    // we get shipping text from settings page otherwise we take shipping method
+                $shipping_text = ( isset( $settings['rma-shipping-text'] ) && !empty( $settings['rma-shipping-text'] ) ? $settings['rma-shipping-text'] : $order->get_shipping_method() );
+
                 $order_details_products[ $shipping_costs_product_id ] = array(
-                    'name'     => $order->get_shipping_method(),
+                    'name'     => $shipping_text,
                     'quantity' => 1,
                     'price'    => $order_shipping_total
                 );
