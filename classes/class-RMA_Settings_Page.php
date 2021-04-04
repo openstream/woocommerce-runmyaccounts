@@ -527,6 +527,22 @@ if ( !class_exists('RMA_Settings_Page') ) {
                 )
             );
 
+            $id = 'rma-shipping-text';
+            add_settings_field(
+                $id,
+                esc_html__('Text', 'rma-wc'),
+                array( $this, 'option_input_text_cb'),
+                $this->option_page_general,
+                $section,
+                array(
+                    'option_group' => $this->option_group_general,
+                    'id'           => $id,
+                    'value'        => isset( $this->options_general[ $id ] ) ? $this->options_general[ $id ] : '',
+                    'description'  => esc_html__('Optionally, the text on the invoice for shipping. Usually it is the text from the shipping method chosen by the customer.', 'rma-wc' )
+                )
+            );
+
+
         }
 
         /**
@@ -798,7 +814,7 @@ if ( !class_exists('RMA_Settings_Page') ) {
             $description  = (isset($args['description'])) ? $args['description'] : '';
             $class        = (isset($args['class'])) ? $args['class'] : '';
 
-            echo '<select name="' . $option_group . '[' . $id . ']"' . ( !empty( $class) ? 'class="' . $class . '"' : '' ) . '>';
+            echo '<select name="' . $option_group . '[' . $id . ']"' . ( !empty( $class) ? 'id="'. $id .'" class="' . $class . '"' : '' ) . '>';
 
             foreach ($options as $value => $text) {
                 printf(

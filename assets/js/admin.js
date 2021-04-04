@@ -4,6 +4,8 @@ jQuery(document).ready(function(){
 
     show_guest_input();
 
+    shipping_text();
+
     jQuery("#rma-create-guest-customer").click( function( event ) {
 
         show_guest_input();
@@ -41,6 +43,10 @@ jQuery(document).ready(function(){
 
         set_trigger();
 
+    });
+
+    jQuery("#rma-shipping-id").on("select2:select", function () {
+        shipping_text();
     });
 
 });
@@ -88,6 +94,20 @@ function set_trigger() {
 
         jQuery(".invoice-trigger option[value='immediately']").prop('disabled', false);
 
+    }
+
+}
+
+function shipping_text() {
+
+    let val = jQuery("#rma-shipping-id").val();
+
+    if ( '' === val )
+    {
+        jQuery("#rma-shipping-text").parent().parent().css("display", "none");
+    }
+    else {
+        jQuery("#rma-shipping-text").parent().parent().css("display", "");
     }
 
 }

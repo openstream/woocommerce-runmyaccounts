@@ -53,6 +53,7 @@ Please send a request to the Openstream Internet Solutions. We provide customiza
 == Changelog ==
 = 1.6.1 =
 * Tweak - moved shipping address from notes to internal notes
+* Feature - added optional shipping text for invoicing
 
 == Changelog ==
 = 1.6.0 =
