@@ -3,15 +3,15 @@ msgstr ""
 "Project-Id-Version: WooCommerce RMA\n"
 "Report-Msgid-Bugs-To: \n"
 "POT-Creation-Date: 2020-09-23 17:44+0000\n"
-"PO-Revision-Date: 2021-03-30 09:40+0200\n"
+"PO-Revision-Date: 2021-04-06 10:12+0000\n"
 "Last-Translator: Sandro Lucifora <wordpress@kybernetik.com.de>\n"
-"Language-Team: German (Formal)\n"
-"Language: de\n"
+"Language-Team: Deutsch (Sie)\n"
+"Language: de_DE_formal\n"
 "Plural-Forms: nplurals=2; plural=n != 1;\n"
 "MIME-Version: 1.0\n"
 "Content-Type: text/plain; charset=UTF-8\n"
 "Content-Transfer-Encoding: 8bit\n"
-"X-Generator: Poedit 2.4.2\n"
+"X-Generator: Loco https://localise.biz/\n"
 "X-Loco-Version: 2.4.6; wp-5.6-RC1\n"
 
 #: classes/class-RMA_Settings_Page.php:84
@@ -22,7 +22,7 @@ msgstr "Buchhaltung"
 msgid "Activate Function"
 msgstr "Funktion aktivieren"
 
-#: classes/class-RMA_Settings_Page.php:1064
+#: classes/class-RMA_Settings_Page.php:1080
 msgid "An error occurred while flushing the error log."
 msgstr "Ein Fehler ist beim Leeren der Tabelle aufgetreten."
 
@@ -44,15 +44,15 @@ msgstr "Buchung erfolgt manuell"
 msgid "Catch-All Account"
 msgstr "Catch-All-Konto"
 
-#: classes/class-RMA_Settings_Page.php:559
+#: classes/class-RMA_Settings_Page.php:575
 msgid "complete"
 msgstr "komplett"
 
-#: classes/class-RMA_Settings_Page.php:850
+#: classes/class-RMA_Settings_Page.php:866
 msgid "Connection successful."
 msgstr "Verbindung erfolgreich hergestellt."
 
-#: classes/class-RMA_WC_API.php:572
+#: classes/class-RMA_WC_API.php:575
 msgid ""
 "Could not add shipping costs to invoice because of missing shipping costs "
 "product sku"
@@ -98,9 +98,13 @@ msgstr "Kunde"
 msgid "Customer Number Prefix"
 msgstr "Kundennummer-Präfix"
 
-#: classes/class-RMA_Settings_Page.php:619
+#: classes/class-RMA_Settings_Page.php:635
 msgid "Delete Settings"
 msgstr "Einstellungen löschen"
+
+#: classes/class-RMA_Settings_Page.php:533
+msgid "Description"
+msgstr "Artikelbeschreibung"
 
 #: classes/class-RMA_Settings_Page.php:175
 msgid "Do not activate the plugin before you have set up all data."
@@ -108,18 +112,18 @@ msgstr ""
 "Aktivieren Sie das Plugin nicht, solange Sie nicht alle Einstellungen "
 "vorgenommen haben."
 
-#: classes/class-RMA_Settings_Page.php:587
+#: classes/class-RMA_Settings_Page.php:603
 msgid "email"
 msgstr "E-Mail"
 
-#: classes/class-RMA_WC_API.php:918
+#: classes/class-RMA_WC_API.php:921
 msgctxt "email"
 msgid "An error occurred while connecting with Run my Accounts API"
 msgstr ""
 "Beim Herstellen einer Verbindung mit der Run my Accounts API ist ein Fehler "
 "aufgetreten"
 
-#: classes/class-RMA_Settings_Page.php:558
+#: classes/class-RMA_Settings_Page.php:574
 msgid "error"
 msgstr "Fehler"
 
@@ -144,13 +148,13 @@ msgid "Section ID"
 msgstr "ID"
 
 #. ID
-#: classes/class-RMA_Settings_Page.php:541
-#: classes/class-RMA_Settings_Page.php:725
+#: classes/class-RMA_Settings_Page.php:557
+#: classes/class-RMA_Settings_Page.php:741
 msgid "Error Log"
 msgstr "Fehlerprotokoll"
 
-#: classes/class-RMA_Settings_Page.php:870
-#: classes/class-RMA_Settings_Page.php:915
+#: classes/class-RMA_Settings_Page.php:886
+#: classes/class-RMA_Settings_Page.php:931
 #: classes/class-RMA_WC_Backend_Abstract.php:388
 msgid "Error while connecting to RMA. Please check your settings."
 msgstr "Fehler bei der Verbindung mit RMA. Bitte prüfen Sie die Einstellungen."
@@ -159,7 +163,7 @@ msgstr "Fehler bei der Verbindung mit RMA. Bitte prüfen Sie die Einstellungen."
 msgid "Fallback product sku"
 msgstr "Fallback Artikelnummer"
 
-#: classes/class-RMA_Settings_Page.php:1041
+#: classes/class-RMA_Settings_Page.php:1057
 msgid "Flush Table"
 msgstr "Tabelle leeren"
 
@@ -201,39 +205,39 @@ msgstr "Rechnungspräfix"
 msgid "Log"
 msgstr "Protokoll"
 
-#: classes/class-RMA_WC_API.php:748
+#: classes/class-RMA_WC_API.php:751
 #, php-format
 msgctxt "Log"
 msgid "Customer %s created"
 msgstr "Kunde %s erstellt"
 
-#: classes/class-RMA_WC_API.php:936
+#: classes/class-RMA_WC_API.php:939
 msgctxt "Log"
 msgid "Email sent successfully."
 msgstr "E-Mail erfolgreich gesendet."
 
-#: classes/class-RMA_WC_API.php:925
+#: classes/class-RMA_WC_API.php:928
 msgctxt "Log"
 msgid "Failed to send email."
 msgstr "Fehler beim Senden der E-Mail."
 
-#: classes/class-RMA_WC_API.php:639
+#: classes/class-RMA_WC_API.php:642
 #, php-format
 #| msgid "Invoice %u created"
 msgctxt "Log"
 msgid "Invoice %s created"
 msgstr "Rechnung %s erstellt"
 
-#: classes/class-RMA_WC_API.php:844
+#: classes/class-RMA_WC_API.php:847
 msgctxt "Log"
 msgid "Plugin was not activated"
 msgstr "Plugin wurde nicht aktiviert"
 
-#: classes/class-RMA_Settings_Page.php:549
+#: classes/class-RMA_Settings_Page.php:565
 msgid "Log Level"
 msgstr "Log-Level"
 
-#: classes/class-RMA_WC_API.php:842
+#: classes/class-RMA_WC_API.php:845
 msgctxt "Log Section"
 msgid "Activation"
 msgstr "Aktivierung"
@@ -243,13 +247,13 @@ msgctxt "Log Section"
 msgid "Customer"
 msgstr "Kunde"
 
-#: classes/class-RMA_WC_API.php:766
+#: classes/class-RMA_WC_API.php:769
 #, php-format
 msgctxt "Log Section"
 msgid "Customer by %s id"
 msgstr "Kunde nach %s id"
 
-#: classes/class-RMA_WC_API.php:923 classes/class-RMA_WC_API.php:934
+#: classes/class-RMA_WC_API.php:926 classes/class-RMA_WC_API.php:937
 msgctxt "Log Section"
 msgid "Email"
 msgstr "E-Mail"
@@ -264,7 +268,7 @@ msgctxt "Log Section"
 msgid "Get Parts"
 msgstr "Artikel abrufen"
 
-#: classes/class-RMA_WC_API.php:570 classes/class-RMA_WC_API.php:667
+#: classes/class-RMA_WC_API.php:573 classes/class-RMA_WC_API.php:670
 msgctxt "Log Section"
 msgid "Invoice"
 msgstr "Rechnung"
@@ -275,7 +279,7 @@ msgid "Payment"
 msgstr "Zahlung"
 
 #. ID
-#: classes/class-RMA_Settings_Page.php:611
+#: classes/class-RMA_Settings_Page.php:627
 msgid "Misc"
 msgstr "Verschiedenes"
 
@@ -295,16 +299,16 @@ msgstr "Herr"
 msgid "Ms."
 msgstr "Frau"
 
-#: classes/class-RMA_Settings_Page.php:576
-#: classes/class-RMA_Settings_Page.php:628
+#: classes/class-RMA_Settings_Page.php:592
+#: classes/class-RMA_Settings_Page.php:644
 msgid "no"
 msgstr "nein"
 
-#: classes/class-RMA_Settings_Page.php:848
+#: classes/class-RMA_Settings_Page.php:864
 msgid "No connection. Please check your settings."
 msgstr "Keine Verbindung. Bitte überprüfen Sie die Einstellungen."
 
-#: classes/class-RMA_Settings_Page.php:992
+#: classes/class-RMA_Settings_Page.php:1008
 msgid "No error data was found."
 msgstr "Keine Einträge gefunden."
 
@@ -325,7 +329,15 @@ msgstr "Openstream Internet Solutions"
 msgid "Operation Mode"
 msgstr "Betriebsmodus"
 
-#: classes/class-RMA_WC_API.php:643
+#: classes/class-RMA_Settings_Page.php:541
+msgid ""
+"Optionally, the text on the invoice for shipping. Usually it is the text "
+"from the shipping method chosen by the customer."
+msgstr ""
+"Optional der Text auf der Rechnung für den Versand. In der Regel handelt es "
+"sich um den Text der vom Kunden gewählten Versandart."
+
+#: classes/class-RMA_WC_API.php:646
 #, php-format
 #| msgid "Invoice %u created in Run my Accounts"
 msgctxt "Order Note"
@@ -356,8 +368,8 @@ msgid ""
 "Please enter your Production Client and Production API Key before using Run "
 "my Accounts for WooCommerce in production mode."
 msgstr ""
-"Bitte geben Sie Ihren Produktion-Client und den Produktion-API-Schlüssel "
-"ein, bevor Sie Run my Accounts für WooCommerce im Produktionsmodus nutzen."
+"Bitte geben Sie Ihren Produktion-Client und den Produktion-API-Schlüssel ein,"
+" bevor Sie Run my Accounts für WooCommerce im Produktionsmodus nutzen."
 
 #: classes/class-RMA_Settings_Page.php:294
 msgid ""
@@ -396,7 +408,7 @@ msgstr ""
 msgid "Product"
 msgstr "Produkt"
 
-#: classes/class-RMA_Settings_Page.php:834
+#: classes/class-RMA_Settings_Page.php:850
 msgid "Production"
 msgstr "Produktion"
 
@@ -412,7 +424,7 @@ msgstr "Kunde Produktivumgebung"
 msgid "Receivables Account"
 msgstr "Forderungskonto"
 
-#: classes/class-RMA_Settings_Page.php:631
+#: classes/class-RMA_Settings_Page.php:647
 msgid ""
 "Remove all plugin data when using the \"Delete\" link on the plugins screen"
 msgstr ""
@@ -449,7 +461,7 @@ msgstr "Sandbox API-Schlüssel"
 msgid "Sandbox Client"
 msgstr "Sandbox Client"
 
-#: classes/class-RMA_Settings_Page.php:833
+#: classes/class-RMA_Settings_Page.php:849
 msgid "Sandbox Test"
 msgstr "Sandbox Test"
 
@@ -462,20 +474,20 @@ msgstr "Kunden auswählen..."
 msgid "Select the corresponding RMA customer for this account."
 msgstr "Wählen Sie den entsprechenden RMA-Kunden für dieses Konto aus."
 
-#: classes/class-RMA_Settings_Page.php:875
-#: classes/class-RMA_Settings_Page.php:920
+#: classes/class-RMA_Settings_Page.php:891
+#: classes/class-RMA_Settings_Page.php:936
 msgid "Select..."
 msgstr "Auswählen..."
 
-#: classes/class-RMA_Settings_Page.php:567
+#: classes/class-RMA_Settings_Page.php:583
 msgid "Send email on error"
 msgstr "E-Mail bei Fehlern senden"
 
-#: classes/class-RMA_Settings_Page.php:579
+#: classes/class-RMA_Settings_Page.php:595
 msgid "Send email on error with Run my Accounts API."
 msgstr "E-Mail senden bei Fehlern mit der Run my Accounts API."
 
-#: classes/class-RMA_Settings_Page.php:595
+#: classes/class-RMA_Settings_Page.php:611
 msgid "Send email to this recipient. By default administrators email."
 msgstr ""
 "Senden Sie eine E-Mail an diesen Empfänger. Standardmäßig ist es die "
@@ -494,9 +506,12 @@ msgstr "Einstellungen Run my Accounts"
 
 #. ID
 #: classes/class-RMA_Settings_Page.php:510
-#: classes/class-RMA_Settings_Page.php:518
 msgid "Shipping"
-msgstr "Versand"
+msgstr "Versandkosten"
+
+#: classes/class-RMA_Settings_Page.php:518
+msgid "SKU"
+msgstr "Artikelnummer"
 
 #: classes/class-RMA_WC_Frontend.php:256
 #, php-format
@@ -524,15 +539,15 @@ msgstr ""
 "wenn Sie es nicht verwenden möchten. In diesem Fall wird die Rechnung nicht "
 "erstellt, wenn die Artikelnummer in Run My Accounts nicht bekannt ist."
 
-#: classes/class-RMA_Settings_Page.php:742
+#: classes/class-RMA_Settings_Page.php:758
 msgid "This page shows you the error logs."
 msgstr "Diese Seite zeigt das Fehlerprotokoll."
 
 #. Description of the plugin
 msgid ""
-"This plug-in connects WooCommerce to <a href=\"https://www.runmyaccounts.ch/"
-"\">Run my Accounts</a>. Create customers and invoices as soon as you get an "
-"order in your WooCommerce shop."
+"This plug-in connects WooCommerce to <a href=\"https://www.runmyaccounts."
+"ch/\">Run my Accounts</a>. Create customers and invoices as soon as you get "
+"an order in your WooCommerce shop."
 msgstr ""
 "Dieses Plugin verbindet WooCommerce mit <a href=\"https://www.runmyaccounts."
 "ch/\">Run my Accounts</a>. Er erstellt Kunden und Rechnungen sobald eine "
@@ -595,8 +610,8 @@ msgstr ""
 "WooCommerce Run my Accounts ist nicht aktiviert. Es werden keine Rechnungen "
 "erstellt."
 
-#: classes/class-RMA_Settings_Page.php:577
-#: classes/class-RMA_Settings_Page.php:629
+#: classes/class-RMA_Settings_Page.php:593
+#: classes/class-RMA_Settings_Page.php:645
 msgid "yes"
 msgstr "ja"
 
@@ -606,13 +621,13 @@ msgid ""
 msgstr ""
 "Sie nutzen eine falsche PHP Version. Sie benötigen Version 7.3 oder höher."
 
-#: classes/class-RMA_Settings_Page.php:712
+#: classes/class-RMA_Settings_Page.php:728
 msgid ""
 "You can specify a dedicated payment account for each active payment gateway."
 msgstr ""
 "Sie können für jede aktive Zahlungsmethode ein eigenes Zahlungskonto angeben."
 
-#: classes/class-RMA_Settings_Page.php:708
+#: classes/class-RMA_Settings_Page.php:724
 #| msgid ""
 #| "You can specify a dedicated receivable account for each payment gateway."
 msgid ""

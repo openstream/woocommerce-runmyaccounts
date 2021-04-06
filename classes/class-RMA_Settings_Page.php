@@ -515,7 +515,7 @@ if ( !class_exists('RMA_Settings_Page') ) {
             $id = 'rma-shipping-id';
             add_settings_field(
                 $id,
-                esc_html__('Shipping', 'rma-wc'),
+                esc_html__('SKU', 'rma-wc'),
                 array( $this, 'rma_parts_cb'), // individual callback
                 $this->option_page_general,
                 $section,
@@ -530,7 +530,7 @@ if ( !class_exists('RMA_Settings_Page') ) {
             $id = 'rma-shipping-text';
             add_settings_field(
                 $id,
-                esc_html__('Text', 'rma-wc'),
+                esc_html__('Description', 'rma-wc'),
                 array( $this, 'option_input_text_cb'),
                 $this->option_page_general,
                 $section,
