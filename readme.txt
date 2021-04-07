@@ -55,7 +55,6 @@ Please send a request to the Openstream Internet Solutions. We provide customiza
 * Tweak - moved shipping address from notes to internal notes
 * Feature - added optional shipping text for invoicing
 
-== Changelog ==
 = 1.6.0 =
 * Feature - added bulk creation for invoice on backend order page
 * Feature - added handling of shipping costs as a dedicated product
