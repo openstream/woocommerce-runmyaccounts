@@ -6,6 +6,8 @@ jQuery(document).ready(function(){
 
     shipping_text();
 
+    set_trigger();
+
     jQuery("#rma-create-guest-customer").click( function( event ) {
 
         show_guest_input();
@@ -39,7 +41,7 @@ jQuery(document).ready(function(){
 
     });
 
-    jQuery('select.invoice-trigger, select.payment-trigger').on( 'change', function ( event ){
+    jQuery('select.invoice-trigger, select.payment-trigger, select.payment-trigger-exclude').on( 'change', function ( event ){
 
         set_trigger();
 
@@ -70,9 +72,11 @@ function show_guest_input() {
 function set_trigger() {
     let invoiceTrigger ='';
     let paymentTrigger ='';
+    let paymentTriggerExclude = '';
 
-    invoiceTrigger = jQuery('select.invoice-trigger').val();
-    paymentTrigger = jQuery('select.payment-trigger').val();
+    invoiceTrigger        = jQuery('select.invoice-trigger').val();
+    paymentTrigger        = jQuery('select.payment-trigger').val();
+    paymentTriggerExclude = jQuery('select.payment-trigger-exclude').val();
 
     if( 'completed' === invoiceTrigger ) {
 
@@ -94,6 +98,21 @@ function set_trigger() {
 
         jQuery(".invoice-trigger option[value='immediately']").prop('disabled', false);
 
+    }
+
+    if( '' === paymentTrigger) {
+        jQuery("select[name='wc_rma_settings[rma-payment-trigger-exclude]']").parent().parent().css("display", "none");
+        jQuery("fieldset[id='rma-payment-trigger-exclude-values']").parent().parent().css("display", "none");
+    }
+    else if( '' !== paymentTrigger ) {
+        jQuery("select[name='wc_rma_settings[rma-payment-trigger-exclude]']").parent().parent().css("display", "");
+
+        if( 'yes' === paymentTriggerExclude ) {
+            jQuery("fieldset[id='rma-payment-trigger-exclude-values']").parent().parent().css("display", "");
+        }
+        else if ( 'no' === paymentTriggerExclude) {
+            jQuery("fieldset[id='rma-payment-trigger-exclude-values']").parent().parent().css("display", "none");
+        }
     }
 
 }

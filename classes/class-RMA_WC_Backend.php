@@ -113,6 +113,24 @@ if (!class_exists('RMA_WC_Backend')) {
             exit;
         }
 
+        /**
+         * Returns current plugin version
+         *
+         * @return int|string
+         *
+         * @since 1.6.1
+         *
+         */
+        public static function get_plugin_version() {
+
+            $plugin_data = get_file_data(__FILE__, [
+                'Version' => 'Version'
+            ], 'plugin');
+
+            return $plugin_data[ 'Version' ];
+
+        }
+
     }
 
 } 

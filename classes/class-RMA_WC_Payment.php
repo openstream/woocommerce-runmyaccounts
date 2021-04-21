@@ -10,9 +10,13 @@ if ( ! defined('ABSPATH')) exit;
 class RMA_WC_Payment {
 
     public $order_id;
+    private $settings;
     private $invoice;
 
     public function __construct() {
+
+        // read rma settings
+        $this->settings = get_option('wc_rma_settings');
 
         // define constants only if they are not defined yet
         if ( !defined( 'RMA_MANDANT' ) )
@@ -28,33 +32,30 @@ class RMA_WC_Payment {
     private function define_constants() {
         //ToDO: create a central definition which can be used by all classes
 
-        // read rma settings
-        $settings = get_option('wc_rma_settings');
-
         // check if operation mode is set and is live
-        if( isset( $settings['rma-mode'] ) && 'live' == $settings['rma-mode'] ) {
+        if( isset( $this->settings['rma-mode'] ) && 'live' == $this->settings['rma-mode'] ) {
 
             // define constants with live values
-            DEFINE( 'RMA_MANDANT', ( isset( $settings['rma-live-client'] ) ? $settings['rma-live-client'] : '' ) );
-            DEFINE( 'RMA_APIKEY', ( isset( $settings['rma-live-apikey'] ) ? $settings['rma-live-apikey'] : '' ) );
+            DEFINE( 'RMA_MANDANT', ( isset( $this->settings['rma-live-client'] ) ? $this->settings['rma-live-client'] : '' ) );
+            DEFINE( 'RMA_APIKEY', ( isset( $this->settings['rma-live-apikey'] ) ? $this->settings['rma-live-apikey'] : '' ) );
             DEFINE( 'RMA_CALLERSANDBOX', FALSE );
 
         }
         else {
 
             // set default operation mode to test
-            DEFINE( 'RMA_MANDANT', ( isset( $settings['rma-test-client'] ) ? $settings['rma-test-client'] : '' ) );
-            DEFINE( 'RMA_APIKEY', ( isset( $settings['rma-test-apikey'] ) ? $settings['rma-test-apikey'] : '' ) );
+            DEFINE( 'RMA_MANDANT', ( isset( $this->settings['rma-test-client'] ) ? $this->settings['rma-test-client'] : '' ) );
+            DEFINE( 'RMA_APIKEY', ( isset( $this->settings['rma-test-apikey'] ) ? $this->settings['rma-test-apikey'] : '' ) );
             DEFINE( 'RMA_CALLERSANDBOX', TRUE );
 
         }
 
         // if rma-loglevel ist not set, LOGLEVEL is set to error by default
-        if( isset( $settings['rma-loglevel'] ) ) {
-            if( 'error' == $settings['rma-loglevel']  || empty( $settings['rma-loglevel'] ) ) {
+        if( isset( $this->settings['rma-loglevel'] ) ) {
+            if( 'error' == $this->settings['rma-loglevel']  || empty( $this->settings['rma-loglevel'] ) ) {
                 DEFINE( 'LOGLEVEL' , 'error' );
             }
-            elseif ( $settings['rma-loglevel'] == 'complete' ) {
+            elseif ( $this->settings['rma-loglevel'] == 'complete' ) {
                 DEFINE( 'LOGLEVEL' , 'complete' );
             }
         } else {
@@ -71,6 +72,9 @@ class RMA_WC_Payment {
      * @since 1.6.0
      */
     public function send_payment() {
+
+        // bail if the payment method is for payment booking with Run my Accounts
+        if( self::check_excluded_payment_options() ) return false;
 
         // continue only if an order_id is available
         if( !$this->order_id ) return false;
@@ -141,6 +145,31 @@ class RMA_WC_Payment {
     }
 
     /**
+     * Check if the order payment is excluded for payment booking with Run my Accounts
+     *
+     * @return bool
+     *
+     * @since 1.6.2
+     */
+    private function check_excluded_payment_options(): bool {
+
+        $order = new WC_Order( $this->order_id );
+        $name  = 'rma-payment-trigger-exclude-values-' . $order->get_payment_method();
+
+        if ( isset( $this->settings[ $name ] ) && 1 == $this->settings[ $name ] ) {
+
+            $message        = esc_html_x( 'Payment not booked in Run my Accounts. Payment method is excluded for payment booking.', 'Order Note', 'rma-wc');
+            // add order note
+            $order->add_order_note( $message );
+
+            return true;
+        }
+
+        return false;
+
+    }
+
+    /**
      * Create payment details
      *
      * @return array
@@ -148,8 +177,7 @@ class RMA_WC_Payment {
      * @since 1.6.0
      * @author Sandro Lucifora
      */
-    private function get_payment_details(): array
-    {
+    private function get_payment_details(): array {
 
         $option = get_option( 'wc_rma_settings_accounting' );
 

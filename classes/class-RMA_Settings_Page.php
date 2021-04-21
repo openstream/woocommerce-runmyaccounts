@@ -377,6 +377,44 @@ if ( !class_exists('RMA_Settings_Page') ) {
 
                 )
             );
+
+            $id = 'rma-payment-trigger-exclude';
+            add_settings_field(
+                $id,
+                esc_html__('Excluded Payment Options', 'rma-wc'),
+                array( $this, 'option_select_cb'),
+                $this->option_page_general,
+                $section,
+                array(
+                    'option_group' => $this->option_group_general,
+                    'id'           => $id,
+                    'value'        => $this->options_general[$id] ?? '',
+                    'options'      => array(
+                        'no'       => esc_html__('no','rma-wc'),
+                        'yes'      => esc_html__('yes','rma-wc'),
+                    ),
+                    'class'        => 'payment-trigger-exclude',
+                    'description'  => esc_html__('Would you like to exclude payment options from the payment booking?', 'rma-wc' ),
+                )
+            );
+
+            $id = 'rma-payment-trigger-exclude-values';
+            //wp_die( print_r( $this->options_general[$id], 1) );
+
+            add_settings_field(
+                $id,
+                '',
+                array( $this, 'option_input_multiple_checkbox_cb'),
+                $this->option_page_general,
+                $section,
+                array(
+                    'option_group' => $this->option_group_general,
+                    'id'           => $id,
+                    'value'        => $this->options_general[$id] ?? '',
+                    'description'  => esc_html__('Please select the payment options you want to exclude?', 'rma-wc' ),
+                )
+            );
+
         }
 
         /**
@@ -774,6 +812,49 @@ if ( !class_exists('RMA_Settings_Page') ) {
                 '<input type="checkbox" id="%1$s" name="%3$s[%1$s]" value="1" %2$s />',
                 $id, $checked, $option_group
             );
+
+            if ( !empty( $description) )
+                echo '<p class="description">' . $description . '</p>';
+
+        }
+
+        /**
+         * General Input Field Multiple Checkboxes
+         *
+         * @param array $args
+         */
+        public function option_input_multiple_checkbox_cb( $args ){
+
+            // add  settings fields for all payment gateways
+            $available_gateways = WC()->payment_gateways->get_available_payment_gateways();
+
+            if( 0 == count( $available_gateways ) )
+                return;
+
+            $legend       = ( isset( $args['legend'] ) ) ? $args['legend'] : '';
+            $option_group = ( isset( $args['option_group'] ) ) ? $args['option_group'] : '';
+            $id           = ( isset( $args['id'] ) ) ? $args['id'] : '';
+            $description  = ( isset( $args['description'] ) ) ? $args['description'] : '';
+
+            $s = get_option('wc_rma_settings');
+
+            echo '<fieldset id="' . $id . '"> ';
+            if( $legend ) {
+                printf( '<legend>%1$s</legend>', $legend );
+            }
+
+            foreach ( $available_gateways as $gateway_key => $values ) {
+
+                $checked = ( 1 == $this->options_general[ $id . '-'. $gateway_key ] ) ? 'checked' : '';
+
+                printf(
+                    '<input type="checkbox" id="%5$s" name="%3$s[%1$s-%5$s]" value="1" %2$s />&nbsp;%4$s<br />',
+                    $id, $checked, $option_group, $values->title, $gateway_key
+                );
+
+            }
+
+            echo '</fieldset>';
 
             if ( !empty( $description) )
                 echo '<p class="description">' . $description . '</p>';
