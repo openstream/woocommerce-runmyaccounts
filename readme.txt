@@ -53,6 +53,7 @@ Please send a request to the Openstream Internet Solutions. We provide customiza
 == Changelog ==
 = 1.6.2 =
 * Feature - added option to disable payment booking by payment method
+* Compatibility - tested up to WooCommerce 5.3
 
 = 1.6.1 =
 * Tweak - moved shipping address from notes to internal notes
