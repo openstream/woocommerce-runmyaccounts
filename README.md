@@ -10,6 +10,10 @@ The main features are:
 
 Please note, you need a paid account with Run my Accounts to use this plugin.
 
+## Known issues
+* Discount codes does not be reflected on the invoice.
+* Credits are not created in Run My Accounts.
+
 ## Installation
 Upload the files to your server and put it in your folder /plugins/.
 Activate the plugin, enter the API key and check the settings page.

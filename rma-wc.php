@@ -7,7 +7,7 @@
  *
  * @package              RunmyAccountsforWooCommerce
  * @author               Sandro Lucifora
- * @copyright            2020 Openstream Internet Solutions
+ * @copyright            2021 Openstream Internet Solutions
  * @license              GPL-3.0-or-later
  *
  * Plugin Name:          Run my Accounts for WooCommerce
@@ -20,7 +20,7 @@
  * Text Domain:          rma-wc
  * Domain Path:          /languages/
  * WC requires at least: 3.2
- * WC tested up to:      5.3
+ * WC tested up to:      5.6
  * License:              GPL v2 or later
  * License URI:          https://www.gnu.org/licenses/gpl-2.0.html
  */

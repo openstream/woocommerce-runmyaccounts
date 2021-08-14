@@ -2,7 +2,7 @@
 * Contributors: openstream, codestylist
 * Tags: Run my Accounts, WooCommerce, Billing
 * Requires at least: 4.7
-* Tested up to: 5.7
+* Tested up to: 5.8
 * Stable tag: 1.6.2
 * Requires PHP: 7.2
 * License: GPLv3
@@ -48,7 +48,8 @@ Please send a request to the Openstream Internet Solutions. We provide customiza
 3. Settings on user page.
 
 == Known issues ==
-* none
+* Discount codes does not be reflected on the invoice.
+* Credits are not created in Run My Accounts.
 
 == Changelog ==
 = 1.6.2 =
