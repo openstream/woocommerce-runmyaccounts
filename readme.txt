@@ -3,7 +3,7 @@
 * Tags: Run my Accounts, WooCommerce, Billing
 * Requires at least: 4.7
 * Tested up to: 5.8
-* Stable tag: 1.6.2
+* Stable tag: 1.6.3
 * Requires PHP: 7.2
 * License: GPLv3
 * License URI: https://www.gnu.org/licenses/gpl-3.0.html
@@ -52,6 +52,9 @@ Please send a request to the Openstream Internet Solutions. We provide customiza
 * Credits are not created in Run My Accounts.
 
 == Changelog ==
+= 1.6.3 =
+* Compatibility - tested up to WooCommerce 5.7 and WordPress 5.8
+
 = 1.6.2 =
 * Feature - added option to disable payment booking by payment method
 * Compatibility - tested up to WooCommerce 5.3
