@@ -296,28 +296,23 @@ if ( ! class_exists('RMA_WC_Frontend' ) ) {
          */
 	    public function create_rma_invoice( $order_id ) {
 
-	        error_log( 'create_rma_invoice');
-
 	    	$RMA_WC_API = new RMA_WC_API();
 
             $result = $RMA_WC_API->create_invoice( $order_id );
 
             unset( $RMA_WC_API );
 
-            error_log( '$result = ' . ( true == $result ? 'true' : 'false' ) );
-
             /*
              * If invoice creation was successful, check for payment booking
              */
             if( true === $result ) {
 
-                error_log( 'Payment after invoice');
                 $settings = get_option( 'wc_rma_settings' );
                 $trigger  = ( isset( $settings['rma-payment-trigger'] ) ? $settings['rma-payment-trigger'] : '' );
-                error_log( 'rma-payment-trigger = ' . $trigger );
+
                 // trigger payment booking when trigger is set 'immediately' (means, immediately after invoice creation)
                 if( 'immediately' == $trigger ) {
-                    error_log( 'Payment booking' );
+
                     self::rma_payment_booking( $order_id );
 
                 }

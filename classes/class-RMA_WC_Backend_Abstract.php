@@ -15,7 +15,7 @@ if ( !class_exists('RMA_WC_Backend_Abstract') ) {
 
     abstract class RMA_WC_Backend_Abstract {
 
-        const VERSION = '1.6.2';
+        const VERSION = '1.6.3';
         const DB_VERSION = '1.1.0';
 
         private static function _table_log() {

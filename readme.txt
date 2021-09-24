@@ -54,6 +54,7 @@ Please send a request to the Openstream Internet Solutions. We provide customiza
 == Changelog ==
 = 1.6.3 =
 * Compatibility - tested up to WooCommerce 5.7 and WordPress 5.8
+* Tweak - code improvements
 
 = 1.6.2 =
 * Feature - added option to disable payment booking by payment method

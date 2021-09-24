@@ -405,9 +405,9 @@ if ( !class_exists('RMA_WC_API') ) {
             $customer_prefix = isset( $settings[ 'rma-guest-customer-prefix' ] ) ? $settings[ 'rma-guest-customer-prefix' ] : '';
             unset( $settings );
 
-            $order           = new WC_Order( $order_id );
+            $order                = new WC_Order( $order_id );
 
-            $is_company      = !empty( $order->get_billing_company() );
+            $is_company           = !empty( $order->get_billing_company() );
 
             return array(
                 'customernumber'    => $customer_prefix . $order_id,
@@ -710,7 +710,7 @@ if ( !class_exists('RMA_WC_API') ) {
                 return false;
 
             $method = 'get_customer_values_by_' . $type . '_id';
-            $data = self::$method( $id );
+            $data   = self::$method( $id );
 
 			// build REST api url for Run my Accounts
 			$caller_url_customer = self::get_caller_url() . RMA_MANDANT . '/customers?api_key=' . RMA_APIKEY;
@@ -787,6 +787,7 @@ if ( !class_exists('RMA_WC_API') ) {
          *
          * @since 1.5.2
          */
+        // ToDo: replace this function as soon as min. PHP is 7.3 or above
 		public static function first_key_of_array( $array ): string
         {
 
