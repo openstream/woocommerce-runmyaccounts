@@ -1,4 +1,4 @@
-# Run my Accounts for WooCommerce#
+# Run my Accounts for WooCommerce
 [![WordPress plugin](https://img.shields.io/wordpress/plugin/dt/run-my-accounts-for-woocommerce.svg?style=flat)](https://wordpress.org/plugins/run-my-accounts-for-woocommerce/) [![WordPress plugin](https://img.shields.io/wordpress/plugin/v/run-my-accounts-for-woocommerce.svg?style=flat)](https://wordpress.org/plugins/run-my-accounts-for-woocommerce/) [![WordPress](https://img.shields.io/wordpress/v/run-my-accounts-for-woocommerce.svg?style=flat)]() [![License](https://img.shields.io/badge/license-GPL%203.0%2B-lightgrey.svg?style=flat-square)](https://github.com/openstream/woocommerce-runmyaccounts/blob/master/LICENSE)
 
 Run my Accounts for WooCommerce is a powerful WooCommerce solution to create customers and invoice in Run My Account when an order is placed.
