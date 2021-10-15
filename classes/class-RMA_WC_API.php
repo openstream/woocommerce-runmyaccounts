@@ -301,16 +301,17 @@ if ( !class_exists('RMA_WC_API') ) {
                     'invnumber'      => RMA_INVOICE_PREFIX . str_pad( $order_id, max(intval(RMA_INVOICE_DIGITS) - strlen(RMA_INVOICE_PREFIX ), 0 ), '0', STR_PAD_LEFT ),
                     'ordnumber'      => $order_id,
                     'status'         => 'OPEN',
-                    'currency'       => $order_details['currency'],
-                    'ar_accno'       => $order_details['ar_accno'],
+                    'currency'       => $order_details[ 'currency' ],
+                    'ar_accno'       => $order_details[ 'ar_accno' ],
                     'transdate'      => date( DateTime::RFC3339, time() ),
-                    'duedate'        => $order_details['duedate'], //date( DateTime::RFC3339, time() ),
-                    'description'    => str_replace('[orderdate]',$order_details['orderdate'], RMA_INVOICE_DESCRIPTION),
+                    'duedate'        => $order_details[ 'duedate' ], //date( DateTime::RFC3339, time() ),
+                    'description'    => str_replace('[orderdate]',$order_details[ 'orderdate' ], RMA_INVOICE_DESCRIPTION),
                     'notes'          => '',
-                    'intnotes'       => $order_details['notes'],
-                    'taxincluded'    => $order_details['taxincluded'],
+                    'intnotes'       => $order_details[ 'notes' ],
+                    'taxincluded'    => $order_details[ 'taxincluded' ],
                     'dcn'            => '',
-                    'customernumber' => $order_details['customernumber']
+                    'customernumber' => $order_details[ 'customernumber' ],
+                    'payment_accno'  => $order_details[ 'payment_accno' ]
                 ),
                 'part' => array()
             );
@@ -327,10 +328,10 @@ if ( !class_exists('RMA_WC_API') ) {
 
 					$data['part'][] = array (
 						'partnumber'   => $partnumber,
-						'description'  => $part['name'],
+						'description'  => $part[ 'name' ],
 						'unit'         => '',
-						'quantity'     => $part['quantity'],
-						'sellprice'    => $part['price'],
+						'quantity'     => $part[ 'quantity' ],
+						'sellprice'    => $part[ 'price' ],
 						'discount'     => '0.0',
 						'itemnote'     => '',
 						'price_update' => '',
@@ -495,25 +496,26 @@ if ( !class_exists('RMA_WC_API') ) {
             }
 
             // Set order header
-			$order_details['currency']       = $order->get_currency();
-			$order_details['orderdate']      = wc_format_datetime($order->get_date_created(),'d.m.Y');
-			$order_details['taxincluded']    = $order->get_prices_include_tax() ? 'true' : 'false';
-			$order_details['customernumber'] = $rma_customer_id;
-            $order_details['ar_accno']       = isset ( $option_accounting[ $order_payment_method ] ) && !empty( $option_accounting[ $order_payment_method ] ) ? $option_accounting[ $order_payment_method ] : '';
+			$order_details[ 'currency' ]       = $order->get_currency();
+			$order_details[ 'orderdate' ]      = wc_format_datetime($order->get_date_created(),'d.m.Y');
+			$order_details[ 'taxincluded' ]    = $order->get_prices_include_tax() ? 'true' : 'false';
+			$order_details[ 'customernumber' ] = $rma_customer_id;
+            $order_details[ 'ar_accno' ]       = isset ( $option_accounting[ $order_payment_method ] ) && !empty( $option_accounting[ $order_payment_method ] ) ? $option_accounting[ $order_payment_method ] : '';
+            $order_details[ 'payment_accno' ]  = isset( $option_accounting[ $order->get_payment_method() . '_payment_account' ] ) && !empty( $option_accounting[ $order->get_payment_method() . '_payment_account' ] ) ? $option_accounting[ $order->get_payment_method() . '_payment_account' ] : '' ;
 
             // Calculate due date
-			$user_payment_period             = get_user_meta( $order->get_customer_id(), 'rma_payment_period', true );
+			$user_payment_period               = get_user_meta( $order->get_customer_id(), 'rma_payment_period', true );
 			// Set payment period - if user payment period not exist set to global period
-			$payment_period                  = $user_payment_period ? $user_payment_period : RMA_GLOBAL_PAYMENT_PERIOD;
+			$payment_period                    = $user_payment_period ? $user_payment_period : RMA_GLOBAL_PAYMENT_PERIOD;
 			// Calculate duedate (now + payment period)
-			$order_details['duedate']        = date( DateTime::RFC3339, time() + ($payment_period*60*60*24) );
+			$order_details[ 'duedate' ]        = date( DateTime::RFC3339, time() + ($payment_period*60*60*24) );
 
 			// add shipping address; first converts a break tag to a newline – no matter what kind of HTML is being processed.
-            $order_details['notes']          = preg_replace('/<br(\s+)?\/?>/i', "\n", $order->get_formatted_shipping_address());
+            $order_details[ 'notes' ]          = preg_replace('/<br(\s+)?\/?>/i', "\n", $order->get_formatted_shipping_address());
 
             // Add products to order
-			$_order                          = $order->get_items(); //to get info about product
-            $order_details_products          = array();
+			$_order                            = $order->get_items(); //to get info about product
+            $order_details_products            = array();
 
 			foreach( $_order as $order_product_detail ){
 
@@ -551,7 +553,7 @@ if ( !class_exists('RMA_WC_API') ) {
                 $order_shipping_total  = $order_shipping_total_net;
             }
 
-			// Do we have shipping costs and a product id to use for?
+			// do we have shipping costs and a product id to use for?
 			if( 0 < $order_shipping_total && !empty( $shipping_costs_product_id ) ) {
 
 			    // we get shipping text from settings page otherwise we take shipping method
@@ -564,7 +566,7 @@ if ( !class_exists('RMA_WC_API') ) {
                 );
 
             }
-            // Do we have shipping costs but not set up a product id?
+            // do we have shipping costs but not set up a product id?
 			elseif ( 0 < $order_shipping_total && empty( $shipping_costs_product_id ) ) {
 
                 $log_values = array(
@@ -623,10 +625,10 @@ if ( !class_exists('RMA_WC_API') ) {
 				}
 			}
 
-			//make the output pretty
+			// make the output pretty
 			$xml->formatOutput = true;
 
-			//create xml content
+			// create xml content
 			$xml_str = $xml->saveXML() . "\n";
 
             // send xml content to RMA

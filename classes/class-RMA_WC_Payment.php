@@ -179,11 +179,11 @@ class RMA_WC_Payment {
      */
     private function get_payment_details(): array {
 
-        $option = get_option( 'wc_rma_settings_accounting' );
+        $option        = get_option( 'wc_rma_settings_accounting' );
 
-        $order = new WC_Order( $this->order_id );
+        $order         = new WC_Order( $this->order_id );
 
-        $account = isset( $option[ $order->get_payment_method() . '_payment_account' ] ) && !empty( $option[ $order->get_payment_method() . '_payment_account' ] ) ? $option[ $order->get_payment_method() . '_payment_account' ] : 1020 ;
+        $payment_accno = isset( $option[ $order->get_payment_method() . '_payment_account' ] ) && !empty( $option[ $order->get_payment_method() . '_payment_account' ] ) ? $option[ $order->get_payment_method() . '_payment_account' ] : 1020 ;
 
         return array(
             'payment' => array(
@@ -193,7 +193,7 @@ class RMA_WC_Payment {
                 'amount_paid'    => $order->get_total(),
                 'source'         => 'Shop-Payment',
                 'memo'           => $order->get_payment_method_title(),
-                'payment_accno'  => $account,
+                'payment_accno'  => $payment_accno,
                 'currency'       => $order->get_currency(),
                 'exchangerate'   => '1.0',
                 'flag'           => 'NEW',

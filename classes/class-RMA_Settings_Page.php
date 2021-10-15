@@ -845,7 +845,7 @@ if ( !class_exists('RMA_Settings_Page') ) {
 
             foreach ( $available_gateways as $gateway_key => $values ) {
 
-                $checked = ( 1 == $this->options_general[ $id . '-'. $gateway_key ] ) ? 'checked' : '';
+                $checked = ( isset( $this->options_general[ $id . '-'. $gateway_key ] ) && 1 == $this->options_general[ $id . '-'. $gateway_key ] ) ? 'checked' : '';
 
                 printf(
                     '<input type="checkbox" id="%5$s" name="%3$s[%1$s-%5$s]" value="1" %2$s />&nbsp;%4$s<br />',
