@@ -53,13 +53,14 @@ Please send a request to the Openstream Internet Solutions. We provide customiza
 
 == Changelog ==
 = 1.6.4 =
-* Compatibility - tested up to WooCommerce 5.8
 * Tweak - added payment account when creating the invoice
 * Fix - fixed debug warning when opening the settings page
+* Compatibility - tested up to WooCommerce 5.8
+* Compatibility - tested up to WooCommerce 6.1
 
 = 1.6.3 =
-* Compatibility - tested up to WooCommerce 5.7 and WordPress 5.8
 * Tweak - code improvements
+* Compatibility - tested up to WooCommerce 5.7 and WordPress 5.8
 
 = 1.6.2 =
 * Feature - added option to disable payment booking by payment method
