@@ -52,6 +52,13 @@ Please send a request to the Openstream Internet Solutions. We provide customiza
 * Credits are not created in Run My Accounts.
 
 == Changelog ==
+= 1.7.0 =
+* Feature - added native support for WooCommerce Rental & Booking System (https://codecanyon.net/item/rnb-woocommerce-rental-booking-system/14835145)
+* Developer - added filter 'rma_invoice_part'
+* Fix - fixed creating invoice sometimes returns an error when creating invoice on status change completed
+* Compatibility - tested up to WooCommerce 6.3
+* Compatibility - tested up to WooCommerce 5.9
+
 = 1.6.4 =
 * Tweak - added payment account when creating the invoice
 * Fix - fixed debug warning when opening the settings page
