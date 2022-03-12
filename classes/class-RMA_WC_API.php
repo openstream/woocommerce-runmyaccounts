@@ -320,15 +320,15 @@ if ( !class_exists('RMA_WC_API') ) {
             // Add parts
 			if ( count( $order_details_products ) > 0 ) :
 
-				foreach ( $order_details_products as $partnumber => $part ) :
+                foreach ( $order_details_products as $part_number => $part ) :
 
                     // check if fallback sku exist and part number does not exist in list of RMA part numbers
                     if( !empty( $fallback_sku ) &&
-                        !array_key_exists( $partnumber, $rma_part_numbers ) )
-                        $partnumber = $fallback_sku;
+                        !array_key_exists( $part_number, $rma_part_numbers ) )
+                        $part_number = $fallback_sku;
 
-					$data['part'][] = array (
-						'partnumber'   => $partnumber,
+					$data['part'][] = apply_filters( 'rma_invoice_part', array (
+						'partnumber'   => $part_number,
 						'description'  => $part[ 'name' ],
 						'unit'         => '',
 						'quantity'     => $part[ 'quantity' ],
@@ -336,7 +336,7 @@ if ( !class_exists('RMA_WC_API') ) {
 						'discount'     => '0.0',
 						'itemnote'     => '',
 						'price_update' => '',
-					);
+					), $part[ 'item_id' ] );
 				endforeach;
 
 			endif;
@@ -452,7 +452,7 @@ if ( !class_exists('RMA_WC_API') ) {
 		 */
 		private function get_wc_order_details( $order_id ) {
 
-			$order                = new WC_Order( $order_id );
+            $order                = wc_get_order( $order_id );
             $settings             = get_option( 'wc_rma_settings' );
 			$option_accounting    = get_option( 'wc_rma_settings_accounting' );
             $order_payment_method = $order->get_payment_method();
@@ -498,7 +498,7 @@ if ( !class_exists('RMA_WC_API') ) {
 
             // Set order header
 			$order_details[ 'currency' ]       = $order->get_currency();
-			$order_details[ 'orderdate' ]      = wc_format_datetime($order->get_date_created(),'d.m.Y');
+			$order_details[ 'orderdate' ]      = wc_format_datetime( $order->get_date_created(),'d.m.Y' );
 			$order_details[ 'taxincluded' ]    = $order->get_prices_include_tax() ? 'true' : 'false';
 			$order_details[ 'customernumber' ] = $rma_customer_id;
             $order_details[ 'ar_accno' ]       = isset ( $option_accounting[ $order_payment_method ] ) && !empty( $option_accounting[ $order_payment_method ] ) ? $option_accounting[ $order_payment_method ] : '';
@@ -511,34 +511,30 @@ if ( !class_exists('RMA_WC_API') ) {
 			// Calculate duedate (now + payment period)
 			$order_details[ 'duedate' ]        = date( DateTime::RFC3339, time() + ($payment_period*60*60*24) );
 
-			// add shipping address; first converts a break tag to a newline – no matter what kind of HTML is being processed.
-            $order_details[ 'notes' ]          = preg_replace('/<br(\s+)?\/?>/i', "\n", $order->get_formatted_shipping_address());
+            // add shipping address if needed
+            $order_details[ 'notes' ]          = '';
+            if( $order->needs_shipping_address() ) {
+
+                // first converts a break tag to a newline – no matter what kind of HTML is being processed.
+                $order_details[ 'notes' ]      = preg_replace('/<br(\s+)?\/?>/i', "\n", $order->get_formatted_shipping_address());
+
+            }
 
             // Add products to order
-			$_order                            = $order->get_items(); //to get info about product
             $order_details_products            = array();
 
-			foreach( $_order as $order_product_detail ){
+            // add line items
+            foreach ( $order->get_items() as $item_id => $item ) {
+                $product       = $item->get_product();
 
-                // check if the product is a variation and get the right id
-                if ( $order_product_detail[ 'variation_id' ] ) {
+                $order_details_products[ $product->get_sku() ] = array(
+                    'name'     => $item->get_name(),
+                    'quantity' => $item->get_quantity(),
+                    'price'    => wc_format_decimal( $product->get_price(), 2 ),
+                    'item_id'  => $item_id
+                );
 
-                    $_product = wc_get_product( $order_product_detail[ 'variation_id' ] );
-
-                }
-                else {
-
-                    $_product = wc_get_product( $order_product_detail[ 'product_id' ] );
-
-                }
-
-				$order_details_products[ $_product->get_sku() ] = array(
-					'name'     => $order_product_detail['name'],
-					'quantity' => $order_product_detail['quantity'],
-					'price'    => $_product->get_price()
-				);
-
-			}
+            }
 
 			// Add Shipping costs
             // @since 1.6.0
@@ -554,7 +550,7 @@ if ( !class_exists('RMA_WC_API') ) {
                 $order_shipping_total  = $order_shipping_total_net;
             }
 
-			// do we have shipping costs and a product id to use for?
+			// do we have shipping costs and a product id on file?
 			if( 0 < $order_shipping_total && !empty( $shipping_costs_product_id ) ) {
 
 			    // we get shipping text from settings page otherwise we take shipping method
@@ -567,7 +563,7 @@ if ( !class_exists('RMA_WC_API') ) {
                 );
 
             }
-            // do we have shipping costs but not set up a product id?
+            // do we have shipping costs but no product id on file?
 			elseif ( 0 < $order_shipping_total && empty( $shipping_costs_product_id ) ) {
 
                 $log_values = array(
@@ -586,14 +582,16 @@ if ( !class_exists('RMA_WC_API') ) {
 
 		}
 
-		/**
+        /**
          * Create invoice in Run my Accounts
          *
-		 * @param string $order_id
-		 *
-		 * @return bool|array
-		 */
-		public function create_invoice( $order_id='' ) {
+         * @param string $order_id
+         *
+         * @return bool
+         *
+         * @throws DOMException
+         */
+		public function create_invoice( string $order_id='' ): bool {
 
             $is_active = self::is_activated( '$order_id ' . $order_id );
 
@@ -629,7 +627,7 @@ if ( !class_exists('RMA_WC_API') ) {
 			// make the output pretty
 			$xml->formatOutput = true;
 
-			// create xml content
+            // create xml content
 			$xml_str = $xml->saveXML() . "\n";
 
             // send xml content to RMA
@@ -692,6 +690,8 @@ if ( !class_exists('RMA_WC_API') ) {
          * @param string $action new|update
          *
          * @return bool|string
+         *
+         * @throws DOMException
          */
 		public function create_rma_customer( $type, $id='', $action = 'new') {
 
