@@ -61,14 +61,14 @@ if ( ! class_exists('RMA_WC_Frontend' ) ) {
                         break;
                 endswitch;
 
-                $trigger  = ( isset( $settings['rma-payment-trigger'] ) ? $settings['rma-payment-trigger'] : '' );
+                $trigger  = ( $settings['rma-payment-trigger'] ?? '' );
 
                 switch ( $trigger ) :
                     // trigger payment booking on order status change
                     case 'completed':
-                        add_action('woocommerce_order_status_changed', array( $this,
-                            'rma_payment_booking'
-                        ), 95, 3);
+
+                        add_action('woocommerce_order_status_completed', array( $this, 'rma_payment_booking' ), 95, 3);
+
                         break;
                     // trigger payment booking when trigger is set Never or no selection was done on settings page
                     default:
@@ -247,11 +247,11 @@ if ( ! class_exists('RMA_WC_Frontend' ) ) {
 	        $rma_client = ( isset ($rma_settings['rma-live-client']) ? $rma_settings['rma-live-client'] : '');
 	        $rma_apikey = ( isset ($rma_settings['rma-live-apikey']) ? $rma_settings['rma-live-apikey'] : '');
 
-	        if ( 70300 > PHP_VERSION_ID ) {
+	        if ( 70200 > PHP_VERSION_ID ) {
                 $html = '<div class="notice notice-error">';
                 $html .= '<p>';
                 $html .= '<b>'.esc_html__( 'Run my Accounts for WooCommerce', 'rma-wc' ).'&nbsp;</b>';
-                $html .= esc_html__( 'You are using a wrong PHP version. You need to install PHP 7.3 or higher.', 'rma-wc' );
+                $html .= esc_html__( 'You are using a wrong PHP version. You need to install PHP 7.2 or higher.', 'rma-wc' );
                 $html .= '&nbsp;';
                 $html .= sprintf( esc_html__( 'The current PHP version is %s.', 'rma-wc' ), PHP_VERSION);
                 $html .= '</p>';
@@ -308,7 +308,7 @@ if ( ! class_exists('RMA_WC_Frontend' ) ) {
             if( true === $result ) {
 
                 $settings = get_option( 'wc_rma_settings' );
-                $trigger  = ( isset( $settings['rma-payment-trigger'] ) ? $settings['rma-payment-trigger'] : '' );
+                $trigger  = ( $settings['rma-payment-trigger'] ?? '' );
 
                 // trigger payment booking when trigger is set 'immediately' (means, immediately after invoice creation)
                 if( 'immediately' == $trigger ) {
