@@ -83,17 +83,16 @@ class RMA_WC_Payment {
         $this->invoice = get_post_meta( $this->order_id, '_rma_invoice', true );
 
         $data = self::get_payment_details();
-        $url  = RMA_WC_API::get_caller_url() . RMA_MANDANT . '/invoices/' . $this->invoice . '/payment_list?api_key=' . RMA_APIKEY;
+        $url  = RMA_WC_API::get_caller_url() . RMA_MANDANT . '/invoices/' . $this->invoice . '/payments?api_key=' . RMA_APIKEY;
 
         //create the xml document
         $xml  = new DOMDocument('1.0', 'UTF-8');
 
-        // create root element invoice and child
-        $root    = $xml->appendChild( $xml->createElement('payments' ) );
-        $payment = $root->appendChild( $xml->createElement('payment' ) );
+        // create root element for payment
+        $root = $xml->appendChild( $xml->createElement('payment' ) );
         foreach( $data['payment'] as $key => $value ) {
             if ( ! empty( $key ) )
-                $payment->appendChild( $xml->createElement( $key, $value ) );
+                $root->appendChild( $xml->createElement( $key, $value ) );
         }
 
         // make the output pretty
