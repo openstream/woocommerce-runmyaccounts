@@ -169,9 +169,10 @@ if ( !class_exists('RMA_WC_Backend_Abstract') ) {
          * @param $post_ids
          *
          * @return string
+         * @throws DOMException
+         * @author Sandro Lucifora
          * @since 1.6.0
          *
-         * @author Sandro Lucifora
          */
         public function create_invoice_handle_bulk_action_edit_shop_order( $redirect_to, $action, $post_ids ) {
 

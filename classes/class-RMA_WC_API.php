@@ -11,7 +11,8 @@ if ( !class_exists('RMA_WC_API') ) {
 		public function __construct() {
 
 		    // define constants only if they are not defined yet
-		    if ( !defined( 'RMA_MANDANT' ) )
+            // for this we check for two common constants which definitely needs to be defined
+		    if ( !defined( 'RMA_MANDANT' ) || !defined( 'RMA_INVOICE_PREFIX' ) )
 		        self::define_constants();
 
 		}
@@ -20,6 +21,7 @@ if ( !class_exists('RMA_WC_API') ) {
          * define default constants
          */
 		private function define_constants() {
+
             // read rma settings
             $settings = get_option('wc_rma_settings');
 
@@ -27,47 +29,47 @@ if ( !class_exists('RMA_WC_API') ) {
             if( isset( $settings['rma-mode'] ) && 'live' == $settings['rma-mode'] ) {
 
                 // define constants with live values
-                DEFINE( 'RMA_MANDANT', ( isset( $settings['rma-live-client'] ) ? $settings['rma-live-client'] : '' ) );
-                DEFINE( 'RMA_APIKEY', ( isset( $settings['rma-live-apikey'] ) ? $settings['rma-live-apikey'] : '' ) );
-                DEFINE( 'RMA_CALLERSANDBOX', FALSE );
+                if( !defined( 'RMA_MANDANT' ) )       DEFINE( 'RMA_MANDANT', ( $settings[ 'rma-live-client' ] ?? '') );
+                if( !defined( 'RMA_APIKEY' ) )        DEFINE( 'RMA_APIKEY', ( $settings[ 'rma-live-apikey' ] ?? '') );
+                if( !defined( 'RMA_CALLERSANDBOX' ) ) DEFINE( 'RMA_CALLERSANDBOX', FALSE );
 
             }
             else {
 
                 // set default operation mode to test
-                DEFINE( 'RMA_MANDANT', ( isset( $settings['rma-test-client'] ) ? $settings['rma-test-client'] : '' ) );
-                DEFINE( 'RMA_APIKEY', ( isset( $settings['rma-test-apikey'] ) ? $settings['rma-test-apikey'] : '' ) );
-                DEFINE( 'RMA_CALLERSANDBOX', TRUE );
+                if( !defined( 'RMA_MANDANT' ) )       DEFINE( 'RMA_MANDANT', ( $settings[ 'rma-test-client' ] ?? '') );
+                if( !defined( 'RMA_APIKEY' ) )        DEFINE( 'RMA_APIKEY', ( $settings[ 'rma-test-apikey' ] ?? '') );
+                if( !defined( 'RMA_CALLERSANDBOX' ) ) DEFINE( 'RMA_CALLERSANDBOX', TRUE );
 
             }
 
-            DEFINE( 'RMA_INVOICE_DESCRIPTION', ( isset( $settings['rma-invoice-description'] ) ? $settings['rma-invoice-description'] : '' ) );
-            DEFINE( 'RMA_GLOBAL_PAYMENT_PERIOD', ( isset( $settings['rma-payment-period'] ) ? $settings['rma-payment-period'] : '0' ) ); // default value 0 days
-            DEFINE( 'RMA_INVOICE_PREFIX', ( isset( $settings['rma-invoice-prefix'] ) ? $settings['rma-invoice-prefix'] : '' ) );
+            DEFINE( 'RMA_INVOICE_DESCRIPTION', ($settings['rma-invoice-description'] ?? '') );
+            DEFINE( 'RMA_GLOBAL_PAYMENT_PERIOD', ($settings['rma-payment-period'] ?? '0') ); // default value 0 days
+            DEFINE( 'RMA_INVOICE_PREFIX', ($settings['rma-invoice-prefix'] ?? '') );
             DEFINE( 'RMA_INVOICE_DIGITS', ( isset( $settings['rma-digits'] ) ? $settings['rma-invoice-description'] : '' ) );
 
             // if rma-loglevel ist not set, LOGLEVEL is set to error by default
             if( isset( $settings['rma-loglevel'] ) ) {
                 if( 'error' == $settings['rma-loglevel']  || empty( $settings['rma-loglevel'] ) ) {
-                    DEFINE( 'LOGLEVEL' , 'error' );
+                    if( !defined( 'LOGLEVEL' ) ) DEFINE( 'LOGLEVEL' , 'error' );
                 }
                 elseif ( $settings['rma-loglevel'] == 'complete' ) {
-                    DEFINE( 'LOGLEVEL' , 'complete' );
+                    if( !defined( 'LOGLEVEL' ) ) DEFINE( 'LOGLEVEL' , 'complete' );
                 }
             } else {
-                DEFINE( 'LOGLEVEL' , 'error' );
+                if( !defined( 'LOGLEVEL' ) ) DEFINE( 'LOGLEVEL' , 'error' );
             }
 
             // if rma-log-send-email ist not set, SENDLOGEMAIL is set to false by default
             if( isset ( $settings['rma-log-send-email'] ) &&
                 'yes' == $settings['rma-log-send-email'] ) {
-                DEFINE( 'SENDLOGEMAIL' , true );
+                if( !defined( 'SENDLOGEMAIL' ) ) DEFINE( 'SENDLOGEMAIL' , true );
 
                 // who will get email on error
-                DEFINE( 'LOGEMAIL', ( !empty( $settings['rma-log-email'] ) ? $settings['rma-log-email'] : get_option( 'admin_email' ) ) );
+                if( !defined( 'LOGEMAIL' ) ) DEFINE( 'LOGEMAIL', ( !empty( $settings['rma-log-email'] ) ? $settings['rma-log-email'] : get_option( 'admin_email' ) ) );
 
             } else {
-                DEFINE( 'SENDLOGEMAIL' , false );
+                if( !defined( 'SENDLOGEMAIL' ) ) DEFINE( 'SENDLOGEMAIL' , false );
             }
 
         }
