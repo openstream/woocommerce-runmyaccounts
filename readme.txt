@@ -53,12 +53,14 @@ Please send a request to the Openstream Internet Solutions. We provide customiza
 
 == Changelog ==
 = 1.7.0 =
+* Feature - added consolidated invoice per customer
 * Feature - added native support for WooCommerce Rental & Booking System (https://codecanyon.net/item/rnb-woocommerce-rental-booking-system/14835145)
-* Developer - added filter 'rma_invoice_part'
 * Fix - fixed creating invoice sometimes returns an error when creating invoice when "status change completed"
 * Fix - fixed loading language files sometimes not working probably
+* Tweak - code improvements
 * Compatibility - tested up to WooCommerce 6.3
 * Compatibility - tested up to WooCommerce 5.9
+* Developer - added filter 'rma_invoice_part'
 
 = 1.6.4 =
 * Tweak - added payment account when creating the invoice

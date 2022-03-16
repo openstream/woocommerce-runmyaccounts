@@ -18,24 +18,30 @@ if ( !class_exists('RMA_Settings_Page') ) {
         private $admin_url;
         private $option_group_general;
         private $option_group_accounting;
+        private $option_group_collective_invoice;
         private $options_general;
         private $options_accounting;
+        private $options_collective_invoice;
         private $option_page_general;
         private $option_page_accounting;
+        private $option_page_collective_invoice;
         private $option_page_log;
         private $rma_log_count;
 
         public function __construct() {
 
-            $this->admin_url               = 'admin.php?page=rma-wc';
-            $this->option_group_general    = 'wc_rma_settings';
-            $this->option_group_accounting = 'wc_rma_settings_accounting';
-            $this->option_page_general     = 'settings-general';
-            $this->option_page_accounting  = 'settings-accounting';
-            $this->option_page_log         = 'settings-log';
+            $this->admin_url                       = 'admin.php?page=rma-wc';
+            $this->option_group_general            = 'wc_rma_settings';
+            $this->option_group_accounting         = 'wc_rma_settings_accounting';
+            $this->option_group_collective_invoice = 'wc_rma_settings_collective_invoice';
+            $this->option_page_general             = 'settings-general';
+            $this->option_page_accounting          = 'settings-accounting';
+            $this->option_page_collective_invoice  = 'settings-collective-invoice';
+            $this->option_page_log                 = 'settings-log';
 
-            $this->options_general    = get_option( $this->option_group_general );
-            $this->options_accounting = get_option( $this->option_group_accounting );
+            $this->options_general            = get_option( $this->option_group_general );
+            $this->options_accounting         = get_option( $this->option_group_accounting );
+            $this->options_collective_invoice = get_option( $this->option_group_collective_invoice );
 
             add_action( 'wp_ajax_rma_log_table', array( $this, 'ajax_handle_database_log_table') );
 
@@ -82,6 +88,7 @@ if ( !class_exists('RMA_Settings_Page') ) {
                 <h2 class="nav-tab-wrapper">
                     <a href="<?php echo admin_url( $this->admin_url ); ?>" class="nav-tab<?php echo ( 'general' == $active_page ? ' nav-tab-active' : '' ); ?>"><?php esc_html_e('General', 'rma-wc'); ?></a>
                     <a href="<?php echo esc_url( add_query_arg( array( 'tab' => 'accounting' ), admin_url( $this->admin_url ) ) ); ?>" class="nav-tab<?php echo ( 'accounting' == $active_page ? ' nav-tab-active' : '' ); ?>"><?php esc_html_e('Accounting', 'rma-wc'); ?></a>
+                    <a href="<?php echo esc_url( add_query_arg( array( 'tab' => 'collective' ), admin_url( $this->admin_url ) ) ); ?>" class="nav-tab<?php echo ( 'collective' == $active_page ? ' nav-tab-active' : '' ); ?>"><?php esc_html_e('Collective Invoice', 'rma-wc'); ?></a>
                     <a href="<?php echo esc_url( add_query_arg( array( 'tab' => 'log' ), admin_url( $this->admin_url ) ) ); ?>" class="nav-tab<?php echo ( 'log' == $active_page ? ' nav-tab-active' : '' ); ?>"><?php esc_html_e('Log', 'rma-wc'); ?></a>
                 </h2>
 
@@ -95,8 +102,13 @@ if ( !class_exists('RMA_Settings_Page') ) {
                         case 'log':
                             do_settings_sections( $this->option_page_log );
                             $this->flush_log_button();
-
                             break;
+                        case 'collective':
+                            settings_fields( $this->option_group_collective_invoice );
+                            do_settings_sections( $this->option_page_collective_invoice );
+                            submit_button();
+                            break;
+
                         default:
                             settings_fields( $this->option_group_general );
                             do_settings_sections( $this->option_page_general );
@@ -143,6 +155,14 @@ if ( !class_exists('RMA_Settings_Page') ) {
             $this->options_accounting_gateways();
 
             $this->options_payment_gateways();
+
+            register_setting(
+                $this->option_group_collective_invoice, // Option group
+                $this->option_group_collective_invoice, // Option name
+                array( $this, 'sanitize' ) // Sanitize
+            );
+
+            $this->options_collectiv_invoice();
 
             $this->log();
 
@@ -267,15 +287,16 @@ if ( !class_exists('RMA_Settings_Page') ) {
                 $this->option_page_general,
                 $section,
                 array(
-                    'option_group' => $this->option_group_general,
-                    'id'           => $id,
-                    'value'        => isset( $this->options_general[ $id ] ) ? $this->options_general[ $id ] : '',
-                    'options'      => array(
+                    'option_group'    => $this->option_group_general,
+                    'id'              => $id,
+                    'options'         => $this->options_general,
+                    'select_options'  => array(
                         'immediately' => esc_html__('Immediately after ordering','rma-wc'),
                         'completed'   => esc_html__('On order status completed','rma-wc'),
+                        'collective'  => esc_html__('Collective invoice','rma-wc'),
                     ),
                     'class'        => 'invoice-trigger',
-                    'description'  => esc_html__('When should customers and invoices be created in Run My Accounts', 'rma-wc' ),
+                    'description'  => esc_html__('When should customers and invoices be created in Run My Accounts?', 'rma-wc' ),
 
                 )
             );
@@ -364,10 +385,10 @@ if ( !class_exists('RMA_Settings_Page') ) {
                 $this->option_page_general,
                 $section,
                 array(
-                    'option_group' => $this->option_group_general,
-                    'id'           => $id,
-                    'value'        => isset( $this->options_general[ $id ] ) ? $this->options_general[ $id ] : '',
-                    'options'      => array(
+                    'option_group'    => $this->option_group_general,
+                    'id'              => $id,
+                    'options'         => $this->options_general,
+                    'select_options'  => array(
                         ''            => esc_html__('Booking manually','rma-wc'),
                         'immediately' => esc_html__('Immediately after ordering','rma-wc'),
                         'completed'   => esc_html__('On order status completed','rma-wc'),
@@ -388,10 +409,10 @@ if ( !class_exists('RMA_Settings_Page') ) {
                 array(
                     'option_group' => $this->option_group_general,
                     'id'           => $id,
-                    'value'        => $this->options_general[$id] ?? '',
-                    'options'      => array(
-                        'no'       => esc_html__('no','rma-wc'),
-                        'yes'      => esc_html__('yes','rma-wc'),
+                    'options'      => $this->options_general,
+                    'select_options' => array(
+                        'no'         => esc_html__('no','rma-wc'),
+                        'yes'        => esc_html__('yes','rma-wc'),
                     ),
                     'class'        => 'payment-trigger-exclude',
                     'description'  => esc_html__('Would you like to exclude payment options from the payment booking?', 'rma-wc' ),
@@ -399,12 +420,10 @@ if ( !class_exists('RMA_Settings_Page') ) {
             );
 
             $id = 'rma-payment-trigger-exclude-values';
-            //wp_die( print_r( $this->options_general[$id], 1) );
-
             add_settings_field(
                 $id,
                 '',
-                array( $this, 'option_input_multiple_checkbox_cb'),
+                array( $this, 'option_input_multiple_payment_gateway_checkbox_cb'),
                 $this->option_page_general,
                 $section,
                 array(
@@ -605,12 +624,12 @@ if ( !class_exists('RMA_Settings_Page') ) {
                 $this->option_page_general,
                 $section,
                 array(
-                    'option_group' => $this->option_group_general,
-                    'id'           => $id,
-                    'value'        => isset( $this->options_general[ $id ] ) ? $this->options_general[ $id ] : '',
-                    'options'      => array(
-                        'error'    => esc_html__('error','rma-wc'),
-                        'complete' => esc_html__('complete','rma-wc'),
+                    'option_group'   => $this->option_group_general,
+                    'id'             => $id,
+                    'options'        => $this->options_general,
+                    'select_options' => array(
+                        'error'      => esc_html__('error','rma-wc'),
+                        'complete'   => esc_html__('complete','rma-wc'),
                     )
                 )
             );
@@ -623,12 +642,12 @@ if ( !class_exists('RMA_Settings_Page') ) {
                 $this->option_page_general,
                 $section,
                 array(
-                    'option_group' => $this->option_group_general,
-                    'id'           => $id,
-                    'value'        => isset( $this->options_general[ $id ] ) ? $this->options_general[ $id ] : '',
-                    'options'      => array(
-                        'no'       => esc_html__('no','rma-wc'),
-                        'yes'      => esc_html__('yes','rma-wc'),
+                    'option_group'   => $this->option_group_general,
+                    'id'             => $id,
+                    'options'        => $this->options_general,
+                    'select_options' => array(
+                        'no'         => esc_html__('no','rma-wc'),
+                        'yes'        => esc_html__('yes','rma-wc'),
                     ),
                     'description'  => esc_html__('Send email on error with Run my Accounts API.', 'rma-wc' )
 
@@ -675,12 +694,12 @@ if ( !class_exists('RMA_Settings_Page') ) {
                 $this->option_page_general,
                 $section,
                 array(
-                    'option_group' => $this->option_group_general,
-                    'id'           => $id,
-                    'value'        => isset( $this->options_general[ $id ] ) ? $this->options_general[ $id ] : '',
-                    'options'      => array(
-                        'no'       => esc_html__('no','rma-wc'),
-                        'yes'      => esc_html__('yes','rma-wc'),
+                    'option_group'   => $this->option_group_general,
+                    'id'             => $id,
+                    'options'        => $this->options_general,
+                    'select_options' => array(
+                        'no'         => esc_html__('no','rma-wc'),
+                        'yes'        => esc_html__('yes','rma-wc'),
                     ),
                     'description'  => esc_html__('Remove all plugin data when using the "Delete" link on the plugins screen', 'rma-wc' ),
 
@@ -695,7 +714,7 @@ if ( !class_exists('RMA_Settings_Page') ) {
 
             add_settings_section(
                 $section, // ID
-                'Receivables Account', // Title
+                esc_html__('Receivables Account', 'rma-wc'), // Title
                 array( $this, 'section_info_accounting' ), // Callback
                 $this->option_page_accounting // Page
             );
@@ -728,7 +747,7 @@ if ( !class_exists('RMA_Settings_Page') ) {
 
             add_settings_section(
                 $section, // ID
-                'Payment Account', // Title
+                esc_html__('Payment Account', 'rma-wc'), // Title
                 array( $this, 'section_info_payment' ), // Callback
                 $this->option_page_accounting // Page
             );
@@ -758,8 +777,91 @@ if ( !class_exists('RMA_Settings_Page') ) {
 
         }
 
+        public function options_collectiv_invoice() {
+
+            $section = 'collectiv_invoice_settings';
+            add_settings_section(
+                $section, // ID
+                esc_html__( 'Collective Invoice', 'rma-wc'), // Title
+                array( $this, 'section_info_collective_invoice' ), // Callback
+                $this->option_page_collective_invoice // Page
+            );
+
+            $id = 'collectiv_invoice_period';
+            add_settings_field(
+                $id,
+                esc_html__('Invoice Period', 'rma-wc'),
+                array( $this, 'option_select_cb'),
+                $this->option_page_collective_invoice,
+                $section,
+                array(
+                    'option_group' => $this->option_group_collective_invoice,
+                    'id'           => $id,
+                    'options'      => $this->options_collective_invoice,
+                    'select_options'  => array(
+                        'week'        => esc_html__( 'Once a week','rma-wc'),
+                        'second_week' => esc_html__( 'Every second week','rma-wc'),
+                        'month'       => esc_html__( 'Every month (first weekday of the month)','rma-wc'),
+                    ),
+                    'description'  => esc_html__('For what period of time should collective invoices be created?', 'rma-wc' ),
+
+                )
+            );
+
+            $id = 'collectiv_invoice_weekday';
+            add_settings_field(
+                $id,
+                esc_html__('Weekday', 'rma-wc'),
+                array( $this, 'option_input_multiple_radio_cb'),
+                $this->option_page_collective_invoice,
+                $section,
+                array(
+                    'option_group' => $this->option_group_collective_invoice,
+                    'id'           => $id,
+                    'value'        => $this->options_collective_invoice[$id] ?? '',
+                    'description'  => esc_html__('Please select the days of the week on which a collective invoice should be created.', 'rma-wc' ),
+                    'values'       => array(
+                            'mon' => esc_html__( 'Monday', 'rma-wc' ),
+                            'tue' => esc_html__( 'Tuesday', 'rma-wc' ),
+                            'wed' => esc_html__( 'Wednesday', 'rma-wc' ),
+                            'thu' => esc_html__( 'Thursday', 'rma-wc' ),
+                            'fri' => esc_html__( 'Friday', 'rma-wc' ),
+                            'sat' => esc_html__( 'Saturday', 'rma-wc' ),
+                            'sun' => esc_html__( 'Sunday', 'rma-wc' ),
+                    ),
+                    'line_break'  => false
+                )
+            );
+
+            $id = 'collectiv_invoice_span';
+            add_settings_field(
+                $id,
+                esc_html__('Invoice Span', 'rma-wc'),
+                array( $this, 'option_select_cb'),
+                $this->option_page_collective_invoice,
+                $section,
+                array(
+                    'option_group' => $this->option_group_collective_invoice,
+                    'id'           => $id,
+                    'options'      => $this->options_collective_invoice,
+                    'select_options' => array(
+                        'per_day'    => esc_html__( 'Only on the day of creation','rma-wc'),
+                        'per_week'   => esc_html__( 'On the day of creation and a week before','rma-wc'),
+                        'per_month'  => esc_html__( 'On the day of creation and a month before','rma-wc'),
+                    ),
+                    'description'  => esc_html__('For what period of time should collective invoices be created?', 'rma-wc' ),
+
+                )
+            );
+
+        }
+
         public function section_info_accounting() {
             esc_html_e('You can specify a dedicated receivable account for each active payment gateway.', 'rma-wc');
+        }
+
+        public function section_info_collective_invoice() {
+            esc_html_e('Set up the handling of the collective invoices', 'rma-wc');
         }
 
         public function section_info_payment() {
@@ -819,11 +921,96 @@ if ( !class_exists('RMA_Settings_Page') ) {
         }
 
         /**
-         * General Input Field Multiple Checkboxes
+         * General Input with Multiple Checkboxes
+         *
+         * @param array $args
+         *
+         * @since 1.7.0
+         */
+        public function option_input_multiple_checkbox_cb( $args ){
+
+            $legend       = ( isset( $args['legend'] ) ) ? $args['legend'] : '';
+            $option_group = ( isset( $args['option_group'] ) ) ? $args['option_group'] : '';
+            $id           = ( isset( $args['id'] ) ) ? $args['id'] : '';
+            $options      = ( isset( $args['options'] ) ) ? $args['options'] : '';
+            $description  = ( isset( $args['description'] ) ) ? $args['description'] : '';
+            $values       = ( isset( $args['values'] ) ) ? $args['values'] : '';
+            $line_break   = ( isset( $args['line_break'] ) ) ? $args['line_break'] : true;
+
+            if( 0 == count( $values ) )
+                return;
+
+            echo '<fieldset id="' . $id . '"> ';
+            if( $legend ) {
+                printf( '<legend>%1$s</legend>', $legend );
+            }
+
+            foreach ( $values as $key => $title ) {
+
+                $checked = isset( $options[ $id . '-'. $key ] ) && 1 == $options[ $id . '-'. $key ] ? 'checked' : '';
+                $br      = isset( $line_break ) && true === $line_break ? '<br>' : '&nbsp;';
+
+                printf(
+                    '<input type="checkbox" id="%5$s" name="%3$s[%1$s-%5$s]" value="1" %2$s /><label for="%5$s">%4$s</label>%6$s',
+                    $id, $checked, $option_group, $title, $key, $br
+                );
+
+            }
+
+            echo '</fieldset>';
+
+            if ( !empty( $description) )
+                echo '<p class="description">' . $description . '</p>';
+
+        }
+
+        /**
+         * General Input with Multiple Checkboxes
+         *
+         * @param array $args
+         *
+         * @since 1.7.0
+         */
+        public function option_input_multiple_radio_cb( $args ){
+
+            $legend       = ( isset( $args['legend'] ) ) ? $args['legend'] : '';
+            $option_group = ( isset( $args['option_group'] ) ) ? $args['option_group'] : '';
+            $id           = ( isset( $args['id'] ) ) ? $args['id'] : '';
+            $value        = ( isset( $args['value'] ) ) ? $args['value'] : '';
+            $description  = ( isset( $args['description'] ) ) ? $args['description'] : '';
+            $values       = ( isset( $args['values'] ) ) ? $args['values'] : '';
+            $line_break   = ( isset( $args['line_break'] ) ) ? $args['line_break'] : true;
+
+            if( 0 == count( $values ) )
+                return;
+
+            if( $legend ) {
+                printf( '<legend>%1$s</legend>', $legend );
+            }
+
+            foreach ( $values as $key => $title ) {
+
+                $checked = $value == $key ? 'checked' : '';
+                $br      = isset( $line_break ) && true === $line_break ? '<br>' : '&nbsp;';
+
+                printf(
+                    '<input type="radio" id="%5$s" name="%3$s[%1$s]" value="%5$s" %2$s /><label for="%5$s">%4$s</label>%6$s',
+                    $id, $checked, $option_group, $title, $key, $br
+                );
+
+            }
+
+            if ( !empty( $description) )
+                echo '<p class="description">' . $description . '</p>';
+
+        }
+
+        /**
+         * Input Field with Multiple Checkboxes for Payment Gateways
          *
          * @param array $args
          */
-        public function option_input_multiple_checkbox_cb( $args ){
+        public function option_input_multiple_payment_gateway_checkbox_cb( $args ){
 
             // add  settings fields for all payment gateways
             $available_gateways = WC()->payment_gateways->get_available_payment_gateways();
@@ -889,19 +1076,20 @@ if ( !class_exists('RMA_Settings_Page') ) {
          * @param array $args
          */
         public function option_select_cb( $args ) {
-            $option_group = (isset($args['option_group'])) ? $args['option_group'] : '';
-            $id           = (isset($args['id'])) ? $args['id'] : '';
-            $options      = (isset($args['options'])) ? $args['options'] : array();
-            $description  = (isset($args['description'])) ? $args['description'] : '';
-            $class        = (isset($args['class'])) ? $args['class'] : '';
+            $option_group   = (isset($args['option_group'])) ? $args['option_group'] : '';
+            $id             = (isset($args['id'])) ? $args['id'] : '';
+            $options        = (isset($args['options'])) ? $args['options'] : '';
+            $select_options = (isset($args['select_options'])) ? $args['select_options'] : array();
+            $description    = (isset($args['description'])) ? $args['description'] : '';
+            $class          = (isset($args['class'])) ? $args['class'] : '';
 
             echo '<select name="' . $option_group . '[' . $id . ']"' . ( !empty( $class) ? 'id="'. $id .'" class="' . $class . '"' : '' ) . '>';
 
-            foreach ($options as $value => $text) {
+            foreach ( $select_options as $value => $text ) {
                 printf(
                     '<option value="%1$s" %2$s />%3$s</option>',
                     $value,
-                    ( isset( $this->options_general[ $id ] ) && $value == $this->options_general[ $id ] ) ? 'selected="selected"' : '',
+                    ( isset( $options[ $id ] ) && $value == $options[ $id ] ) ? 'selected="selected"' : '',
                     $text
                 );
             }
@@ -925,8 +1113,8 @@ if ( !class_exists('RMA_Settings_Page') ) {
             $select_args  = array(
                 'option_group' => $option_group,
                 'id'           => $id,
-                'value'        => isset( $this->options_general[ $id ] ) ? $this->options_general[ $id ] : '',
-                'options'      => array(
+                'options'      => $this->options_general,
+                'select_options' => array(
                     'test' => esc_html__('Sandbox Test','rma-wc'),
                     'live' => esc_html__('Production','rma-wc'),
                 )
@@ -974,11 +1162,11 @@ if ( !class_exists('RMA_Settings_Page') ) {
             }
 
             $select_args  = array (
-                'option_group' => $option_group,
-                'id'           => $id,
-                'value'        => isset( $this->options_general[ $id ] ) ? $this->options_general[ $id ] : '',
-                'options'      => $options,
-                'class'        => 'select2'
+                'option_group'   => $option_group,
+                'id'             => $id,
+                'options'        => $this->options_general,
+                'select_options' => $options,
+                'class'          => 'select2'
             );
 
             // create select
@@ -1019,12 +1207,12 @@ if ( !class_exists('RMA_Settings_Page') ) {
             }
 
             $select_args  = array (
-                'option_group' => $option_group,
-                'id'           => $id,
-                'value'        => isset( $this->options_general[ $id ] ) ? $this->options_general[ $id ] : '',
-                'options'      => $options,
-                'description'  => $description,
-                'class'        => 'select2'
+                'option_group'   => $option_group,
+                'id'             => $id,
+                'options'        => $this->options_general,
+                'select_options' => $options,
+                'description'    => $description,
+                'class'          => 'select2'
             );
 
             // create select

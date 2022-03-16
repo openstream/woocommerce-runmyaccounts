@@ -43,7 +43,7 @@ if ( ! class_exists('RMA_WC_Frontend' ) ) {
             if ( in_array( 'woocommerce/woocommerce.php', apply_filters( 'active_plugins', get_option( 'active_plugins' ) ) ) ) {
 
                 $settings = get_option( 'wc_rma_settings' );
-                $trigger  = ( isset( $settings['rma-invoice-trigger'] ) ? $settings['rma-invoice-trigger'] : '' );
+                $trigger  = $settings[ 'rma-invoice-trigger' ] ?? '';
 
                 switch ( $trigger ) :
                     // trigger invoice and customer creation on order status change

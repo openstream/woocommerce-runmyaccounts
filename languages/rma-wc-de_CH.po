@@ -3,10 +3,10 @@ msgstr ""
 "Project-Id-Version: WooCommerce RMA\n"
 "Report-Msgid-Bugs-To: \n"
 "POT-Creation-Date: 2020-09-23 17:44+0000\n"
-"PO-Revision-Date: 2022-01-27 17:36+0000\n"
+"PO-Revision-Date: 2022-01-27 17:35+0000\n"
 "Last-Translator: \n"
-"Language-Team: Deutsch (Schweiz)\n"
-"Language: de_CH\n"
+"Language-Team: German (Formal)\n"
+"Language: de_CH_formal\n"
 "Plural-Forms: nplurals=2; plural=n != 1;\n"
 "MIME-Version: 1.0\n"
 "Content-Type: text/plain; charset=UTF-8\n"
@@ -58,7 +58,7 @@ msgid ""
 "product sku"
 msgstr ""
 "Versandkosten konnten nicht zur Rechnung hinzugefügt werden, da die "
-"Versandkosten Produktnummer fehlt."
+"Versandkosten Artikelnummer fehlt."
 
 #: classes/class-RMA_WC_API.php:474
 msgid "Could not create RMA customer dedicated guest account"
@@ -84,8 +84,8 @@ msgstr "Neuen Kunden erstellen"
 #, php-format
 msgid "Created %s invoice"
 msgid_plural "Created %s invoices"
-msgstr[0] "Rechnung %s erstellt."
-msgstr[1] "Rechnungen %s erstellt."
+msgstr[0] "Rechnung %s erstellt"
+msgstr[1] "Rechnungen %s erstellt"
 
 #. ID
 #: classes/class-RMA_Settings_Page.php:429
@@ -109,8 +109,8 @@ msgstr "Artikelbeschreibung"
 #: classes/class-RMA_Settings_Page.php:175
 msgid "Do not activate the plugin before you have set up all data."
 msgstr ""
-"Aktiviere das Plugin nicht, solange Du nicht alle Einstellungen vorgenommen "
-"hast."
+"Aktivieren Sie das Plugin nicht, solange Sie nicht alle Einstellungen "
+"vorgenommen haben."
 
 #: classes/class-RMA_Settings_Page.php:641
 msgid "email"
@@ -157,7 +157,7 @@ msgstr "Fehlerprotokoll"
 #: classes/class-RMA_Settings_Page.php:1012
 #: classes/class-RMA_WC_Backend_Abstract.php:388
 msgid "Error while connecting to RMA. Please check your settings."
-msgstr "Fehler bei der Verbindung mit RMA. Bitte prüfe die Einstellungen."
+msgstr "Fehler bei der Verbindung mit RMA. Bitte prüfen Sie die Einstellungen."
 
 #: classes/class-RMA_Settings_Page.php:384
 msgid "Excluded Payment Options"
@@ -181,7 +181,7 @@ msgstr "Gast Kundennummer Präfix"
 
 #: classes/class-RMA_WC_Backend_Abstract.php:415
 msgid "How many days has this customer to pay your invoice?"
-msgstr "Wie viele Tage hat dieser Kunde um Deine Rechnung zu bezahlen?"
+msgstr "Wie viele Tage hat dieser Kunde um Ihre Rechnung zu bezahlen?"
 
 #. Author URI of the plugin
 msgid "https://www.openstream.ch"
@@ -311,7 +311,7 @@ msgstr "nein"
 
 #: classes/class-RMA_Settings_Page.php:945
 msgid "No connection. Please check your settings."
-msgstr "Keine Verbindung. Bitte überprüfe die Einstellungen."
+msgstr "Keine Verbindung. Bitte überprüfen Sie die Einstellungen."
 
 #: classes/class-RMA_Settings_Page.php:1089
 msgid "No error data was found."
@@ -382,20 +382,21 @@ msgid ""
 "Please enter your Production Client and Production API Key before using Run "
 "my Accounts for WooCommerce in production mode."
 msgstr ""
-"Bitte geben Sie Ihren Production Client und den Production API-Schlüssel ein,"
-" bevor Sie Run my Accounts für  WooCommerce im Produktionsmodus nutzen."
+"Bitte geben Sie Ihren Produktion-Client und den Produktion-API-Schlüssel ein,"
+" bevor Sie Run my Accounts für WooCommerce im Produktionsmodus nutzen."
 
 #: classes/class-RMA_Settings_Page.php:414
 msgid "Please select the payment options you want to exclude?"
-msgstr "Bitte wähle die Zahlungsoptionen aus, die Du ausschliessen möchtest."
+msgstr ""
+"Bitte wählen Sie die Zahlungsoptionen aus, die Sie ausschliessen möchten."
 
 #: classes/class-RMA_Settings_Page.php:294
 msgid ""
 "Please set the general payment period. You can set a individual value, for a "
 "customer, in the user profile."
 msgstr ""
-"Bitte lege den allgemeinen Zahlungszeitraum fest. Im Benutzerprofil kannst "
-"Du zusätzlich einen individuellen Wert für jeden Kunden eintragen."
+"Bitte legen Sie den allgemeinen Zahlungszeitraum fest. Im Benutzerprofil "
+"können Sie zusätzlich einen individuellen Wert für jeden Kunden hinterlegen."
 
 #: classes/class-RMA_Settings_Page.php:339
 msgid "Possible variable: [orderdate]"
@@ -490,7 +491,7 @@ msgstr "Kunden auswählen..."
 #: classes/class-RMA_WC_Backend_Abstract.php:389
 #: classes/class-RMA_WC_Backend_Abstract.php:401
 msgid "Select the corresponding RMA customer for this account."
-msgstr "Wähle den entsprechenden RMA-Kunden für dieses Konto aus."
+msgstr "Wählen Sie den entsprechenden RMA-Kunden für dieses Konto aus."
 
 #: classes/class-RMA_Settings_Page.php:972
 #: classes/class-RMA_Settings_Page.php:1017
@@ -508,14 +509,14 @@ msgstr "E-Mail senden bei Fehlern mit der Run my Accounts API"
 #: classes/class-RMA_Settings_Page.php:649
 msgid "Send email to this recipient. By default administrators email."
 msgstr ""
-"Senden Sie eine E-Mail an diesen Empfänger. Standardmässig die "
+"Senden Sie eine E-Mail an diesen Empfänger. Standardmässig ist es die "
 "Administratoren-E-Mail."
 
 #: classes/class-RMA_Settings_Page.php:324
 msgid ""
 "Set the maximum number of digits for the invoice number (including prefix)."
 msgstr ""
-"Lege die maximale Anzahl der Ziffern für die Rechnungsnummer "
+"Legen Sie die maximale Anzahl der Ziffern für die Rechnungsnummer "
 "(einschliesslich Präfix) fest."
 
 #: classes/class-RMA_WC_Backend_Abstract.php:378
@@ -541,7 +542,7 @@ msgid ""
 "The receivables account has to be available in RMA. Leave it blank to use "
 "default value 1100."
 msgstr ""
-"Das Forderungskonto muss in RMA verfügbar sein. Lasse es leer, um den "
+"Das Forderungskonto muss in RMA verfügbar sein. Lassen Sie es leer, um den "
 "Standardwert 1100 zu verwenden."
 
 #: classes/class-RMA_Settings_Page.php:533
@@ -551,10 +552,10 @@ msgid ""
 "Accounts. Leave it empty if you do not want to use it. In this case the "
 "invoice cannot be created if the sku is not available in Run My Accounts."
 msgstr ""
-"Dies ist eine Fallback-Artikelnummer in Run My Accounts, die  verwendet wird,"
-" um eine Rechnung zu erstellen, wenn die WooCommerce-Artikelnummer eines "
-"Produkts in Run My Accounts nicht verfügbar ist. Lasse das Feld leer, wenn "
-"Du es nicht verwenden möchtest. In diesem Fall wird die Rechnung nicht "
+"Dies ist ein Fallback-Artikelnummer in Run My Accounts, der verwendet wird, "
+"um eine Rechnung zu erstellen, wenn die WooCommerce-Artikelnummer eines "
+"Produkts in Run My Accounts nicht verfügbar ist. Lassen Sie das Feld leer, "
+"wenn Sie es nicht verwenden möchten. In diesem Fall wird die Rechnung nicht "
 "erstellt, wenn die Artikelnummer in Run My Accounts nicht bekannt ist."
 
 #: classes/class-RMA_Settings_Page.php:796
@@ -576,9 +577,9 @@ msgid ""
 "Tick this if you want to create a customer as soon as a new user is created "
 "in WooCommerce (recommended if customer can register by itself)."
 msgstr ""
-"Setze hier einen Haken wenn Du möchtest, dass ein Kunde angelegt wird sobald "
-"einer in WooCommerce registriert ist (wird empfohlen, wenn Kunden sich "
-"selber registrieren können)."
+"Setzen Sie hier einen Haken wenn Sie möchten, dass ein Kunde angelegt wird "
+"sobald einer in WooCommerce registriert ist (wird empfohlen, wenn Kunden "
+"sich selber registrieren können)."
 
 #: classes/class-RMA_Settings_Page.php:475
 msgid ""
@@ -586,9 +587,9 @@ msgid ""
 "for guest orders. Otherwise the guest orders will be booked on a pre-defined "
 "catch-all customer account."
 msgstr ""
-"Aktiviere diese Einstellung, wenn Du ein eindeutiges Debitorenkonto in Run "
-"my Accounts für Gastbestellungen erstellen möchtest. Ansonsten werden die "
-"Gästebestellungen über das vordefinierte Catch-All-Kundenkonto gebucht."
+"Aktivieren Sie diese Einstellung, wenn Sie ein eindeutiges Debitorenkonto in "
+"Run my Accounts für Gastbestellungen erstellen möchten. Ansonsten werden die "
+"Gastbestellungen über das vordefinierte Catch-All-Kundenkonto gebucht."
 
 #: classes/class-RMA_WC_Backend_Abstract.php:367
 #: classes/class-RMA_WC_Frontend.php:106
@@ -600,8 +601,8 @@ msgid ""
 "To book the shipping costs, you have to select a dedicated product in Run my "
 "Accounts. The shipping costs will be booked on this product id."
 msgstr ""
-"Um die Versandkosten zu buchen, musst Du ein dediziertes Produkt in Run my "
-"Accounts auswählen. Die Versandkosten werden auf dieser Produkt-ID gebucht."
+"Um die Versandkosten zu buchen, müssen Sie in Run my Accounts ein Produkt "
+"auswählen. Die Versandkosten werden auf dieser Artikelnummer gebucht."
 
 #: classes/class-RMA_Settings_Page.php:265
 #: classes/class-RMA_Settings_Page.php:362
@@ -630,7 +631,7 @@ msgstr ""
 
 #: classes/class-RMA_Settings_Page.php:397
 msgid "Would you like to exclude payment options from the payment booking?"
-msgstr "Möchtest Du Zahlungsoptionen von der Zahlungsbuchung ausschliessen?"
+msgstr "Möchten Sie Zahlungsoptionen von der Zahlungsbuchung ausschliessen?"
 
 #: classes/class-RMA_Settings_Page.php:394
 #: classes/class-RMA_Settings_Page.php:631
@@ -642,7 +643,7 @@ msgstr "ja"
 msgid ""
 "You are using a wrong PHP version. You need to install PHP 7.3 or higher."
 msgstr ""
-"Du nutzt eine falsche PHP Version. Du benötigst Version 7.3 oder höher."
+"Sie nutzen eine falsche PHP Version. Sie benötigen Version 7.3 oder höher."
 
 #: classes/class-RMA_Settings_Page.php:766
 msgid ""
@@ -656,4 +657,5 @@ msgstr ""
 msgid ""
 "You can specify a dedicated receivable account for each active payment "
 "gateway."
-msgstr "Du kannst für jede Zahlungsform eine eigenes Debitorenkonto festlegen."
+msgstr ""
+"Sie können für jede Zahlungsform eine eigenes Debitorenkonto festlegen."
