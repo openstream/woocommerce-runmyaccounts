@@ -31,11 +31,13 @@ if ( ! class_exists('RMA_WC_Frontend' ) ) {
                 unset( $version );
             }
 
+            // get plugin locale
+            $this->locale = get_locale();
+
             /**
              * add_action() WP Since: 1.2.0
              * https://developer.wordpress.org/reference/functions/add_action/
              */
-            add_action( 'init', array( $this, 'init') );
             add_action( 'plugins_loaded', array( $this, 'plugins_loaded' ) );
 
             if ( in_array( 'woocommerce/woocommerce.php', apply_filters( 'active_plugins', get_option( 'active_plugins' ) ) ) ) {
@@ -190,26 +192,6 @@ if ( ! class_exists('RMA_WC_Frontend' ) ) {
         }
 
         /**
-         * Init
-         */
-        public function init() {
-
-            $this->init_filters(); // Filter
-        }
-
-        /**
-         * Filters
-         */
-        public function init_filters() {
-
-            /**
-             * apply_filters() WP Since: 0.71
-             * https://developer.wordpress.org/reference/functions/apply_filters/
-             */
-            $this->locale = apply_filters('plugin_locale', get_locale(), 'rma-wc');
-        }
-
-        /**
          * Plugins Loaded
          */
         public function plugins_loaded() {
@@ -229,13 +211,14 @@ if ( ! class_exists('RMA_WC_Frontend' ) ) {
              * load_textdomain() WP Since: 1.0.0
              * https://codex.wordpress.org/Function_Reference/load_textdomain
              */
-            load_textdomain('rma-wc', WP_LANG_DIR . "/plugins/rma-wc/rma-wc-$this->locale.mo");
+            load_textdomain( 'rma-wc', WP_LANG_DIR . "/plugins/rma-wc/rma-wc-$this->locale.mo" );
 
             /**
              * load_plugin_textdomain() WP Since: 1.0.0
              * https://codex.wordpress.org/Function_Reference/load_plugin_textdomain
              */
-            load_plugin_textdomain('rma-wc', false, plugin_basename(RMA_WC_PFAD . 'languages/'));
+            load_plugin_textdomain( 'rma-wc', false, plugin_basename( RMA_WC_PFAD . 'languages/' ) );
+
         }
 
 	    /**
