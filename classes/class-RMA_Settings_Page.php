@@ -162,7 +162,7 @@ if ( !class_exists('RMA_Settings_Page') ) {
                 array( $this, 'sanitize' ) // Sanitize
             );
 
-            $this->options_collectiv_invoice();
+            $this->options_collective_invoice();
 
             $this->log();
 
@@ -777,9 +777,9 @@ if ( !class_exists('RMA_Settings_Page') ) {
 
         }
 
-        public function options_collectiv_invoice() {
+        public function options_collective_invoice() {
 
-            $section = 'collectiv_invoice_settings';
+            $section = 'collective_invoice_settings';
             add_settings_section(
                 $section, // ID
                 esc_html__( 'Collective Invoice', 'rma-wc'), // Title
@@ -787,7 +787,26 @@ if ( !class_exists('RMA_Settings_Page') ) {
                 $this->option_page_collective_invoice // Page
             );
 
-            $id = 'collectiv_invoice_period';
+            if( empty( $this->options_collective_invoice[ 'collective_invoice_next_date' ] ) ) {
+                $text = __('The next invoice date cannot be calculated. Please set all options first.');
+            }
+            else {
+                $text = date_i18n( get_option('date_format'), $this->options_collective_invoice[ 'collective_invoice_next_date' ] );
+            }
+            $id = 'collective_invoice_next_text';
+            add_settings_field(
+                $id,
+                esc_html__('Next Invoice Date', 'rma-wc'),
+                array( $this, 'plain_text_cb'),
+                $this->option_page_collective_invoice,
+                $section,
+                array(
+                    'text'  => $text,
+                    'class' => 'next-invoice-date'
+                )
+            );
+
+            $id = 'collective_invoice_period';
             add_settings_field(
                 $id,
                 esc_html__('Invoice Period', 'rma-wc'),
@@ -804,11 +823,11 @@ if ( !class_exists('RMA_Settings_Page') ) {
                         'month'       => esc_html__( 'Every month (first weekday of the month)','rma-wc'),
                     ),
                     'description'  => esc_html__('For what period of time should collective invoices be created?', 'rma-wc' ),
-
+                    'class'        => 'collective-invoice__period'
                 )
             );
 
-            $id = 'collectiv_invoice_weekday';
+            $id = 'collective_invoice_weekday';
             add_settings_field(
                 $id,
                 esc_html__('Weekday', 'rma-wc'),
@@ -821,19 +840,20 @@ if ( !class_exists('RMA_Settings_Page') ) {
                     'value'        => $this->options_collective_invoice[$id] ?? '',
                     'description'  => esc_html__('Please select the days of the week on which a collective invoice should be created.', 'rma-wc' ),
                     'values'       => array(
-                            'mon' => esc_html__( 'Monday', 'rma-wc' ),
-                            'tue' => esc_html__( 'Tuesday', 'rma-wc' ),
-                            'wed' => esc_html__( 'Wednesday', 'rma-wc' ),
-                            'thu' => esc_html__( 'Thursday', 'rma-wc' ),
-                            'fri' => esc_html__( 'Friday', 'rma-wc' ),
-                            'sat' => esc_html__( 'Saturday', 'rma-wc' ),
-                            'sun' => esc_html__( 'Sunday', 'rma-wc' ),
+                            'monday'    => esc_html__( 'Monday', 'rma-wc' ),
+                            'tuesday'   => esc_html__( 'Tuesday', 'rma-wc' ),
+                            'wednesday' => esc_html__( 'Wednesday', 'rma-wc' ),
+                            'thursday'  => esc_html__( 'Thursday', 'rma-wc' ),
+                            'friday'    => esc_html__( 'Friday', 'rma-wc' ),
+                            'saturday'  => esc_html__( 'Saturday', 'rma-wc' ),
+                            'sunday'    => esc_html__( 'Sunday', 'rma-wc' ),
                     ),
-                    'line_break'  => false
+                    'line_break'  => false,
+                    'class'       => 'collective-invoice__weekday'
                 )
             );
 
-            $id = 'collectiv_invoice_span';
+            $id = 'collective_invoice_span';
             add_settings_field(
                 $id,
                 esc_html__('Invoice Span', 'rma-wc'),
@@ -845,9 +865,9 @@ if ( !class_exists('RMA_Settings_Page') ) {
                     'id'           => $id,
                     'options'      => $this->options_collective_invoice,
                     'select_options' => array(
-                        'per_day'    => esc_html__( 'Only on the day of creation','rma-wc'),
-                        'per_week'   => esc_html__( 'On the day of creation and a week before','rma-wc'),
-                        'per_month'  => esc_html__( 'On the day of creation and a month before','rma-wc'),
+                        'all'        => esc_html__( 'All unbilled invoices','rma-wc'),
+                        'per_week'   => esc_html__( 'Day of creation and a week before','rma-wc'),
+                        'per_month'  => esc_html__( 'Day of creation and a month before','rma-wc'),
                     ),
                     'description'  => esc_html__('For what period of time should collective invoices be created?', 'rma-wc' ),
 
@@ -867,7 +887,6 @@ if ( !class_exists('RMA_Settings_Page') ) {
         public function section_info_payment() {
             esc_html_e('You can specify a dedicated payment account for each active payment gateway.', 'rma-wc');
         }
-
 
         /**
          * Page Error Log, Section Log
@@ -1099,6 +1118,16 @@ if ( !class_exists('RMA_Settings_Page') ) {
             if ( !empty( $description) )
                 echo '<p class="description">' . $description . '</p>';
 
+        }
+
+        /**
+         * @param array
+         */
+        public function plain_text_cb( $args ) {
+            $text  = ( isset( $args[ 'text' ] ) ) ? $args[ 'text' ] : '';
+            $class = ( isset( $args[ 'class' ] ) ) ? $args[ 'class' ] : '';
+
+            echo '<p class="' . $class . '">' . $text . '</p>';
         }
 
         /**

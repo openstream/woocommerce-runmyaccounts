@@ -64,6 +64,8 @@ if ( is_admin() ) {
  */
 $RMA_WC_FRONTEND = new RMA_WC_Frontend();
 
+$t = new RMA_WC_Collective_Invoicing();
+
 /*
  * Integration of WooCommerce Rental & Booking System if activated
  * https://codecanyon.net/item/rnb-woocommerce-rental-booking-system/14835145

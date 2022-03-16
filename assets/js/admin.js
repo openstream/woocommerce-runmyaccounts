@@ -8,6 +8,8 @@ jQuery(document).ready(function(){
 
     set_trigger();
 
+    calculate_next_collective_invoice_date();
+
     jQuery("#rma-create-guest-customer").click( function( event ) {
 
         show_guest_input();
@@ -129,4 +131,37 @@ function shipping_text() {
         jQuery("#rma-shipping-text").parent().parent().css("display", "");
     }
 
+}
+
+function calculate_next_collective_invoice_date() {
+    let invoicePeriod ='';
+    let invoiceWeekday ='';
+
+    invoicePeriod  = jQuery('select.collective-invoice__period').val();
+    invoiceWeekday = jQuery("input:radio[name ='wc_rma_settings_collective_invoice[collective_invoice_weekday]']:checked").val();
+
+    if( null != invoiceWeekday ) {
+
+        var data = {
+            'action': 'next_invoice_date',
+            'period': invoicePeriod,
+            'weekday': invoiceWeekday
+        };
+
+        // since 2.8 ajaxurl is always defined in the admin header and points to admin-ajax.php
+        jQuery.post(ajaxurl, data, function ( response ) {
+
+            if ( '' !== response ) {
+
+                jQuery('p.next-invoice-date').text( response );
+
+            } else {
+
+                // show error message
+                alert(response.data.message);
+
+            }
+
+        });
+    }
 }
