@@ -55,7 +55,7 @@ if ( is_admin() ) {
     register_activation_hook(__FILE__, array('RMA_WC_Backend', 'activate') );
     register_deactivation_hook(__FILE__, array('RMA_WC_Backend', 'deactivate') );
 
-    $my_settings_page = new RMA_Settings_Page();
+    $my_settings_page = new RMA_WC_Settings_Page();
 
 }
 

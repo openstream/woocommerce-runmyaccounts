@@ -32,7 +32,7 @@ class RMA_WC_Collective_Invoicing {
         $period  = $_POST['period'];
         $weekday = $_POST['weekday'];
 
-        $dates   = self::calculate_next_invoice_date($period, $weekday );
+        $dates   = self::get_next_invoice_date($period, $weekday );
 
         if( !empty( $dates ) ) {
 
@@ -55,7 +55,7 @@ class RMA_WC_Collective_Invoicing {
      *
      * @since 1.7.0
      */
-    public function calculate_next_invoice_date( $period, $weekday ): array {
+    public function get_next_invoice_date( $period, $weekday ): array {
 
         switch ( $period ) {
             case 'week' :
@@ -81,6 +81,69 @@ class RMA_WC_Collective_Invoicing {
         }
 
         return array();
+
+    }
+
+    /**
+     * Collecting completed invoices, sorted by customer
+     *
+     * @return array
+     *
+     * @since 1.7.0
+     */
+    public function get_paid_orders(): array {
+
+        switch ( $this->settings[ 'collective_invoice_span' ] ) {
+            case 'per_week':
+                $invoice_from_date = strtotime( "-1 week" );
+                break;
+            case 'per_month':
+                $invoice_from_date = strtotime( "-1 month" );
+                break;
+            default:
+                $invoice_from_date = 0;
+                break;
+        }
+
+        $orders_no_invoice = get_posts( array(
+                                            'numberposts'     => -1,
+                                            'post_type'       => 'shop_order',
+                                            'post_status'     => 'wc-completed',
+                                            'meta_query'      => array(
+                                                'relation'    => 'AND',
+                                                array(
+                                                    'key'     => '_rma_invoice',
+                                                    'compare' => 'NOT EXISTS',
+                                                ),
+                                            )
+                                        )
+        );
+
+        $cumulated_orders_by_customer_id = array();
+
+        // loop through orders and create an associative array with orders for customer
+        foreach ( $orders_no_invoice as $key => $order ) {
+
+            // get values
+            $WC_Order  = new WC_Order( $order->ID );
+            $user_id   = $WC_Order->get_user_id( );
+            $paid_date = $WC_Order->get_date_completed();
+
+            // is paid date in the range for invoicing?
+            if( strtotime( $paid_date ) > $invoice_from_date ) {
+
+                // prepare arrays to merge
+                $a = is_array(  $cumulated_orders_by_customer_id[ $user_id ] ) ?  $cumulated_orders_by_customer_id[ $user_id ] : array();
+                $b = array( 1 => $order->ID );
+
+                // merge previous order ids of a customer with additional order id
+                $cumulated_orders_by_customer_id[ $user_id ] = array_merge( $a, $b );
+
+           }
+
+        }
+
+        return $cumulated_orders_by_customer_id;
 
     }
 
