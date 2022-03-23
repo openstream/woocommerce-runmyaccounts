@@ -142,7 +142,7 @@ function calculate_next_collective_invoice_date() {
 
     if( null != invoiceWeekday ) {
 
-        var data = {
+        const data = {
             'action': 'next_invoice_date',
             'period': invoicePeriod,
             'weekday': invoiceWeekday

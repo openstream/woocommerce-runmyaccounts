@@ -38,14 +38,13 @@ if (!class_exists('RMA_WC_Backend')) {
              * https://codex.wordpress.org/Function_Reference/set_transient  
              */
             set_transient('rma-wc-page-activated', 1, 30);
-
         }
 
         /**
          * Deactivate - is triggered when register_deactivation_hook() is called, but we do this in the rma-wc.php
          */
         static function deactivate() {
-
+            wp_clear_scheduled_hook( 'run_my_accounts_collective_invoice' );
         }
 
 	    /**

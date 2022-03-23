@@ -12,11 +12,15 @@ class RMA_WC_Collective_Invoicing {
     private $settings;
 
     public function __construct() {
+        $this->maybe_create_scheduled_event();
 
         // read rma settings
         $this->settings = get_option( 'wc_rma_settings_collective_invoice' );
 
         add_action('wp_ajax_next_invoice_date', [ $this, 'ajax_next_invoice_date' ] );
+
+        add_action( 'run_my_accounts_collective_invoice', array( $this, 'create_collective_invoice' ) );
+
 
     }
 
@@ -147,4 +151,26 @@ class RMA_WC_Collective_Invoicing {
 
     }
 
+    /**
+     * Create collective invoice triggered by cron job
+     *
+     * @return void
+     *
+     * @since 1.7.0
+     */
+    public function create_collective_invoice() {
+
+    }
+
+
+    /**
+     * Create a daily cron event, if one does not already exist.
+     *
+     * @since 1.7.0
+     */
+    public function maybe_create_scheduled_event() {
+        if ( ! wp_next_scheduled( 'run_my_accounts_collective_invoice' ) ) {
+            wp_schedule_event( time() + HOUR_IN_SECONDS , 'daily', 'run_my_accounts_collective_invoice' );
+        }
+    }
 }
