@@ -17,10 +17,9 @@ class RMA_WC_Collective_Invoicing {
         // read rma settings
         $this->settings = get_option( 'wc_rma_settings_collective_invoice' );
 
-        add_action('wp_ajax_next_invoice_date', [ $this, 'ajax_next_invoice_date' ] );
+        add_action( 'wp_ajax_next_invoice_date', [ $this, 'ajax_next_invoice_date' ] );
 
         add_action( 'run_my_accounts_collective_invoice', array( $this, 'create_collective_invoice' ) );
-
 
     }
 
@@ -33,10 +32,10 @@ class RMA_WC_Collective_Invoicing {
      */
     public function ajax_next_invoice_date(){
 
-        $period  = $_POST['period'];
-        $weekday = $_POST['weekday'];
+        $period  = $_POST[ 'period' ];
+        $weekday = $_POST[ 'weekday' ];
 
-        $dates   = self::get_next_invoice_date($period, $weekday );
+        $dates   = self::get_next_invoice_date( $period, $weekday );
 
         if( !empty( $dates ) ) {
 
@@ -75,7 +74,7 @@ class RMA_WC_Collective_Invoicing {
 
         if( !empty( $next_date_ts ) ) {
 
-            $date = date_i18n( get_option('date_format'), $next_date_ts );
+            $date = date_i18n( get_option( 'date_format' ), $next_date_ts );
 
             return array(
                 'next_date_ts' => $next_date_ts,
@@ -89,13 +88,14 @@ class RMA_WC_Collective_Invoicing {
     }
 
     /**
-     * Collecting completed invoices, sorted by customer
+     * Collecting completed invoices, sorted by customer,
+     * which were still not invoiced
      *
      * @return array
      *
      * @since 1.7.0
      */
-    public function get_paid_orders(): array {
+    public function get_not_invoiced_orders(): array {
 
         switch ( $this->settings[ 'collective_invoice_span' ] ) {
             case 'per_week':
@@ -129,21 +129,24 @@ class RMA_WC_Collective_Invoicing {
         foreach ( $orders_no_invoice as $key => $order ) {
 
             // get values
-            $WC_Order  = new WC_Order( $order->ID );
-            $user_id   = $WC_Order->get_user_id( );
-            $paid_date = $WC_Order->get_date_completed();
+            $order          = wc_get_order( $order->ID );
+            $order_id       = $order->get_id();
+            $user_id        = $order->get_user_id( $order_id );
+            $paid_date      = $order->get_date_completed( $order_id );
+            $tax_included   = $order->get_prices_include_tax( $order_id );
+            $payment_method = $order->get_payment_method( $order_id );
 
             // is paid date in the range for invoicing?
             if( strtotime( $paid_date ) > $invoice_from_date ) {
 
                 // prepare arrays to merge
-                $a = is_array(  $cumulated_orders_by_customer_id[ $user_id ] ) ?  $cumulated_orders_by_customer_id[ $user_id ] : array();
-                $b = array( 1 => $order->ID );
+                $a = isset( $cumulated_orders_by_customer_id[ $user_id ][ $tax_included ? 'tax' : 'no_tax' ][ $payment_method ] ) && is_array( $cumulated_orders_by_customer_id[ $user_id ][ $tax_included ? 'tax' : 'no_tax' ][ $payment_method ] ) ? $cumulated_orders_by_customer_id[ $user_id ][ $tax_included ? 'tax' : 'no_tax' ][ $payment_method ] : array();
+                $b = array( 1 => $order_id );
 
                 // merge previous order ids of a customer with additional order id
-                $cumulated_orders_by_customer_id[ $user_id ] = array_merge( $a, $b );
+                $cumulated_orders_by_customer_id[ $user_id ][ $tax_included ? 'tax' : 'no_tax' ][ $payment_method ] = array_merge( $a, $b );
 
-           }
+            }
 
         }
 
@@ -160,8 +163,19 @@ class RMA_WC_Collective_Invoicing {
      */
     public function create_collective_invoice() {
 
-    }
+        $not_invoiced_orders = self::get_not_invoiced_orders();
 
+        foreach ( $not_invoiced_orders as $user_id => $orders ) {
+
+            foreach ( $orders as $order_id ) {
+
+
+
+            }
+
+        }
+
+    }
 
     /**
      * Create a daily cron event, if one does not already exist.
@@ -173,4 +187,5 @@ class RMA_WC_Collective_Invoicing {
             wp_schedule_event( time() + HOUR_IN_SECONDS , 'daily', 'run_my_accounts_collective_invoice' );
         }
     }
+
 }
