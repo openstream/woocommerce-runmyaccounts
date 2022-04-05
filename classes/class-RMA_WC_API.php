@@ -338,7 +338,7 @@ if ( !class_exists('RMA_WC_API') ) {
 						'discount'     => '0.0',
 						'itemnote'     => '',
 						'price_update' => '',
-					), $part[ 'item_id' ] );
+					), $part[ 'item_id' ] ?? null );
 				endforeach;
 
 			endif;
@@ -459,7 +459,7 @@ if ( !class_exists('RMA_WC_API') ) {
 			$option_accounting    = get_option( 'wc_rma_settings_accounting' );
             $order_payment_method = $order->get_payment_method();
 
-            // if order is done without...
+            // if order is done without user account
             if ( 0 == get_post_meta( $order_id, '_customer_user', true ) ) {
 
                 $settings = get_option('wc_rma_settings');
@@ -503,15 +503,15 @@ if ( !class_exists('RMA_WC_API') ) {
 			$order_details[ 'orderdate' ]      = wc_format_datetime( $order->get_date_created(),'d.m.Y' );
 			$order_details[ 'taxincluded' ]    = $order->get_prices_include_tax() ? 'true' : 'false';
 			$order_details[ 'customernumber' ] = $rma_customer_id;
-            $order_details[ 'ar_accno' ]       = isset ( $option_accounting[ $order_payment_method ] ) && !empty( $option_accounting[ $order_payment_method ] ) ? $option_accounting[ $order_payment_method ] : '';
-            $order_details[ 'payment_accno' ]  = isset( $option_accounting[ $order->get_payment_method() . '_payment_account' ] ) && !empty( $option_accounting[ $order->get_payment_method() . '_payment_account' ] ) ? $option_accounting[ $order->get_payment_method() . '_payment_account' ] : '' ;
+            $order_details[ 'ar_accno' ]       = isset( $option_accounting[ $order_payment_method ] ) && !empty( $option_accounting[ $order_payment_method ] ) ? $option_accounting[ $order_payment_method ] : '';
+            $order_details[ 'payment_accno' ]  = isset( $option_accounting[ $order_payment_method . '_payment_account' ] ) && !empty( $option_accounting[ $order_payment_method . '_payment_account' ] ) ? $option_accounting[ $order_payment_method . '_payment_account' ] : '' ;
 
             // Calculate due date
 			$user_payment_period               = get_user_meta( $order->get_customer_id(), 'rma_payment_period', true );
 			// Set payment period - if user payment period not exist set to global period
 			$payment_period                    = $user_payment_period ? $user_payment_period : RMA_GLOBAL_PAYMENT_PERIOD;
 			// Calculate duedate (now + payment period)
-			$order_details[ 'duedate' ]        = date( DateTime::RFC3339, time() + ($payment_period*60*60*24) );
+			$order_details[ 'duedate' ]        = date( DateTime::RFC3339, time() + ( $payment_period*60*60*24 ) );
 
             // add shipping address if needed
             $order_details[ 'notes' ]          = '';
@@ -522,8 +522,28 @@ if ( !class_exists('RMA_WC_API') ) {
 
             }
 
-            // Add products to order
-            $order_details_products            = array();
+            // add products to order
+            $order_details_products = self::get_order_details_products( $order );
+
+            // add shipping costs to order
+            $order_details_products = self::get_order_details_shipping_costs( $order, $order_details_products, $settings );
+
+			return array( $order_details, $order_details_products );
+
+		}
+
+        /**
+         * Collect products as order details
+         *
+         * @param object $order
+         * @param array $order_details_products
+         *
+         * @return array
+         *
+         * @since 1.7.0
+         */
+        private function get_order_details_products( object $order, array $order_details_products = array() ): array
+        {
 
             // add line items
             foreach ( $order->get_items() as $item_id => $item ) {
@@ -535,27 +555,44 @@ if ( !class_exists('RMA_WC_API') ) {
                     'price'    => wc_format_decimal( $product->get_price(), 2 ),
                     'item_id'  => $item_id
                 );
-
             }
 
-			// Add Shipping costs
+            return $order_details_products;
+
+        }
+
+        /**
+         * Add shipping costs as product, if necessary
+         *
+         * @param object $order
+         * @param array $order_details_products
+         * @param array $settings
+         *
+         * @return array
+         *
+         * @since 1.7.0
+         */
+        private function get_order_details_shipping_costs( object $order, array $order_details_products, array $settings ): array
+        {
+
+            // Add Shipping costs
             // @since 1.6.0
             $order_shipping_total_net  = (float) $order->get_shipping_total();
             $order_shipping_tax        = (float) $order->get_shipping_tax();
-			$shipping_costs_product_id = isset( $settings[ 'rma-shipping-id' ] ) ? $settings[ 'rma-shipping-id' ] : '';
+            $shipping_costs_product_id = $settings['rma-shipping-id'] ?? '';
 
-			// Calculate shipping costs w/ or wo/ tax
-			if( $order->get_prices_include_tax() ) {
+            // Calculate shipping costs w/ or wo/ tax
+            if( $order->get_prices_include_tax() ) {
                 $order_shipping_total  = $order_shipping_total_net + $order_shipping_tax;
             }
-			else {
+            else {
                 $order_shipping_total  = $order_shipping_total_net;
             }
 
-			// do we have shipping costs and a product id on file?
-			if( 0 < $order_shipping_total && !empty( $shipping_costs_product_id ) ) {
+            // do we have shipping costs and a product id on file?
+            if( 0 < $order_shipping_total && !empty( $shipping_costs_product_id ) ) {
 
-			    // we get shipping text from settings page otherwise we take shipping method
+                // we get shipping text from settings page otherwise we take shipping method
                 $shipping_text = ( isset( $settings['rma-shipping-text'] ) && !empty( $settings['rma-shipping-text'] ) ? $settings['rma-shipping-text'] : $order->get_shipping_method() );
 
                 $order_details_products[ $shipping_costs_product_id ] = array(
@@ -566,11 +603,11 @@ if ( !class_exists('RMA_WC_API') ) {
 
             }
             // do we have shipping costs but no product id on file?
-			elseif ( 0 < $order_shipping_total && empty( $shipping_costs_product_id ) ) {
+            elseif ( 0 < $order_shipping_total && empty( $shipping_costs_product_id ) ) {
 
                 $log_values = array(
                     'status' => 'error',
-                    'section_id' => $order_id,
+                    'section_id' => $order->get_id(),
                     'section' => esc_html_x( 'Invoice', 'Log Section', 'rma-wc'),
                     'mode' => self::rma_mode(),
                     'message' => __( 'Could not add shipping costs to invoice because of missing shipping costs product sku', 'rma-wc' )
@@ -580,9 +617,9 @@ if ( !class_exists('RMA_WC_API') ) {
 
             }
 
-			return array( $order_details, $order_details_products );
+            return $order_details_products;
 
-		}
+        }
 
         /**
          * Create invoice in Run my Accounts
