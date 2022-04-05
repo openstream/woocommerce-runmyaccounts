@@ -55,8 +55,8 @@ class RMA_WC_Rental_And_Booking {
     /**
      * Modifies invoice part with rental details
      *
-     * @param array $part    The original part array
-     * @param int   $item_id The item id of this order part
+     * @param array    $part    The original part array
+     * @param int|null $item_id The item id of this order part
      *
      * @return array         Modified part
      * @throws Exception
@@ -65,7 +65,14 @@ class RMA_WC_Rental_And_Booking {
      *
      * @author Sandro Lucifora
      */
-    public function modify_rma_invoice_part( array $part, int $item_id ): array {
+    public function modify_rma_invoice_part( array $part, ?int $item_id ): array {
+
+        // bail if item_id is not an int (like shipping costs can be)
+        if( null === $item_id ) {
+
+            return $part;
+
+        }
 
         // get values
         $days            = wc_get_order_item_meta( $item_id, '_return_hidden_days' );
@@ -76,12 +83,20 @@ class RMA_WC_Rental_And_Booking {
         $return_date     = wc_get_order_item_meta( $item_id, 'Return Date & Time' );
         $total_days      = wc_get_order_item_meta( $item_id, 'Total Days' );
 
+        // bail if we do not get all RnB meta data
+        if( !$pickup_location || !$pickup_date || !$return_date || $total_days ) {
+
+            return $part;
+
+        }
+
         // set line total price
         if( wc_tax_enabled() ) {
 
             $part[ 'sellprice' ] = round( $total + $tax, 2 );
 
-        }else {
+        }
+        else {
 
             $part[ 'sellprice' ] = $total;
 
