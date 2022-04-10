@@ -40,7 +40,7 @@ The source code is freely available, but you need a Run my Accounts API key. Ope
 
 = I miss a feature. What to do? =
 
-Please send a request to the Openstream Internet Solutions. We provide customization on an hourly rate. Otherwise you can fork the plugin on GitHub and develop the missing feature yourself. We only ask to send a pull request so, each user can benefit from your extension.
+Please send a request to the Openstream Internet Solutions. We provide customization on an hourly rate. Otherwise, you can fork the plugin on GitHub and develop the missing feature yourself. We only ask to send a pull request so, each user can benefit from your extension.
 
 == Screenshots ==
 1. General settings.
@@ -50,13 +50,14 @@ Please send a request to the Openstream Internet Solutions. We provide customiza
 == Known issues ==
 * Discount codes does not be reflected on the invoice.
 * Credits are not created in Run My Accounts.
+* The collective invoice only works with available products. If a product was deleted between the order and the invoice, the product cannot be included in the invoice anymore.
 
 == Changelog ==
 = 1.7.0 =
-* Feature - added consolidated invoice per customer
+* Feature - added collective invoice per customer
 * Feature - added native support for WooCommerce Rental & Booking System (https://codecanyon.net/item/rnb-woocommerce-rental-booking-system/14835145)
-* Fix - fixed creating invoice sometimes returns an error when creating invoice when "status change completed"
-* Fix - fixed loading language files sometimes not working probably
+* Fix - fixed creating invoice sometimes returns an error when creating invoice with "status change completed"
+* Fix - fixed loading language files sometimes not working
 * Tweak - code improvements
 * Compatibility - tested up to WooCommerce 6.3
 * Compatibility - tested up to WooCommerce 5.9

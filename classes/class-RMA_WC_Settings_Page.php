@@ -349,15 +349,30 @@ if ( !class_exists('RMA_WC_Settings_Page') ) {
             $id = 'rma-invoice-description';
             add_settings_field(
                 $id,
-                esc_html__('Invoice Description in RMA', 'rma-wc'),
+                esc_html__('Invoice Description', 'rma-wc'),
                 array( $this, 'option_input_text_cb'),
                 $this->option_page_general,
                 $section,
                 array(
                     'option_group' => $this->option_group_general,
                     'id'           => $id,
-                    'value'        => isset( $this->options_general[ $id ] ) ? $this->options_general[ $id ] : '',
-                    'description'  => esc_html__('Possible variable: [orderdate]', 'rma-wc' )
+                    'value'        => $this->options_general[$id] ?? '',
+                    'description'  => esc_html__('Description of the invoice in Run My Accounts. Possible variable: [orderdate]', 'rma-wc' )
+                )
+            );
+
+            $id = 'rma-collective-invoice-description';
+            add_settings_field(
+                $id,
+                esc_html__('Collective Invoice Description', 'rma-wc'),
+                array( $this, 'option_input_text_cb'),
+                $this->option_page_general,
+                $section,
+                array(
+                    'option_group' => $this->option_group_general,
+                    'id'           => $id,
+                    'value'        => $this->options_general[$id] ?? '',
+                    'description'  => esc_html__('Description of the collective invoice in Run My Accounts. Possible variable: [period]', 'rma-wc' )
                 )
             );
 
@@ -637,7 +652,7 @@ if ( !class_exists('RMA_WC_Settings_Page') ) {
             $id = 'rma-log-send-email';
             add_settings_field(
                 $id,
-                esc_html__('Send email on error', 'rma-wc'),
+                esc_html__('Send email', 'rma-wc'),
                 array( $this, 'option_select_cb'),
                 $this->option_page_general,
                 $section,
@@ -649,7 +664,7 @@ if ( !class_exists('RMA_WC_Settings_Page') ) {
                         'no'         => esc_html__('no','rma-wc'),
                         'yes'        => esc_html__('yes','rma-wc'),
                     ),
-                    'description'  => esc_html__('Send email on error with Run my Accounts API.', 'rma-wc' )
+                    'description'  => esc_html__('Receive emails on errors and general notifications.', 'rma-wc' )
 
                 )
             );
@@ -665,7 +680,7 @@ if ( !class_exists('RMA_WC_Settings_Page') ) {
                     'option_group' => $this->option_group_general,
                     'id'           => $id,
                     'value'        => isset( $this->options_general[ $id ] ) ? $this->options_general[ $id ] : get_option( 'admin_email' ),
-                    'description'  => esc_html__('Send email to this recipient. By default administrators email.', 'rma-wc' )
+                    'description'  => esc_html__( 'Get an email to this recipient. Administrators email address is used by default.', 'rma-wc' )
                 )
             );
 
@@ -787,11 +802,11 @@ if ( !class_exists('RMA_WC_Settings_Page') ) {
                 $this->option_page_collective_invoice // Page
             );
 
-            if( empty( $this->options_collective_invoice[ 'collective_invoice_next_date' ] ) ) {
+            if( empty( $this->options_collective_invoice[ 'collective_invoice_next_date_ts' ] ) ) {
                 $text = __('The next invoice date cannot be calculated. Please set all options first.');
             }
             else {
-                $text = date_i18n( get_option('date_format'), $this->options_collective_invoice[ 'collective_invoice_next_date' ] );
+                $text = date_i18n( get_option('date_format') , $this->options_collective_invoice[ 'collective_invoice_next_date_ts' ] );
             }
             $id = 'collective_invoice_next_text';
             add_settings_field(

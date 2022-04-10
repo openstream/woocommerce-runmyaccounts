@@ -43,10 +43,9 @@ if ( !class_exists('RMA_WC_API') ) {
 
             }
 
-            DEFINE( 'RMA_INVOICE_DESCRIPTION', ($settings['rma-invoice-description'] ?? '') );
-            DEFINE( 'RMA_GLOBAL_PAYMENT_PERIOD', ($settings['rma-payment-period'] ?? '0') ); // default value 0 days
-            DEFINE( 'RMA_INVOICE_PREFIX', ($settings['rma-invoice-prefix'] ?? '') );
-            DEFINE( 'RMA_INVOICE_DIGITS', ( isset( $settings['rma-digits'] ) ? $settings['rma-invoice-description'] : '' ) );
+            DEFINE( 'RMA_GLOBAL_PAYMENT_PERIOD', ( $settings[ 'rma-payment-period' ] ?? '0') ); // default value 0 days
+            DEFINE( 'RMA_INVOICE_PREFIX', ( $settings[ 'rma-invoice-prefix' ] ?? '') );
+            DEFINE( 'RMA_INVOICE_DIGITS', ( isset( $settings['rma-digits'] ) ? $settings[ 'rma-invoice-description' ] : '' ) );
 
             // if rma-loglevel ist not set, LOGLEVEL is set to error by default
             if( isset( $settings['rma-loglevel'] ) ) {
@@ -228,7 +227,7 @@ if ( !class_exists('RMA_WC_API') ) {
                 $message = esc_html__( 'Response Code', 'rma-wc') . ' '. wp_remote_retrieve_response_code( $response );
                 $message .= ' '. wp_remote_retrieve_response_message( $response );
 
-                $response = (array) $response['http_response'];
+                $response = (array) $response[ 'http_response' ];
 
                 foreach ( $response as $object ) {
                     $message .= ' ' . $object->url;
@@ -281,34 +280,54 @@ if ( !class_exists('RMA_WC_API') ) {
         }
 
         /**
-		 * Collect data for invoice
-		 *
-		 * @param $order_id
+         * Collect data for invoice
          *
-		 * @return array
-		 */
+         * @param $order_id
+         *
+         * @return array
+         * @throws DOMException
+         */
 		private function get_invoice_values( $order_id ): array
         {
 
+			$order_details = self::get_wc_order_details( $order_id );
+
+            // add products to order
+            $order_details_products = self::get_order_details_products( $order_id );
+
+            // add shipping costs to order
+            $order_details_products = self::get_order_details_shipping_costs( $order_id, $order_details_products );
+
+            $invoice_id = RMA_INVOICE_PREFIX . str_pad( $order_id, max(intval(RMA_INVOICE_DIGITS) - strlen(RMA_INVOICE_PREFIX ), 0 ), '0', STR_PAD_LEFT );
+
+            return self::get_invoice_data( $order_details, $order_details_products, $invoice_id, $order_id );
+
+		}
+
+        public static function get_invoice_data( $order_details, $order_details_products, $invoice_id, $order_id, $description = '' ): array {
+
             $settings     = get_option( 'wc_rma_settings' );
             $fallback_sku = $settings[ 'rma-product-fallback_id' ];
-            unset( $settings );
 
             if ( !empty( $fallback_sku ) )
-                $rma_part_numbers = self::get_parts();
+                $rma_part_numbers = (new RMA_WC_API)->get_parts();
 
-			list( $order_details, $order_details_products ) = self::get_wc_order_details( $order_id );
+            if( empty( $description ) ) {
+
+                $description = str_replace('[orderdate]', $order_details[ 'orderdate' ], $settings[ 'rma-invoice-description' ] ?? '' );
+
+            }
 
             $data = array(
                 'invoice' => array(
-                    'invnumber'      => RMA_INVOICE_PREFIX . str_pad( $order_id, max(intval(RMA_INVOICE_DIGITS) - strlen(RMA_INVOICE_PREFIX ), 0 ), '0', STR_PAD_LEFT ),
+                    'invnumber'      => $invoice_id,
                     'ordnumber'      => $order_id,
                     'status'         => 'OPEN',
                     'currency'       => $order_details[ 'currency' ],
                     'ar_accno'       => $order_details[ 'ar_accno' ],
-                    'transdate'      => date( DateTime::RFC3339, time() ),
+                    'transdate'      => date(DateTimeInterface::RFC3339, time() ),
                     'duedate'        => $order_details[ 'duedate' ], //date( DateTime::RFC3339, time() ),
-                    'description'    => str_replace('[orderdate]',$order_details[ 'orderdate' ], RMA_INVOICE_DESCRIPTION),
+                    'description'    => $description,
                     'notes'          => '',
                     'intnotes'       => $order_details[ 'notes' ],
                     'taxincluded'    => $order_details[ 'taxincluded' ],
@@ -320,7 +339,7 @@ if ( !class_exists('RMA_WC_API') ) {
             );
 
             // Add parts
-			if ( count( $order_details_products ) > 0 ) :
+            if ( count( $order_details_products ) > 0 ) :
 
                 foreach ( $order_details_products as $part_number => $part ) :
 
@@ -329,22 +348,23 @@ if ( !class_exists('RMA_WC_API') ) {
                         !array_key_exists( $part_number, $rma_part_numbers ) )
                         $part_number = $fallback_sku;
 
-					$data['part'][] = apply_filters( 'rma_invoice_part', array (
-						'partnumber'   => $part_number,
-						'description'  => $part[ 'name' ],
-						'unit'         => '',
-						'quantity'     => $part[ 'quantity' ],
-						'sellprice'    => $part[ 'price' ],
-						'discount'     => '0.0',
-						'itemnote'     => '',
-						'price_update' => '',
-					), $part[ 'item_id' ] ?? null );
-				endforeach;
+                    $data['part'][] = apply_filters( 'rma_invoice_part', array (
+                        'partnumber'   => $part_number,
+                        'description'  => $part[ 'name' ],
+                        'unit'         => '',
+                        'quantity'     => $part[ 'quantity' ],
+                        'sellprice'    => $part[ 'price' ],
+                        'discount'     => '0.0',
+                        'itemnote'     => '',
+                        'price_update' => '',
+                    ), $part[ 'item_id' ] ?? null );
+                endforeach;
 
-			endif;
+            endif;
 
             return $data;
-		}
+
+        }
 
         /**
          * Prepare data of a customer by user id for sending to Run my Accounts
@@ -445,17 +465,17 @@ if ( !class_exists('RMA_WC_API') ) {
 
         }
 
-		/**
-		 * get WooCommerce order details
-		 *
-		 * @param $order_id
-		 *
-		 * @return bool|array
-		 */
-		private function get_wc_order_details( $order_id ) {
+        /**
+         * get WooCommerce order details
+         *
+         * @param $order_id
+         *
+         * @return array
+         * @throws DOMException
+         */
+		public static function get_wc_order_details( $order_id ): array {
 
             $order                = wc_get_order( $order_id );
-            $settings             = get_option( 'wc_rma_settings' );
 			$option_accounting    = get_option( 'wc_rma_settings_accounting' );
             $order_payment_method = $order->get_payment_method();
 
@@ -466,7 +486,7 @@ if ( !class_exists('RMA_WC_API') ) {
 
                 if ( 1 == $settings[ 'rma-create-guest-customer' ] ) {
 
-                    $rma_customer_id = $this->create_rma_customer( 'order', $order_id );
+                    $rma_customer_id = (new RMA_WC_API)->create_rma_customer('order', $order_id );
 
                     if ( false == $rma_customer_id ) {
 
@@ -478,7 +498,7 @@ if ( !class_exists('RMA_WC_API') ) {
                             'message' => __( 'Could not create RMA customer dedicated guest account', 'rma-wc' )
                         );
 
-                        self::write_log($log_values);
+                        (new RMA_WC_API)->write_log($log_values);
 
                     }
 
@@ -522,39 +542,41 @@ if ( !class_exists('RMA_WC_API') ) {
 
             }
 
-            // add products to order
-            $order_details_products = self::get_order_details_products( $order );
-
-            // add shipping costs to order
-            $order_details_products = self::get_order_details_shipping_costs( $order, $order_details_products, $settings );
-
-			return array( $order_details, $order_details_products );
+			return $order_details;
 
 		}
 
         /**
          * Collect products as order details
          *
-         * @param object $order
+         * @param int $order_id
          * @param array $order_details_products
          *
          * @return array
          *
          * @since 1.7.0
          */
-        private function get_order_details_products( object $order, array $order_details_products = array() ): array
+        public static function get_order_details_products( int $order_id, array $order_details_products = array() ): array
         {
+
+            $order = wc_get_order( $order_id );
 
             // add line items
             foreach ( $order->get_items() as $item_id => $item ) {
                 $product       = $item->get_product();
 
-                $order_details_products[ $product->get_sku() ] = array(
-                    'name'     => $item->get_name(),
-                    'quantity' => $item->get_quantity(),
-                    'price'    => wc_format_decimal( $product->get_price(), 2 ),
-                    'item_id'  => $item_id
-                );
+                // make sure the product is still available in WooCommerce
+                if( is_object( $product ) ) {
+
+                    $order_details_products[ $product->get_sku() ] = array(
+                        'name'     => $item->get_name(),
+                        'quantity' => $item->get_quantity(),
+                        'price'    => wc_format_decimal( $product->get_price(), 2 ),
+                        'item_id'  => $item_id
+                    );
+
+                }
+
             }
 
             return $order_details_products;
@@ -564,16 +586,18 @@ if ( !class_exists('RMA_WC_API') ) {
         /**
          * Add shipping costs as product, if necessary
          *
-         * @param object $order
+         * @param int $order_id
          * @param array $order_details_products
-         * @param array $settings
          *
          * @return array
          *
          * @since 1.7.0
          */
-        private function get_order_details_shipping_costs( object $order, array $order_details_products, array $settings ): array
+        public static function get_order_details_shipping_costs( int $order_id, array $order_details_products): array
         {
+
+            $settings = get_option( 'wc_rma_settings' );
+            $order    = wc_get_order( $order_id );
 
             // Add Shipping costs
             // @since 1.6.0
@@ -609,11 +633,11 @@ if ( !class_exists('RMA_WC_API') ) {
                     'status' => 'error',
                     'section_id' => $order->get_id(),
                     'section' => esc_html_x( 'Invoice', 'Log Section', 'rma-wc'),
-                    'mode' => self::rma_mode(),
+                    'mode' => (new RMA_WC_API)->rma_mode(),
                     'message' => __( 'Could not add shipping costs to invoice because of missing shipping costs product sku', 'rma-wc' )
                 );
 
-                self::write_log($log_values);
+                (new RMA_WC_API)->write_log($log_values);
 
             }
 
@@ -638,62 +662,84 @@ if ( !class_exists('RMA_WC_API') ) {
 			if( !$order_id || !$is_active ) return false;
 
 			$data = self::get_invoice_values( $order_id );
-			$url  = self::get_caller_url() . RMA_MANDANT . '/invoices?api_key=' . RMA_APIKEY;
 
-			//create the xml document
-			$xml  = new DOMDocument('1.0', 'UTF-8');
+            return self::create_xml_content( $data, array( $order_id ) );
 
-			// create root element invoice and child
-			$root = $xml->appendChild($xml->createElement("invoice"));
-			foreach( $data['invoice'] as $key => $value ) {
-				if ( ! empty( $key ) )
-					$root->appendChild( $xml->createElement( $key, $value ) );
-			}
+		}
 
-			$tab_invoice = $root->appendChild($xml->createElement('parts'));
+        /**
+         * Creates XML and send to Run My Accounts
+         *
+         * @param array $data              data of the complete invoice
+         * @param array $order_ids         an array of all affected orders for which we create the invoice
+         * @param bool $collective_invoice true if we create an collective invoice
+         *
+         * @return bool                    true if the invoice creation was successful otherwise false
+         * @throws DOMException
+         */
+        public static function create_xml_content( array $data, array $order_ids, bool $collective_invoice = false ): bool {
 
-			// create child elements part
-			foreach( $data['part'] as $part ){
-				if( !empty( $part ) ){
-					$tab_part = $tab_invoice->appendChild($xml->createElement('part'));
+            $url  = self::get_caller_url() . RMA_MANDANT . '/invoices?api_key=' . RMA_APIKEY;
 
-					foreach( $part as $key=>$value ){
-						$tab_part->appendChild($xml->createElement($key, $value));
-					}
-				}
-			}
+            //create the xml document
+            $xml  = new DOMDocument('1.0', 'UTF-8');
 
-			// make the output pretty
-			$xml->formatOutput = true;
+            // create root element invoice and child
+            $root = $xml->appendChild( $xml->createElement("invoice") );
+            foreach( $data[ 'invoice' ] as $key => $value ) {
+                if ( ! empty( $key ) )
+                    $root->appendChild( $xml->createElement( $key, $value ) );
+            }
+
+            $tab_invoice = $root->appendChild($xml->createElement('parts'));
+
+            // create child elements part
+            foreach( $data[ 'part' ] as $part ){
+                if( !empty( $part ) ){
+                    $tab_part = $tab_invoice->appendChild($xml->createElement('part'));
+
+                    foreach( $part as $key=>$value ){
+                        $tab_part->appendChild($xml->createElement($key, $value));
+                    }
+                }
+            }
+
+            // make the output pretty
+            $xml->formatOutput = true;
 
             // create xml content
-			$xml_str = $xml->saveXML() . "\n";
+            $xml_str = $xml->saveXML() . "\n";
 
             // send xml content to RMA
-			$response = self::send_xml_content( $xml_str, $url );
+            $response = self::send_xml_content( $xml_str, $url );
 
             // $response empty == no errors
-			if ( 200 == self::first_key_of_array( $response ) ||
+            if ( 200 == self::first_key_of_array( $response ) ||
                  204 == self::first_key_of_array( $response )) {
 
                 $status         = 'invoiced';
+                $invoice_type   = $collective_invoice ? esc_html_x( 'Collective invoice', 'Order Note', 'rma-wc') : esc_html_x( 'Invoice', 'Order Note', 'rma-wc') ;
 
-                $invoice_number = $data['invoice']['invnumber'];
-                $message        = sprintf( esc_html_x( 'Invoice %s created', 'Log', 'rma-wc'), $invoice_number);
+                $invoice_number = $data[ 'invoice' ][ 'invnumber' ];
+                $message        = sprintf( esc_html_x( '%s %s created', 'Log', 'rma-wc'), $collective_invoice, $invoice_number);
 
-                // add order note
-                $order          = wc_get_order(  $order_id );
-                $note           = sprintf( esc_html_x( 'Invoice %s created in Run my Accounts', 'Order Note', 'rma-wc'), $invoice_number);
-                $order->add_order_note( $note );
+                // add order note to each order
+                foreach ( $order_ids as $order_id ) {
 
-                update_post_meta( $order_id, '_rma_invoice', $invoice_number );
+                    $order          = wc_get_order(  $order_id );
+                    $note           = sprintf( esc_html_x( '%s %s created in Run my Accounts', 'Order Note', 'rma-wc'), $invoice_type, $invoice_number);
+                    $order->add_order_note( $note );
 
-                unset( $order );
+                    update_post_meta( $order_id, '_rma_invoice', $invoice_number );
+
+                    unset( $order );
+
+                }
 
                 $return = true;
 
             }
-			else {
+            else {
 
                 $status  = 'error';
                 $message = '[' . self::first_key_of_array( $response ) . '] ' . reset( $response ); // get value of first key = return message
@@ -702,24 +748,25 @@ if ( !class_exists('RMA_WC_API') ) {
 
             }
 
-			if ( ( 'error' == LOGLEVEL && 'error' == $status ) || 'complete' == LOGLEVEL ) {
+            if ( ( 'error' == LOGLEVEL && 'error' == $status ) || 'complete' == LOGLEVEL ) {
 
                 $log_values = array(
-					'status' => $status,
-					'section_id' => $order_id,
+                    'status' => $status,
+                    'section_id' => $order_id,
                     'section' => esc_html_x('Invoice', 'Log Section', 'rma-wc'),
-					'mode' => self::rma_mode(),
-					'message' => $message );
+                    'mode' => self::rma_mode(),
+                    'message' => $message );
 
-                self::write_log($log_values);
+                (new RMA_WC_API)->write_log($log_values);
 
-				// send email on error
-				if ( 'error' == $status && SENDLOGEMAIL ) $this->send_log_email($log_values);
+                // send email on error
+                if ( 'error' == $status && SENDLOGEMAIL ) (new RMA_WC_API)->send_log_email($log_values);
 
-			}
+            }
 
-			return $return;
-		}
+            return $return;
+
+        }
 
         /**
          * Create customer in Run my Accounts
@@ -912,7 +959,7 @@ if ( !class_exists('RMA_WC_API') ) {
         /**
          * @return string
          */
-        public function rma_mode(): string
+        public static function rma_mode(): string
         {
             return RMA_CALLERSANDBOX ? 'Test' : 'Live' ;
         }
