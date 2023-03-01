@@ -123,6 +123,16 @@ if ( !class_exists('RMA_WC_API') ) {
 			    $message = esc_html__( 'Response Code', 'rma-wc') . ' '. wp_remote_retrieve_response_code( $response );
                 $message .= ' '. wp_remote_retrieve_response_message( $response );
 
+
+                if ( is_wp_error( $response ) ) {
+
+                    $error_string = $response->get_error_message();
+                    echo '<div id="message" class="error"><p>' . $error_string . '</p></div>';
+
+                    return false;
+
+                }
+
                 $response = (array) $response['http_response'];
 
                 foreach ( $response as $object ) {
