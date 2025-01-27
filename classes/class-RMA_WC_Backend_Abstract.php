@@ -372,7 +372,8 @@ if ( !class_exists('RMA_WC_Backend_Abstract') ) {
                             1 => __('Mr.', 'rma-wc'),
                             2 => __('Ms.', 'rma-wc')
                         )
-                    )
+                    ),
+                    'description' => ''
                 );
             }
 
