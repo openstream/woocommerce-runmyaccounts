@@ -1,8 +1,8 @@
 === Run my Accounts for WooCommerce===
-* Contributors: openstream, codestylist
+* Contributors: openstream
 * Tags: Run my Accounts, WooCommerce, Billing
 * Requires at least: 4.7
-* Tested up to: 6.2
+* Tested up to: 6.7
 * Stable tag: 1.7.1
 * Requires PHP: 7.2
 * License: GPLv3
@@ -55,8 +55,8 @@ Please send a request to the Openstream Internet Solutions. We provide customiza
 == Changelog ==
 = 1.7.1 =
 * Fix - added handling cURL error on settings page
-* Compatibility - tested up to WooCommerce 7.4
-* Compatibility - tested up to WordPress 6.2
+* Compatibility - tested up to WooCommerce 7.4 - 8.3
+* Compatibility - tested up to WordPress 6.2 - 6.7
 
 = 1.7.0 =
 * Feature - added collective invoice per customer
