@@ -3,10 +3,10 @@
 * Tags: Run my Accounts, WooCommerce, Billing
 * Requires at least: 4.7
 * Tested up to: 6.7
-* Stable tag: 1.7.1
+* Stable tag: 1.8.0
 * Requires PHP: 7.2
-* License: GPLv3
-* License URI: https://www.gnu.org/licenses/gpl-3.0.html
+* License: GPLv2
+* License URI: https://www.gnu.org/licenses/gpl-2.0.html
 
 This plug-in connects WooCommerce with Run my Accounts.
 

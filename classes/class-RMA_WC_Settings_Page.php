@@ -797,13 +797,13 @@ if ( !class_exists('RMA_WC_Settings_Page') ) {
             $section = 'collective_invoice_settings';
             add_settings_section(
                 $section, // ID
-                esc_html__( 'Collective Invoice', 'run-my-accounts-for-woocommerce'), // Title
+                esc_html__( 'Collective Invoice', 'run-my-accounts-for-woocommerce' ), // Title
                 array( $this, 'section_info_collective_invoice' ), // Callback
                 $this->option_page_collective_invoice // Page
             );
 
             if( empty( $this->options_collective_invoice[ 'collective_invoice_next_date_ts' ] ) ) {
-                $text = __('The next invoice date cannot be calculated. Please set all options first.');
+                $text = esc_html__( 'The next invoice date cannot be calculated. Please set all options first.', 'run-my-accounts-for-woocommerce' );
             }
             else {
                 $text = date_i18n( get_option('date_format') , $this->options_collective_invoice[ 'collective_invoice_next_date_ts' ] );
@@ -811,7 +811,7 @@ if ( !class_exists('RMA_WC_Settings_Page') ) {
             $id = 'collective_invoice_next_text';
             add_settings_field(
                 $id,
-                esc_html__('Next Invoice Date', 'run-my-accounts-for-woocommerce'),
+                esc_html__('Next Invoice Date', 'run-my-accounts-for-woocommerce' ),
                 array( $this, 'plain_text_cb'),
                 $this->option_page_collective_invoice,
                 $section,
