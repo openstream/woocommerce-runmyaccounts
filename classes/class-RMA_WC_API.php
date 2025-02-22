@@ -104,9 +104,9 @@ if ( !class_exists('RMA_WC_API') ) {
                 $log_values = array(
                     'status' => 'error',
                     'section_id' => '',
-                    'section' => esc_html_x('Get Customer', 'Log Section', 'rma-wc'),
+                    'section' => esc_html_x('Get Customer', 'Log Section', 'run-my-accounts-for-woocommerce'),
                     'mode' => self::rma_mode(),
-                    'message' => esc_html__('Missing API data', 'rma-wc') );
+                    'message' => esc_html__('Missing API data', 'run-my-accounts-for-woocommerce') );
 
                 self::write_log($log_values);
 
@@ -120,7 +120,7 @@ if ( !class_exists('RMA_WC_API') ) {
             // Check response code
 			if ( 200 <> wp_remote_retrieve_response_code( $response ) ){
 
-			    $message = esc_html__( 'Response Code', 'rma-wc') . ' '. wp_remote_retrieve_response_code( $response );
+			    $message = esc_html__( 'Response Code', 'run-my-accounts-for-woocommerce') . ' '. wp_remote_retrieve_response_code( $response );
                 $message .= ' '. wp_remote_retrieve_response_message( $response );
 
 
@@ -143,7 +143,7 @@ if ( !class_exists('RMA_WC_API') ) {
                 $log_values = array(
                     'status' => 'error',
                     'section_id' => '',
-                    'section' => esc_html_x('Get Customer', 'Log Section', 'rma-wc'),
+                    'section' => esc_html_x('Get Customer', 'Log Section', 'run-my-accounts-for-woocommerce'),
                     'mode' => self::rma_mode(),
                     'message' => $message );
 
@@ -217,9 +217,9 @@ if ( !class_exists('RMA_WC_API') ) {
                 $log_values = array(
                     'status' => 'error',
                     'section_id' => '',
-                    'section' => esc_html_x('Get Parts', 'Log Section', 'rma-wc'),
+                    'section' => esc_html_x('Get Parts', 'Log Section', 'run-my-accounts-for-woocommerce'),
                     'mode' => self::rma_mode(),
-                    'message' => esc_html__('Missing API data', 'rma-wc') );
+                    'message' => esc_html__('Missing API data', 'run-my-accounts-for-woocommerce') );
 
                 self::write_log($log_values);
 
@@ -234,7 +234,7 @@ if ( !class_exists('RMA_WC_API') ) {
             // Check response code
             if ( 200 <> wp_remote_retrieve_response_code( $response ) ){
 
-                $message = esc_html__( 'Response Code', 'rma-wc') . ' '. wp_remote_retrieve_response_code( $response );
+                $message = esc_html__( 'Response Code', 'run-my-accounts-for-woocommerce') . ' '. wp_remote_retrieve_response_code( $response );
                 $message .= ' '. wp_remote_retrieve_response_message( $response );
 
                 $response = (array) $response[ 'http_response' ];
@@ -247,7 +247,7 @@ if ( !class_exists('RMA_WC_API') ) {
                 $log_values = array(
                     'status' => 'error',
                     'section_id' => '',
-                    'section' => esc_html_x('Get Parts', 'Log Section', 'rma-wc'),
+                    'section' => esc_html_x('Get Parts', 'Log Section', 'run-my-accounts-for-woocommerce'),
                     'mode' => self::rma_mode(),
                     'message' => $message );
 
@@ -398,7 +398,7 @@ if ( !class_exists('RMA_WC_API') ) {
 				'customernumber'    => $customer_prefix . $user_id,
 				'name'              => ( $is_company ? $customer->get_billing_company() : $customer->get_billing_first_name() . ' ' . $customer->get_billing_last_name() ),
 				'created'           => date('Y-m-d') . 'T00:00:00+01:00',
-				'salutation'        => ( 1 == get_user_meta( $user_id, 'billing_title', true ) ? __('Mr.', 'rma-wc') : __('Ms.', 'rma-wc') ),
+				'salutation'        => ( 1 == get_user_meta( $user_id, 'billing_title', true ) ? __('Mr.', 'run-my-accounts-for-woocommerce') : __('Ms.', 'run-my-accounts-for-woocommerce') ),
 				'firstname'         => $customer->get_billing_first_name(),
 				'lastname'          => $customer->get_billing_last_name(),
 				'address1'          => $customer->get_billing_address_1(),
@@ -447,7 +447,7 @@ if ( !class_exists('RMA_WC_API') ) {
                 'customernumber'    => $customer_prefix . $order_id,
                 'name'              => ( $is_company ? $order->get_billing_company() : $order->get_billing_first_name() . ' ' . $order->get_billing_last_name() ),
                 'created'           => date('Y-m-d') . 'T00:00:00+01:00',
-                'salutation'        => ( 1 == get_post_meta( $order_id, '_billing_title', true ) ? __('Mr.', 'rma-wc') : __('Ms.', 'rma-wc') ),
+                'salutation'        => ( 1 == get_post_meta( $order_id, '_billing_title', true ) ? __('Mr.', 'run-my-accounts-for-woocommerce') : __('Ms.', 'run-my-accounts-for-woocommerce') ),
                 'firstname'         => $order->get_billing_first_name(),
                 'lastname'          => $order->get_billing_last_name(),
                 'address1'          => $order->get_billing_address_1(),
@@ -503,9 +503,9 @@ if ( !class_exists('RMA_WC_API') ) {
                         $log_values = array(
                             'status' => 'error',
                             'section_id' => $order_id,
-                            'section' => esc_html_x( 'Customer', 'Log Section', 'rma-wc'),
+                            'section' => esc_html_x( 'Customer', 'Log Section', 'run-my-accounts-for-woocommerce'),
                             'mode' => self::rma_mode(),
-                            'message' => __( 'Could not create RMA customer dedicated guest account', 'rma-wc' )
+                            'message' => __( 'Could not create RMA customer dedicated guest account', 'run-my-accounts-for-woocommerce' )
                         );
 
                         (new RMA_WC_API)->write_log($log_values);
@@ -642,9 +642,9 @@ if ( !class_exists('RMA_WC_API') ) {
                 $log_values = array(
                     'status' => 'error',
                     'section_id' => $order->get_id(),
-                    'section' => esc_html_x( 'Invoice', 'Log Section', 'rma-wc'),
+                    'section' => esc_html_x( 'Invoice', 'Log Section', 'run-my-accounts-for-woocommerce'),
                     'mode' => (new RMA_WC_API)->rma_mode(),
-                    'message' => __( 'Could not add shipping costs to invoice because of missing shipping costs product sku', 'rma-wc' )
+                    'message' => __( 'Could not add shipping costs to invoice because of missing shipping costs product sku', 'run-my-accounts-for-woocommerce' )
                 );
 
                 (new RMA_WC_API)->write_log($log_values);
@@ -728,16 +728,16 @@ if ( !class_exists('RMA_WC_API') ) {
                  204 == self::first_key_of_array( $response )) {
 
                 $status         = 'invoiced';
-                $invoice_type   = $collective_invoice ? esc_html_x( 'Collective invoice', 'Order Note', 'rma-wc') : esc_html_x( 'Invoice', 'Order Note', 'rma-wc') ;
+                $invoice_type   = $collective_invoice ? esc_html_x( 'Collective invoice', 'Order Note', 'run-my-accounts-for-woocommerce') : esc_html_x( 'Invoice', 'Order Note', 'run-my-accounts-for-woocommerce') ;
 
                 $invoice_number = $data[ 'invoice' ][ 'invnumber' ];
-                $message        = sprintf( esc_html_x( '%s %s created', 'Log', 'rma-wc'), $collective_invoice, $invoice_number);
+                $message        = sprintf( esc_html_x( '%s %s created', 'Log', 'run-my-accounts-for-woocommerce'), $collective_invoice, $invoice_number);
 
                 // add order note to each order
                 foreach ( $order_ids as $order_id ) {
 
                     $order          = wc_get_order(  $order_id );
-                    $note           = sprintf( esc_html_x( '%s %s created in Run my Accounts', 'Order Note', 'rma-wc'), $invoice_type, $invoice_number);
+                    $note           = sprintf( esc_html_x( '%s %s created in Run my Accounts', 'Order Note', 'run-my-accounts-for-woocommerce'), $invoice_type, $invoice_number);
                     $order->add_order_note( $note );
 
                     update_post_meta( $order_id, '_rma_invoice', $invoice_number );
@@ -763,7 +763,7 @@ if ( !class_exists('RMA_WC_API') ) {
                 $log_values = array(
                     'status' => $status,
                     'section_id' => $order_id,
-                    'section' => esc_html_x('Invoice', 'Log Section', 'rma-wc'),
+                    'section' => esc_html_x('Invoice', 'Log Section', 'run-my-accounts-for-woocommerce'),
                     'mode' => self::rma_mode(),
                     'message' => $message );
 
@@ -847,7 +847,7 @@ if ( !class_exists('RMA_WC_API') ) {
 
                 // add RMA customer number to user_meta
                 $status         = 'created';
-                $message        = sprintf( esc_html_x( 'Customer %s created', 'Log', 'rma-wc'), $data['customernumber']);
+                $message        = sprintf( esc_html_x( 'Customer %s created', 'Log', 'run-my-accounts-for-woocommerce'), $data['customernumber']);
 
                 if ( 'user' == $type )
                     update_user_meta( $id, 'rma_customer', $data[ 'customernumber' ] );
@@ -865,7 +865,7 @@ if ( !class_exists('RMA_WC_API') ) {
                 $log_values = array(
                     'status' => $status,
                     'section_id' => $id,
-                    'section' => sprintf( esc_html_x('Customer by %s id', 'Log Section', 'rma-wc'), $type),
+                    'section' => sprintf( esc_html_x('Customer by %s id', 'Log Section', 'run-my-accounts-for-woocommerce'), $type),
                     'mode' => self::rma_mode(),
                     'message' => $message );
 
@@ -942,9 +942,9 @@ if ( !class_exists('RMA_WC_API') ) {
 				$log_values = array(
 					'status'     => 'deactivated',
 					'section_id' => $section_id,
-                    'section'    => esc_html_x( 'Activation', 'Log Section', 'rma-wc' ),
+                    'section'    => esc_html_x( 'Activation', 'Log Section', 'run-my-accounts-for-woocommerce' ),
 					'mode'       => self::rma_mode(),
-					'message'    => esc_html_x( 'Plugin was not activated', 'Log', 'rma-wc' ) );
+					'message'    => esc_html_x( 'Plugin was not activated', 'Log', 'run-my-accounts-for-woocommerce' ) );
 
 				self::write_log($log_values);
 				// send email with log details
@@ -1018,14 +1018,14 @@ if ( !class_exists('RMA_WC_API') ) {
             ob_end_clean();
 
             $headers = array('Content-Type: text/html; charset=UTF-8');
-            if ( !wp_mail( LOGEMAIL, esc_html_x('An error occurred while connecting with Run my Accounts API', 'email', 'rma-wc'), $email_content, $headers) ) {
+            if ( !wp_mail( LOGEMAIL, esc_html_x('An error occurred while connecting with Run my Accounts API', 'email', 'run-my-accounts-for-woocommerce'), $email_content, $headers) ) {
 
                 $log_values = array(
                     'status'     => 'failed',
                     'section_id' => LOGEMAIL,
-                    'section'    => esc_html_x( 'Email', 'Log Section', 'rma-wc' ),
+                    'section'    => esc_html_x( 'Email', 'Log Section', 'run-my-accounts-for-woocommerce' ),
                     'mode'       => self::rma_mode(),
-                    'message'    => esc_html_x( 'Failed to send email.' , 'Log', 'rma-wc') );
+                    'message'    => esc_html_x( 'Failed to send email.' , 'Log', 'run-my-accounts-for-woocommerce') );
 
                 self::write_log($log_values);
 
@@ -1034,9 +1034,9 @@ if ( !class_exists('RMA_WC_API') ) {
                 $log_values = array(
                     'status'     => 'send',
                     'section_id' => LOGEMAIL,
-                    'section'    => esc_html_x( 'Email', 'Log Section', 'rma-wc' ),
+                    'section'    => esc_html_x( 'Email', 'Log Section', 'run-my-accounts-for-woocommerce' ),
                     'mode'       => self::rma_mode(),
-                    'message'    => esc_html_x( 'Email sent successfully.' , 'Log', 'rma-wc') );
+                    'message'    => esc_html_x( 'Email sent successfully.' , 'Log', 'run-my-accounts-for-woocommerce') );
 
                 self::write_log($log_values);
 

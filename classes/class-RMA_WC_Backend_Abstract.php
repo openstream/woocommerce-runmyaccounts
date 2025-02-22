@@ -157,7 +157,7 @@ if ( !class_exists('RMA_WC_Backend_Abstract') ) {
          * @author Sandro Lucifora
          */
         public function create_invoice_bulk_actions_edit_product( $actions ) {
-            $actions['rma_create_invoice'] = __( 'Create Invoice', 'rma-wc' );
+            $actions['rma_create_invoice'] = __( 'Create Invoice', 'run-my-accounts-for-woocommerce' );
             return $actions;
         }
 
@@ -244,7 +244,7 @@ if ( !class_exists('RMA_WC_Backend_Abstract') ) {
                     _n( 'Created %s invoice',
                         'Created %s invoices',
                         $success_count,
-                        'rma-wc'
+                        'run-my-accounts-for-woocommerce'
                     ) . '</p></div>', number_format_i18n( $success_count ) );
 
         }
@@ -266,7 +266,7 @@ if ( !class_exists('RMA_WC_Backend_Abstract') ) {
                 return $actions;
             }
 
-            $actions['create_rma_invoice'] = __( 'Create invoice in Run my Accounts', 'rma-wc' );
+            $actions['create_rma_invoice'] = __( 'Create invoice in Run my Accounts', 'run-my-accounts-for-woocommerce' );
             return $actions;
 
         }
@@ -294,7 +294,7 @@ if ( !class_exists('RMA_WC_Backend_Abstract') ) {
          */
         public function add_column_to_order_table( $columns ) {
 
-            $columns = RMA_WC_Frontend::array_insert( $columns, 'order_total', 'rma_invoice', __( 'Invoice #', 'rma-wc'));
+            $columns = RMA_WC_Frontend::array_insert( $columns, 'order_total', 'rma_invoice', __( 'Invoice #', 'run-my-accounts-for-woocommerce'));
 
             return $columns;
         }
@@ -365,18 +365,18 @@ if ( !class_exists('RMA_WC_Backend_Abstract') ) {
             // if WooCommerce Germanized is not active add our own billing title
             if ( ! defined( 'WC_GERMANIZED_VERSION' ) ) {
                 $fields['billing']['fields']['billing_title'] = array(
-                    'label'       => __('Title', 'rma-wc'),
+                    'label'       => __('Title', 'run-my-accounts-for-woocommerce'),
                     'type'        => 'select',
                     'options'     => apply_filters( 'woocommerce_rma_title_options',
                         array(
-                            1 => __('Mr.', 'rma-wc'),
-                            2 => __('Ms.', 'rma-wc')
+                            1 => __('Mr.', 'run-my-accounts-for-woocommerce'),
+                            2 => __('Ms.', 'run-my-accounts-for-woocommerce')
                         )
                     )
                 );
             }
 
-		    $fields[ 'rma' ][ 'title' ] = __( 'Settings Run my Accounts', 'rma-wc' );
+		    $fields[ 'rma' ][ 'title' ] = __( 'Settings Run my Accounts', 'run-my-accounts-for-woocommerce' );
 
             $RMA_WC_API = new RMA_WC_API();
             $options = $RMA_WC_API->get_customers();
@@ -384,36 +384,36 @@ if ( !class_exists('RMA_WC_Backend_Abstract') ) {
     	    if( !$options ) {
 
 			    $fields[ 'rma' ][ 'fields' ][ 'rma_customer' ] = array(
-				    'label'       => __( 'Customer', 'rma-wc' ),
+				    'label'       => __( 'Customer', 'run-my-accounts-for-woocommerce' ),
 				    'type'		  => 'select',
-				    'options'	  => array('' => __( 'Error while connecting to RMA. Please check your settings.', 'rma-wc' )),
-				    'description' => __( 'Select the corresponding RMA customer for this account.', 'rma-wc' )
+				    'options'	  => array('' => __( 'Error while connecting to RMA. Please check your settings.', 'run-my-accounts-for-woocommerce' )),
+				    'description' => __( 'Select the corresponding RMA customer for this account.', 'run-my-accounts-for-woocommerce' )
 			    );
 
 			    return $fields;
 		    }
 
-		    $options = array('' => __( 'Select customer...', 'rma-wc' )) + $options;
+		    $options = array('' => __( 'Select customer...', 'run-my-accounts-for-woocommerce' )) + $options;
 
 		    $fields[ 'rma' ][ 'fields' ][ 'rma_customer' ] = array(
-			    'label'       => __( 'Customer', 'rma-wc' ),
+			    'label'       => __( 'Customer', 'run-my-accounts-for-woocommerce' ),
 			    'type'		  => 'select',
 			    'options'	  => $options,
-			    'description' => __( 'Select the corresponding RMA customer for this account.', 'rma-wc' )
+			    'description' => __( 'Select the corresponding RMA customer for this account.', 'run-my-accounts-for-woocommerce' )
 		    );
 
 		    if ( !empty( $RMA_WC_API )) unset( $RMA_WC_API );
 
 		    $fields[ 'rma' ][ 'fields' ][ 'rma_billing_account' ] = array(
-			    'label'       => __( 'Receivables Account', 'rma-wc' ),
+			    'label'       => __( 'Receivables Account', 'run-my-accounts-for-woocommerce' ),
 			    'type'		  => 'input',
-			    'description' => __( 'The receivables account has to be available in RMA. Leave it blank to use default value 1100.', 'rma-wc' )
+			    'description' => __( 'The receivables account has to be available in RMA. Leave it blank to use default value 1100.', 'run-my-accounts-for-woocommerce' )
 		    );
 
 		    $fields[ 'rma' ][ 'fields' ][ 'rma_payment_period' ] = array(
-			    'label'       => __( 'Payment Period', 'rma-wc' ),
+			    'label'       => __( 'Payment Period', 'run-my-accounts-for-woocommerce' ),
 			    'type'		  => 'input',
-			    'description' => __( 'How many days has this customer to pay your invoice?', 'rma-wc' )
+			    'description' => __( 'How many days has this customer to pay your invoice?', 'run-my-accounts-for-woocommerce' )
 		    );
 
 		    return $fields;

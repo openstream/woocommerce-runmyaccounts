@@ -53,6 +53,9 @@ Please send a request to the Openstream Internet Solutions. We provide customiza
 * The collective invoice only works with available products. If a product was deleted between the order and the invoice, the product cannot be included in the invoice anymore.
 
 == Changelog ==
+= 1.8.0 =
+* Moved language handling to [GlotPress](https://translate.wordpress.org/projects/wp-plugins/run-my-accounts-for-woocommerce/)
+
 = 1.7.1 =
 * Fix - added handling cURL error on settings page
 * Compatibility - tested up to WooCommerce 7.4 - 8.3

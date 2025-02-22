@@ -67,8 +67,8 @@ if ( !class_exists('RMA_WC_Settings_Page') ) {
         public function add_plugin_page(){
             // This page will be under "WooCommerce"
             add_submenu_page('woocommerce', // $parent_slug
-                             'Run my Accounts - Settings', // $page_title
-                             __('Run my Accounts', 'rma-wc'), // $menu_title
+                             esc_html__('Run my Accounts - Settings', 'run-my-accounts-for-woocommerce'), // $page_title
+                             'Run my Accounts', // $menu_title
                              'manage_options', // $capability
                              'rma-wc', // $menu_slug
                              array($this, 'create_admin_page') // $function
@@ -83,13 +83,13 @@ if ( !class_exists('RMA_WC_Settings_Page') ) {
             $active_page = sanitize_text_field( ( isset( $_GET[ 'tab' ] ) ? $_GET[ 'tab' ] : 'general' ) ); // set default tab ?>
 
             <div class="wrap">
-                <h1><?php _e('Run my Accounts - Settings', 'rma-wc'); ?></h1>
+                <h1><?php esc_html_e('Run my Accounts - Settings', 'run-my-accounts-for-woocommerce'); ?></h1>
                 <?php settings_errors(); ?>
                 <h2 class="nav-tab-wrapper">
-                    <a href="<?php echo admin_url( $this->admin_url ); ?>" class="nav-tab<?php echo ( 'general' == $active_page ? ' nav-tab-active' : '' ); ?>"><?php esc_html_e('General', 'rma-wc'); ?></a>
-                    <a href="<?php echo esc_url( add_query_arg( array( 'tab' => 'accounting' ), admin_url( $this->admin_url ) ) ); ?>" class="nav-tab<?php echo ( 'accounting' == $active_page ? ' nav-tab-active' : '' ); ?>"><?php esc_html_e('Accounting', 'rma-wc'); ?></a>
-                    <a href="<?php echo esc_url( add_query_arg( array( 'tab' => 'collective' ), admin_url( $this->admin_url ) ) ); ?>" class="nav-tab<?php echo ( 'collective' == $active_page ? ' nav-tab-active' : '' ); ?>"><?php esc_html_e('Collective Invoice', 'rma-wc'); ?></a>
-                    <a href="<?php echo esc_url( add_query_arg( array( 'tab' => 'log' ), admin_url( $this->admin_url ) ) ); ?>" class="nav-tab<?php echo ( 'log' == $active_page ? ' nav-tab-active' : '' ); ?>"><?php esc_html_e('Log', 'rma-wc'); ?></a>
+                    <a href="<?php echo admin_url( $this->admin_url ); ?>" class="nav-tab<?php echo ( 'general' == $active_page ? ' nav-tab-active' : '' ); ?>"><?php esc_html_e('General', 'run-my-accounts-for-woocommerce'); ?></a>
+                    <a href="<?php echo esc_url( add_query_arg( array( 'tab' => 'accounting' ), admin_url( $this->admin_url ) ) ); ?>" class="nav-tab<?php echo ( 'accounting' == $active_page ? ' nav-tab-active' : '' ); ?>"><?php esc_html_e('Accounting', 'run-my-accounts-for-woocommerce'); ?></a>
+                    <a href="<?php echo esc_url( add_query_arg( array( 'tab' => 'collective' ), admin_url( $this->admin_url ) ) ); ?>" class="nav-tab<?php echo ( 'collective' == $active_page ? ' nav-tab-active' : '' ); ?>"><?php esc_html_e('Collective Invoice', 'run-my-accounts-for-woocommerce'); ?></a>
+                    <a href="<?php echo esc_url( add_query_arg( array( 'tab' => 'log' ), admin_url( $this->admin_url ) ) ); ?>" class="nav-tab<?php echo ( 'log' == $active_page ? ' nav-tab-active' : '' ); ?>"><?php esc_html_e('Log', 'run-my-accounts-for-woocommerce'); ?></a>
                 </h2>
 
                 <form method="post" action="options.php"><?php //   settings_fields( $this->option_group_general );
@@ -176,7 +176,7 @@ if ( !class_exists('RMA_WC_Settings_Page') ) {
 
             add_settings_section(
                 $section, // ID
-                esc_html__('API', 'rma-wc'),
+                esc_html__('API', 'run-my-accounts-for-woocommerce'),
                 '', // Callback
                 $this->option_page_general // Page
             );
@@ -184,7 +184,7 @@ if ( !class_exists('RMA_WC_Settings_Page') ) {
             $id = 'rma-active';
             add_settings_field(
                 $id,
-                esc_html__('Activate Function', 'rma-wc'),
+                esc_html__('Activate Function', 'run-my-accounts-for-woocommerce'),
                 array( $this, 'option_input_checkbox_cb'), // general callback for checkbox
                 $this->option_page_general,
                 $section,
@@ -192,14 +192,14 @@ if ( !class_exists('RMA_WC_Settings_Page') ) {
                     'option_group' => $this->option_group_general,
                     'id'           => $id,
                     'value'        => isset( $this->options_general[ $id ] ) ? $this->options_general[ $id ] : '',
-                    'description'  => esc_html__('Do not activate the plugin before you have set up all data.', 'rma-wc' )
+                    'description'  => esc_html__('Do not activate the plugin before you have set up all data.', 'run-my-accounts-for-woocommerce' )
                 )
             );
 
             $id = 'rma-mode';
             add_settings_field(
                 $id,
-                esc_html__('Operation Mode', 'rma-wc'),
+                esc_html__('Operation Mode', 'run-my-accounts-for-woocommerce'),
                 array( $this, 'rma_mode_cb'), // individual callback
                 $this->option_page_general,
                 $section,
@@ -211,7 +211,7 @@ if ( !class_exists('RMA_WC_Settings_Page') ) {
             $id = 'rma-live-client';
             add_settings_field(
                 $id,
-                esc_html__('Production Client', 'rma-wc'),
+                esc_html__('Production Client', 'run-my-accounts-for-woocommerce'),
                 array( $this, 'option_input_text_cb'), // general call back for input text
                 $this->option_page_general,
                 $section,
@@ -225,7 +225,7 @@ if ( !class_exists('RMA_WC_Settings_Page') ) {
             $id = 'rma-live-apikey';
             add_settings_field(
                 $id,
-                esc_html__('Production API key', 'rma-wc'),
+                esc_html__('Production API key', 'run-my-accounts-for-woocommerce'),
                 array( $this, 'option_input_text_cb'),
                 $this->option_page_general,
                 $section,
@@ -239,7 +239,7 @@ if ( !class_exists('RMA_WC_Settings_Page') ) {
             $id = 'rma-test-client';
             add_settings_field(
                 $id,
-                esc_html__('Sandbox Client', 'rma-wc'),
+                esc_html__('Sandbox Client', 'run-my-accounts-for-woocommerce'),
                 array( $this, 'option_input_text_cb'), // general call back for input text
                 $this->option_page_general,
                 $section,
@@ -253,7 +253,7 @@ if ( !class_exists('RMA_WC_Settings_Page') ) {
             $id = 'rma-test-apikey';
             add_settings_field(
                 $id,
-                esc_html__('Sandbox API key', 'rma-wc'),
+                esc_html__('Sandbox API key', 'run-my-accounts-for-woocommerce'),
                 array( $this, 'option_input_text_cb'),
                 $this->option_page_general,
                 $section,
@@ -274,7 +274,7 @@ if ( !class_exists('RMA_WC_Settings_Page') ) {
 
             add_settings_section(
                 $section, // ID
-                esc_html__('Billing', 'rma-wc'),
+                esc_html__('Billing', 'run-my-accounts-for-woocommerce'),
                 '', // Callback
                 $this->option_page_general // Page
             );
@@ -282,7 +282,7 @@ if ( !class_exists('RMA_WC_Settings_Page') ) {
             $id = 'rma-invoice-trigger';
             add_settings_field(
                 $id,
-                esc_html__('Trigger', 'rma-wc'),
+                esc_html__('Trigger', 'run-my-accounts-for-woocommerce'),
                 array( $this, 'option_select_cb'),
                 $this->option_page_general,
                 $section,
@@ -291,12 +291,12 @@ if ( !class_exists('RMA_WC_Settings_Page') ) {
                     'id'              => $id,
                     'options'         => $this->options_general,
                     'select_options'  => array(
-                        'immediately' => esc_html__('Immediately after ordering','rma-wc'),
-                        'completed'   => esc_html__('On order status completed','rma-wc'),
-                        'collective'  => esc_html__('Collective invoice','rma-wc'),
+                        'immediately' => esc_html__('Immediately after ordering','run-my-accounts-for-woocommerce'),
+                        'completed'   => esc_html__('On order status completed','run-my-accounts-for-woocommerce'),
+                        'collective'  => esc_html__('Collective invoice','run-my-accounts-for-woocommerce'),
                     ),
                     'class'        => 'invoice-trigger',
-                    'description'  => esc_html__('When should customers and invoices be created in Run My Accounts?', 'rma-wc' ),
+                    'description'  => esc_html__('When should customers and invoices be created in Run My Accounts?', 'run-my-accounts-for-woocommerce' ),
 
                 )
             );
@@ -304,7 +304,7 @@ if ( !class_exists('RMA_WC_Settings_Page') ) {
             $id = 'rma-payment-period';
             add_settings_field(
                 $id,
-                esc_html__('Payment Period in days', 'rma-wc'),
+                esc_html__('Payment Period in days', 'run-my-accounts-for-woocommerce'),
                 array( $this, 'option_input_text_cb'),
                 $this->option_page_general,
                 $section,
@@ -312,14 +312,14 @@ if ( !class_exists('RMA_WC_Settings_Page') ) {
                     'option_group' => $this->option_group_general,
                     'id'           => $id,
                     'value'        => isset( $this->options_general[ $id ] ) ? $this->options_general[ $id ] : '',
-                    'description'  => esc_html__('Please set the general payment period. You can set a individual value, for a customer, in the user profile.', 'rma-wc' )
+                    'description'  => esc_html__('Please set the general payment period. You can set a individual value, for a customer, in the user profile.', 'run-my-accounts-for-woocommerce' )
                 )
             );
 
             $id = 'rma-invoice-prefix';
             add_settings_field(
                 $id,
-                esc_html__('Invoice Prefix', 'rma-wc'),
+                esc_html__('Invoice Prefix', 'run-my-accounts-for-woocommerce'),
                 array( $this, 'option_input_text_cb'),
                 $this->option_page_general,
                 $section,
@@ -327,14 +327,14 @@ if ( !class_exists('RMA_WC_Settings_Page') ) {
                     'option_group' => $this->option_group_general,
                     'id'           => 'rma-invoice-prefix',
                     'value'        => isset( $this->options_general[ $id ] ) ? $this->options_general[ $id ] : '',
-                    'description'  => esc_html__('Prefix followed by order number will be the invoice number in Run my Accounts.', 'rma-wc' )
+                    'description'  => esc_html__('Prefix followed by order number will be the invoice number in Run my Accounts.', 'run-my-accounts-for-woocommerce' )
                 )
             );
 
             $id = 'rma-digits';
             add_settings_field(
                 $id,
-                esc_html__('Number of digits', 'rma-wc'),
+                esc_html__('Number of digits', 'run-my-accounts-for-woocommerce'),
                 array( $this, 'option_input_text_cb'),
                 $this->option_page_general,
                 $section,
@@ -342,14 +342,14 @@ if ( !class_exists('RMA_WC_Settings_Page') ) {
                     'option_group' => $this->option_group_general,
                     'id'           => $id,
                     'value'        => isset( $this->options_general[ $id ] ) ? $this->options_general[ $id ] : '',
-                    'description'  => esc_html__('Set the maximum number of digits for the invoice number (including prefix).', 'rma-wc' )
+                    'description'  => esc_html__('Set the maximum number of digits for the invoice number (including prefix).', 'run-my-accounts-for-woocommerce' )
                 )
             );
 
             $id = 'rma-invoice-description';
             add_settings_field(
                 $id,
-                esc_html__('Invoice Description', 'rma-wc'),
+                esc_html__('Invoice Description', 'run-my-accounts-for-woocommerce'),
                 array( $this, 'option_input_text_cb'),
                 $this->option_page_general,
                 $section,
@@ -357,14 +357,14 @@ if ( !class_exists('RMA_WC_Settings_Page') ) {
                     'option_group' => $this->option_group_general,
                     'id'           => $id,
                     'value'        => $this->options_general[$id] ?? '',
-                    'description'  => esc_html__('Description of the invoice in Run My Accounts. Possible variable: [orderdate]', 'rma-wc' )
+                    'description'  => esc_html__('Description of the invoice in Run My Accounts. Possible variable: [orderdate]', 'run-my-accounts-for-woocommerce' )
                 )
             );
 
             $id = 'rma-collective-invoice-description';
             add_settings_field(
                 $id,
-                esc_html__('Collective Invoice Description', 'rma-wc'),
+                esc_html__('Collective Invoice Description', 'run-my-accounts-for-woocommerce'),
                 array( $this, 'option_input_text_cb'),
                 $this->option_page_general,
                 $section,
@@ -372,7 +372,7 @@ if ( !class_exists('RMA_WC_Settings_Page') ) {
                     'option_group' => $this->option_group_general,
                     'id'           => $id,
                     'value'        => $this->options_general[$id] ?? '',
-                    'description'  => esc_html__('Description of the collective invoice in Run My Accounts. Possible variable: [period]', 'rma-wc' )
+                    'description'  => esc_html__('Description of the collective invoice in Run My Accounts. Possible variable: [period]', 'run-my-accounts-for-woocommerce' )
                 )
             );
 
@@ -387,7 +387,7 @@ if ( !class_exists('RMA_WC_Settings_Page') ) {
 
             add_settings_section(
                 $section, // ID
-                esc_html__('Payment', 'rma-wc'),
+                esc_html__('Payment', 'run-my-accounts-for-woocommerce'),
                 '', // Callback
                 $this->option_page_general // Page
             );
@@ -395,7 +395,7 @@ if ( !class_exists('RMA_WC_Settings_Page') ) {
             $id = 'rma-payment-trigger';
             add_settings_field(
                 $id,
-                esc_html__('Trigger', 'rma-wc'),
+                esc_html__('Trigger', 'run-my-accounts-for-woocommerce'),
                 array( $this, 'option_select_cb'),
                 $this->option_page_general,
                 $section,
@@ -404,12 +404,12 @@ if ( !class_exists('RMA_WC_Settings_Page') ) {
                     'id'              => $id,
                     'options'         => $this->options_general,
                     'select_options'  => array(
-                        ''            => esc_html__('Booking manually','rma-wc'),
-                        'immediately' => esc_html__('Immediately after ordering','rma-wc'),
-                        'completed'   => esc_html__('On order status completed','rma-wc'),
+                        ''            => esc_html__('Booking manually','run-my-accounts-for-woocommerce'),
+                        'immediately' => esc_html__('Immediately after ordering','run-my-accounts-for-woocommerce'),
+                        'completed'   => esc_html__('On order status completed','run-my-accounts-for-woocommerce'),
                     ),
                     'class'        => 'payment-trigger',
-                    'description'  => esc_html__('When should the payment be booked in Run My Accounts', 'rma-wc' ),
+                    'description'  => esc_html__('When should the payment be booked in Run My Accounts', 'run-my-accounts-for-woocommerce' ),
 
                 )
             );
@@ -417,7 +417,7 @@ if ( !class_exists('RMA_WC_Settings_Page') ) {
             $id = 'rma-payment-trigger-exclude';
             add_settings_field(
                 $id,
-                esc_html__('Excluded Payment Options', 'rma-wc'),
+                esc_html__('Excluded Payment Options', 'run-my-accounts-for-woocommerce'),
                 array( $this, 'option_select_cb'),
                 $this->option_page_general,
                 $section,
@@ -426,11 +426,11 @@ if ( !class_exists('RMA_WC_Settings_Page') ) {
                     'id'           => $id,
                     'options'      => $this->options_general,
                     'select_options' => array(
-                        'no'         => esc_html__('no','rma-wc'),
-                        'yes'        => esc_html__('yes','rma-wc'),
+                        'no'         => esc_html__('no','run-my-accounts-for-woocommerce'),
+                        'yes'        => esc_html__('yes','run-my-accounts-for-woocommerce'),
                     ),
                     'class'        => 'payment-trigger-exclude',
-                    'description'  => esc_html__('Would you like to exclude payment options from the payment booking?', 'rma-wc' ),
+                    'description'  => esc_html__('Would you like to exclude payment options from the payment booking?', 'run-my-accounts-for-woocommerce' ),
                 )
             );
 
@@ -445,7 +445,7 @@ if ( !class_exists('RMA_WC_Settings_Page') ) {
                     'option_group' => $this->option_group_general,
                     'id'           => $id,
                     'value'        => $this->options_general[$id] ?? '',
-                    'description'  => esc_html__('Please select the payment options you want to exclude?', 'rma-wc' ),
+                    'description'  => esc_html__('Please select the payment options you want to exclude?', 'run-my-accounts-for-woocommerce' ),
                 )
             );
 
@@ -460,7 +460,7 @@ if ( !class_exists('RMA_WC_Settings_Page') ) {
 
             add_settings_section(
                 $section, // ID
-                esc_html__('Customer', 'rma-wc'),
+                esc_html__('Customer', 'run-my-accounts-for-woocommerce'),
                 '', // Callback
                 $this->option_page_general // Page
             );
@@ -468,7 +468,7 @@ if ( !class_exists('RMA_WC_Settings_Page') ) {
             $id = 'rma-create-customer';
             add_settings_field(
                 $id,
-                esc_html__('Create New Customer', 'rma-wc'),
+                esc_html__('Create New Customer', 'run-my-accounts-for-woocommerce'),
                 array( $this, 'option_input_checkbox_cb'),
                 $this->option_page_general,
                 $section,
@@ -476,14 +476,14 @@ if ( !class_exists('RMA_WC_Settings_Page') ) {
                     'option_group' => $this->option_group_general,
                     'id'           => $id,
                     'value'        => isset( $this->options_general[ $id ] ) ? $this->options_general[ $id ] : '',
-                    'description'  => esc_html__('Tick this if you want to create a customer as soon as a new user is created in WooCommerce (recommended if customer can register by itself).', 'rma-wc' )
+                    'description'  => esc_html__('Tick this if you want to create a customer as soon as a new user is created in WooCommerce (recommended if customer can register by itself).', 'run-my-accounts-for-woocommerce' )
                 )
             );
 
             $id = 'rma-customer-prefix';
             add_settings_field(
                 $id,
-                esc_html__('Customer Number Prefix', 'rma-wc'),
+                esc_html__('Customer Number Prefix', 'run-my-accounts-for-woocommerce'),
                 array( $this, 'option_input_text_cb'),
                 $this->option_page_general,
                 $section,
@@ -491,14 +491,14 @@ if ( !class_exists('RMA_WC_Settings_Page') ) {
                     'option_group' => $this->option_group_general,
                     'id'           => $id,
                     'value'        => isset( $this->options_general[ $id ] ) ? $this->options_general[ $id ] : '',
-                    'description'  => esc_html__('Prefix followed by user id will be  the customer number in Run my Accounts.', 'rma-wc' )
+                    'description'  => esc_html__('Prefix followed by user id will be  the customer number in Run my Accounts.', 'run-my-accounts-for-woocommerce' )
                 )
             );
 
             $id = 'rma-create-guest-customer';
             add_settings_field(
                 $id,
-                esc_html__('Create Account for Guests', 'rma-wc'),
+                esc_html__('Create Account for Guests', 'run-my-accounts-for-woocommerce'),
                 array( $this, 'option_input_checkbox_cb'),
                 $this->option_page_general,
                 $section,
@@ -506,14 +506,14 @@ if ( !class_exists('RMA_WC_Settings_Page') ) {
                     'option_group' => $this->option_group_general,
                     'id'           => $id,
                     'value'        => isset( $this->options_general[ $id ] ) ? $this->options_general[ $id ] : '',
-                    'description'  => esc_html__('Tick this if you want to create unique customer account in Run my Accounts for guest orders. Otherwise the guest orders will be booked on a pre-defined catch-all customer account.', 'rma-wc' )
+                    'description'  => esc_html__('Tick this if you want to create unique customer account in Run my Accounts for guest orders. Otherwise the guest orders will be booked on a pre-defined catch-all customer account.', 'run-my-accounts-for-woocommerce' )
                 )
             );
 
             $id = 'rma-guest-customer-prefix';
             add_settings_field(
                 $id,
-                esc_html__('Guest Customer Number Prefix', 'rma-wc'),
+                esc_html__('Guest Customer Number Prefix', 'run-my-accounts-for-woocommerce'),
                 array( $this, 'option_input_text_cb'),
                 $this->option_page_general,
                 $section,
@@ -521,14 +521,14 @@ if ( !class_exists('RMA_WC_Settings_Page') ) {
                     'option_group' => $this->option_group_general,
                     'id'           => $id,
                     'value'        => isset( $this->options_general[ $id ] ) ? $this->options_general[ $id ] : '',
-                    'description'  => esc_html__('Prefix followed by order id will be the customer number in Run my Accounts.', 'rma-wc' )
+                    'description'  => esc_html__('Prefix followed by order id will be the customer number in Run my Accounts.', 'run-my-accounts-for-woocommerce' )
                 )
             );
 
             $id = 'rma-guest-catch-all';
             add_settings_field(
                 $id,
-                esc_html__('Catch-All Account', 'rma-wc'),
+                esc_html__('Catch-All Account', 'run-my-accounts-for-woocommerce'),
                 array( $this, 'rma_customer_accounts_cb'), // individual callback
                 $this->option_page_general,
                 $section,
@@ -548,7 +548,7 @@ if ( !class_exists('RMA_WC_Settings_Page') ) {
 
             add_settings_section(
                 $section, // ID
-                esc_html__('Product', 'rma-wc'),
+                esc_html__('Product', 'run-my-accounts-for-woocommerce'),
                 '', // Callback
                 $this->option_page_general // Page
             );
@@ -556,7 +556,7 @@ if ( !class_exists('RMA_WC_Settings_Page') ) {
             $id = 'rma-product-fallback_id';
             add_settings_field(
                 $id,
-                esc_html__('Fallback product sku', 'rma-wc'),
+                esc_html__('Fallback product sku', 'run-my-accounts-for-woocommerce'),
                 array( $this, 'rma_parts_cb'), // individual callback
                 $this->option_page_general,
                 $section,
@@ -564,7 +564,7 @@ if ( !class_exists('RMA_WC_Settings_Page') ) {
                     'option_group' => $this->option_group_general,
                     'id'           => $id,
                     'value'        => isset( $this->options_general[ $id ] ) ? $this->options_general[ $id ] : '',
-                    'description'  => esc_html__('This is a fallback sku in Run My Accounts which will be used to create an invoice if the WooCommerce sku of a product is not available in Run My Accounts. Leave it empty if you do not want to use it. In this case the invoice cannot be created if the sku is not available in Run My Accounts.', 'rma-wc' )
+                    'description'  => esc_html__('This is a fallback sku in Run My Accounts which will be used to create an invoice if the WooCommerce sku of a product is not available in Run My Accounts. Leave it empty if you do not want to use it. In this case the invoice cannot be created if the sku is not available in Run My Accounts.', 'run-my-accounts-for-woocommerce' )
                 )
             );
 
@@ -579,7 +579,7 @@ if ( !class_exists('RMA_WC_Settings_Page') ) {
 
             add_settings_section(
                 $section, // ID
-                esc_html__('Shipping', 'rma-wc'),
+                esc_html__('Shipping', 'run-my-accounts-for-woocommerce'),
                 '', // Callback
                 $this->option_page_general // Page
             );
@@ -587,7 +587,7 @@ if ( !class_exists('RMA_WC_Settings_Page') ) {
             $id = 'rma-shipping-id';
             add_settings_field(
                 $id,
-                esc_html__('SKU', 'rma-wc'),
+                esc_html__('SKU', 'run-my-accounts-for-woocommerce'),
                 array( $this, 'rma_parts_cb'), // individual callback
                 $this->option_page_general,
                 $section,
@@ -595,14 +595,14 @@ if ( !class_exists('RMA_WC_Settings_Page') ) {
                     'option_group' => $this->option_group_general,
                     'id'           => $id,
                     'value'        => isset( $this->options_general[ $id ] ) ? $this->options_general[ $id ] : '',
-                    'description'  => esc_html__('To book the shipping costs, you have to select a dedicated product in Run my Accounts. The shipping costs will be booked on this product id.', 'rma-wc' )
+                    'description'  => esc_html__('To book the shipping costs, you have to select a dedicated product in Run my Accounts. The shipping costs will be booked on this product id.', 'run-my-accounts-for-woocommerce' )
                 )
             );
 
             $id = 'rma-shipping-text';
             add_settings_field(
                 $id,
-                esc_html__('Description', 'rma-wc'),
+                esc_html__('Description', 'run-my-accounts-for-woocommerce'),
                 array( $this, 'option_input_text_cb'),
                 $this->option_page_general,
                 $section,
@@ -610,7 +610,7 @@ if ( !class_exists('RMA_WC_Settings_Page') ) {
                     'option_group' => $this->option_group_general,
                     'id'           => $id,
                     'value'        => isset( $this->options_general[ $id ] ) ? $this->options_general[ $id ] : '',
-                    'description'  => esc_html__('Optionally, the text on the invoice for shipping. Usually it is the text from the shipping method chosen by the customer.', 'rma-wc' )
+                    'description'  => esc_html__('Optionally, the text on the invoice for shipping. Usually it is the text from the shipping method chosen by the customer.', 'run-my-accounts-for-woocommerce' )
                 )
             );
 
@@ -626,7 +626,7 @@ if ( !class_exists('RMA_WC_Settings_Page') ) {
 
             add_settings_section(
                 $section, // ID
-                esc_html__('Error Log', 'rma-wc'),
+                esc_html__('Error Log', 'run-my-accounts-for-woocommerce'),
                 '', // Callback
                 $this->option_page_general // Page
             );
@@ -634,7 +634,7 @@ if ( !class_exists('RMA_WC_Settings_Page') ) {
             $id = 'rma-loglevel';
             add_settings_field(
                 $id,
-                esc_html__('Log Level', 'rma-wc'),
+                esc_html__('Log Level', 'run-my-accounts-for-woocommerce'),
                 array( $this, 'option_select_cb'),
                 $this->option_page_general,
                 $section,
@@ -643,8 +643,8 @@ if ( !class_exists('RMA_WC_Settings_Page') ) {
                     'id'             => $id,
                     'options'        => $this->options_general,
                     'select_options' => array(
-                        'error'      => esc_html__('error','rma-wc'),
-                        'complete'   => esc_html__('complete','rma-wc'),
+                        'error'      => esc_html__('error','run-my-accounts-for-woocommerce'),
+                        'complete'   => esc_html__('complete','run-my-accounts-for-woocommerce'),
                     )
                 )
             );
@@ -652,7 +652,7 @@ if ( !class_exists('RMA_WC_Settings_Page') ) {
             $id = 'rma-log-send-email';
             add_settings_field(
                 $id,
-                esc_html__('Send email', 'rma-wc'),
+                esc_html__('Send email', 'run-my-accounts-for-woocommerce'),
                 array( $this, 'option_select_cb'),
                 $this->option_page_general,
                 $section,
@@ -661,10 +661,10 @@ if ( !class_exists('RMA_WC_Settings_Page') ) {
                     'id'             => $id,
                     'options'        => $this->options_general,
                     'select_options' => array(
-                        'no'         => esc_html__('no','rma-wc'),
-                        'yes'        => esc_html__('yes','rma-wc'),
+                        'no'         => esc_html__('no','run-my-accounts-for-woocommerce'),
+                        'yes'        => esc_html__('yes','run-my-accounts-for-woocommerce'),
                     ),
-                    'description'  => esc_html__('Receive emails on errors and general notifications.', 'rma-wc' )
+                    'description'  => esc_html__('Receive emails on errors and general notifications.', 'run-my-accounts-for-woocommerce' )
 
                 )
             );
@@ -672,7 +672,7 @@ if ( !class_exists('RMA_WC_Settings_Page') ) {
             $id = 'rma-log-email';
             add_settings_field(
                 $id,
-                esc_html__('email', 'rma-wc'),
+                esc_html__('email', 'run-my-accounts-for-woocommerce'),
                 array( $this, 'option_input_text_cb'),
                 $this->option_page_general,
                 $section,
@@ -680,7 +680,7 @@ if ( !class_exists('RMA_WC_Settings_Page') ) {
                     'option_group' => $this->option_group_general,
                     'id'           => $id,
                     'value'        => isset( $this->options_general[ $id ] ) ? $this->options_general[ $id ] : get_option( 'admin_email' ),
-                    'description'  => esc_html__( 'Get an email to this recipient. Administrators email address is used by default.', 'rma-wc' )
+                    'description'  => esc_html__( 'Get an email to this recipient. Administrators email address is used by default.', 'run-my-accounts-for-woocommerce' )
                 )
             );
 
@@ -696,7 +696,7 @@ if ( !class_exists('RMA_WC_Settings_Page') ) {
 
             add_settings_section(
                 $section, // ID
-                esc_html__('Misc', 'rma-wc'),
+                esc_html__('Misc', 'run-my-accounts-for-woocommerce'),
                 '', // Callback
                 $this->option_page_general // Page
             );
@@ -704,7 +704,7 @@ if ( !class_exists('RMA_WC_Settings_Page') ) {
             $id = 'rma-delete-settings';
             add_settings_field(
                 $id,
-                esc_html__('Delete Settings', 'rma-wc'),
+                esc_html__('Delete Settings', 'run-my-accounts-for-woocommerce'),
                 array( $this, 'option_select_cb'),
                 $this->option_page_general,
                 $section,
@@ -713,10 +713,10 @@ if ( !class_exists('RMA_WC_Settings_Page') ) {
                     'id'             => $id,
                     'options'        => $this->options_general,
                     'select_options' => array(
-                        'no'         => esc_html__('no','rma-wc'),
-                        'yes'        => esc_html__('yes','rma-wc'),
+                        'no'         => esc_html__('no','run-my-accounts-for-woocommerce'),
+                        'yes'        => esc_html__('yes','run-my-accounts-for-woocommerce'),
                     ),
-                    'description'  => esc_html__('Remove all plugin data when using the "Delete" link on the plugins screen', 'rma-wc' ),
+                    'description'  => esc_html__('Remove all plugin data when using the "Delete" link on the plugins screen', 'run-my-accounts-for-woocommerce' ),
 
                 )
             );
@@ -729,7 +729,7 @@ if ( !class_exists('RMA_WC_Settings_Page') ) {
 
             add_settings_section(
                 $section, // ID
-                esc_html__('Receivables Account', 'rma-wc'), // Title
+                esc_html__('Receivables Account', 'run-my-accounts-for-woocommerce'), // Title
                 array( $this, 'section_info_accounting' ), // Callback
                 $this->option_page_accounting // Page
             );
@@ -762,7 +762,7 @@ if ( !class_exists('RMA_WC_Settings_Page') ) {
 
             add_settings_section(
                 $section, // ID
-                esc_html__('Payment Account', 'rma-wc'), // Title
+                esc_html__('Payment Account', 'run-my-accounts-for-woocommerce'), // Title
                 array( $this, 'section_info_payment' ), // Callback
                 $this->option_page_accounting // Page
             );
@@ -797,7 +797,7 @@ if ( !class_exists('RMA_WC_Settings_Page') ) {
             $section = 'collective_invoice_settings';
             add_settings_section(
                 $section, // ID
-                esc_html__( 'Collective Invoice', 'rma-wc'), // Title
+                esc_html__( 'Collective Invoice', 'run-my-accounts-for-woocommerce'), // Title
                 array( $this, 'section_info_collective_invoice' ), // Callback
                 $this->option_page_collective_invoice // Page
             );
@@ -811,7 +811,7 @@ if ( !class_exists('RMA_WC_Settings_Page') ) {
             $id = 'collective_invoice_next_text';
             add_settings_field(
                 $id,
-                esc_html__('Next Invoice Date', 'rma-wc'),
+                esc_html__('Next Invoice Date', 'run-my-accounts-for-woocommerce'),
                 array( $this, 'plain_text_cb'),
                 $this->option_page_collective_invoice,
                 $section,
@@ -824,7 +824,7 @@ if ( !class_exists('RMA_WC_Settings_Page') ) {
             $id = 'collective_invoice_period';
             add_settings_field(
                 $id,
-                esc_html__('Invoice Period', 'rma-wc'),
+                esc_html__('Invoice Period', 'run-my-accounts-for-woocommerce'),
                 array( $this, 'option_select_cb'),
                 $this->option_page_collective_invoice,
                 $section,
@@ -833,11 +833,11 @@ if ( !class_exists('RMA_WC_Settings_Page') ) {
                     'id'           => $id,
                     'options'      => $this->options_collective_invoice,
                     'select_options'  => array(
-                        'week'        => esc_html__( 'Once a week','rma-wc'),
-                        'second_week' => esc_html__( 'Every second week','rma-wc'),
-                        'month'       => esc_html__( 'Every month (first weekday of the month)','rma-wc'),
+                        'week'        => esc_html__( 'Once a week','run-my-accounts-for-woocommerce'),
+                        'second_week' => esc_html__( 'Every second week','run-my-accounts-for-woocommerce'),
+                        'month'       => esc_html__( 'Every month (first weekday of the month)','run-my-accounts-for-woocommerce'),
                     ),
-                    'description'  => esc_html__('For what period of time should collective invoices be created?', 'rma-wc' ),
+                    'description'  => esc_html__('For what period of time should collective invoices be created?', 'run-my-accounts-for-woocommerce' ),
                     'class'        => 'collective-invoice__period'
                 )
             );
@@ -845,7 +845,7 @@ if ( !class_exists('RMA_WC_Settings_Page') ) {
             $id = 'collective_invoice_weekday';
             add_settings_field(
                 $id,
-                esc_html__('Weekday', 'rma-wc'),
+                esc_html__('Weekday', 'run-my-accounts-for-woocommerce'),
                 array( $this, 'option_input_multiple_radio_cb'),
                 $this->option_page_collective_invoice,
                 $section,
@@ -853,15 +853,15 @@ if ( !class_exists('RMA_WC_Settings_Page') ) {
                     'option_group' => $this->option_group_collective_invoice,
                     'id'           => $id,
                     'value'        => $this->options_collective_invoice[$id] ?? '',
-                    'description'  => esc_html__('Please select the days of the week on which a collective invoice should be created.', 'rma-wc' ),
+                    'description'  => esc_html__('Please select the days of the week on which a collective invoice should be created.', 'run-my-accounts-for-woocommerce' ),
                     'values'       => array(
-                            'monday'    => esc_html__( 'Monday', 'rma-wc' ),
-                            'tuesday'   => esc_html__( 'Tuesday', 'rma-wc' ),
-                            'wednesday' => esc_html__( 'Wednesday', 'rma-wc' ),
-                            'thursday'  => esc_html__( 'Thursday', 'rma-wc' ),
-                            'friday'    => esc_html__( 'Friday', 'rma-wc' ),
-                            'saturday'  => esc_html__( 'Saturday', 'rma-wc' ),
-                            'sunday'    => esc_html__( 'Sunday', 'rma-wc' ),
+                            'monday'    => esc_html__( 'Monday', 'run-my-accounts-for-woocommerce' ),
+                            'tuesday'   => esc_html__( 'Tuesday', 'run-my-accounts-for-woocommerce' ),
+                            'wednesday' => esc_html__( 'Wednesday', 'run-my-accounts-for-woocommerce' ),
+                            'thursday'  => esc_html__( 'Thursday', 'run-my-accounts-for-woocommerce' ),
+                            'friday'    => esc_html__( 'Friday', 'run-my-accounts-for-woocommerce' ),
+                            'saturday'  => esc_html__( 'Saturday', 'run-my-accounts-for-woocommerce' ),
+                            'sunday'    => esc_html__( 'Sunday', 'run-my-accounts-for-woocommerce' ),
                     ),
                     'line_break'  => false,
                     'class'       => 'collective-invoice__weekday'
@@ -871,7 +871,7 @@ if ( !class_exists('RMA_WC_Settings_Page') ) {
             $id = 'collective_invoice_span';
             add_settings_field(
                 $id,
-                esc_html__('Invoice Span', 'rma-wc'),
+                esc_html__('Invoice Span', 'run-my-accounts-for-woocommerce'),
                 array( $this, 'option_select_cb'),
                 $this->option_page_collective_invoice,
                 $section,
@@ -880,11 +880,11 @@ if ( !class_exists('RMA_WC_Settings_Page') ) {
                     'id'           => $id,
                     'options'      => $this->options_collective_invoice,
                     'select_options' => array(
-                        'all'        => esc_html__( 'All unbilled invoices','rma-wc'),
-                        'per_week'   => esc_html__( 'Day of creation and a week before','rma-wc'),
-                        'per_month'  => esc_html__( 'Day of creation and a month before','rma-wc'),
+                        'all'        => esc_html__( 'All unbilled invoices','run-my-accounts-for-woocommerce'),
+                        'per_week'   => esc_html__( 'Day of creation and a week before','run-my-accounts-for-woocommerce'),
+                        'per_month'  => esc_html__( 'Day of creation and a month before','run-my-accounts-for-woocommerce'),
                     ),
-                    'description'  => esc_html__('For what period of time should collective invoices be created?', 'rma-wc' ),
+                    'description'  => esc_html__('For what period of time should collective invoices be created?', 'run-my-accounts-for-woocommerce' ),
 
                 )
             );
@@ -892,15 +892,15 @@ if ( !class_exists('RMA_WC_Settings_Page') ) {
         }
 
         public function section_info_accounting() {
-            esc_html_e('You can specify a dedicated receivable account for each active payment gateway.', 'rma-wc');
+            esc_html_e('You can specify a dedicated receivable account for each active payment gateway.', 'run-my-accounts-for-woocommerce');
         }
 
         public function section_info_collective_invoice() {
-            esc_html_e('Set up the handling of the collective invoices', 'rma-wc');
+            esc_html_e('Set up the handling of the collective invoices', 'run-my-accounts-for-woocommerce');
         }
 
         public function section_info_payment() {
-            esc_html_e('You can specify a dedicated payment account for each active payment gateway.', 'rma-wc');
+            esc_html_e('You can specify a dedicated payment account for each active payment gateway.', 'run-my-accounts-for-woocommerce');
         }
 
         /**
@@ -912,7 +912,7 @@ if ( !class_exists('RMA_WC_Settings_Page') ) {
 
             add_settings_section(
                 $section, // ID
-                esc_html__('Error Log', 'rma-wc'),
+                esc_html__('Error Log', 'run-my-accounts-for-woocommerce'),
                 array( $this, 'section_info_log' ), // Callback
                 $this->option_page_log // Page
             );
@@ -929,7 +929,7 @@ if ( !class_exists('RMA_WC_Settings_Page') ) {
         }
 
         public function section_info_log() {
-            esc_html_e('This page shows you the error logs.', 'rma-wc');
+            esc_html_e('This page shows you the error logs.', 'run-my-accounts-for-woocommerce');
         }
 
         /**
@@ -1159,8 +1159,8 @@ if ( !class_exists('RMA_WC_Settings_Page') ) {
                 'id'           => $id,
                 'options'      => $this->options_general,
                 'select_options' => array(
-                    'test' => esc_html__('Sandbox Test','rma-wc'),
-                    'live' => esc_html__('Production','rma-wc'),
+                    'test' => esc_html__('Sandbox Test','run-my-accounts-for-woocommerce'),
+                    'live' => esc_html__('Production','run-my-accounts-for-woocommerce'),
                 )
             );
 
@@ -1174,9 +1174,9 @@ if ( !class_exists('RMA_WC_Settings_Page') ) {
             unset( $RMA_WC_API );
 
             if ( ! $options )
-                echo '&nbsp;<span style="color: red; font-weight: bold">' . __('No connection. Please check your settings.', 'rma-wc') . '</span>';
+                echo '&nbsp;<span style="color: red; font-weight: bold">' . __('No connection. Please check your settings.', 'run-my-accounts-for-woocommerce') . '</span>';
             else
-                echo '&nbsp;<span style="color: green">' . __('Connection successful.', 'rma-wc') . '</span>';
+                echo '&nbsp;<span style="color: green">' . __('Connection successful.', 'run-my-accounts-for-woocommerce') . '</span>';
 
         }
 
@@ -1196,12 +1196,12 @@ if ( !class_exists('RMA_WC_Settings_Page') ) {
 
             if( !isset( $options ) || !$options ) {
 
-                $options = array('' => __( 'Error while connecting to RMA. Please check your settings.', 'rma-wc' ) );
+                $options = array('' => __( 'Error while connecting to RMA. Please check your settings.', 'run-my-accounts-for-woocommerce' ) );
 
             }
             else {
 
-                $options = array('' => __( 'Select...', 'rma-wc' ) ) + $options;
+                $options = array('' => __( 'Select...', 'run-my-accounts-for-woocommerce' ) ) + $options;
 
             }
 
@@ -1241,12 +1241,12 @@ if ( !class_exists('RMA_WC_Settings_Page') ) {
 
             if( !isset( $parts ) || !$parts ) {
 
-                $options = array('' => __( 'Error while connecting to RMA. Please check your settings.', 'rma-wc' ) );
+                $options = array('' => __( 'Error while connecting to RMA. Please check your settings.', 'run-my-accounts-for-woocommerce' ) );
 
             }
             else {
 
-                $options = array('' => __( 'Select...', 'rma-wc' ) ) + $parts;
+                $options = array('' => __( 'Select...', 'run-my-accounts-for-woocommerce' ) ) + $parts;
 
             }
 
@@ -1318,7 +1318,7 @@ if ( !class_exists('RMA_WC_Settings_Page') ) {
 
                 $this->rma_log_count = 0;
 
-                return esc_html__('No error data was found.', 'rma-wc');
+                return esc_html__('No error data was found.', 'run-my-accounts-for-woocommerce');
 
             }
 
@@ -1367,7 +1367,7 @@ if ( !class_exists('RMA_WC_Settings_Page') ) {
             if ( 0 < $this->rma_log_count || !empty( $this->rma_log_count ) || !isset( $this->rma_log_count )) {
                 echo sprintf(
                     '<a href="#" id="flush-table" class="button-primary">%s</a>&nbsp;<span class="spinner">',
-                    esc_html__('Flush Table', 'rma-wc')
+                    esc_html__('Flush Table', 'run-my-accounts-for-woocommerce')
                 );
             }
 
@@ -1390,7 +1390,7 @@ if ( !class_exists('RMA_WC_Settings_Page') ) {
 
                     if($wpdb->last_error !== '') {
 
-                        esc_html_e( 'An error occurred while flushing the error log.', 'rma-wc');
+                        esc_html_e( 'An error occurred while flushing the error log.', 'run-my-accounts-for-woocommerce');
 
                         $wpdb->print_error();
 

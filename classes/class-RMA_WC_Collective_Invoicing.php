@@ -347,8 +347,8 @@ class RMA_WC_Collective_Invoicing {
         if( 0 < count( $created_invoices ) && SENDLOGEMAIL ) {
 
             $headers = array('Content-Type: text/html; charset=UTF-8');
-            $email_content = sprintf( esc_html_x('The following collective invoices were sent: %s', 'email', 'rma-wc'), implode(', ', $created_invoices ) );
-            wp_mail( LOGEMAIL, esc_html_x( 'Collective invoices were sent', 'email', 'rma-wc' ), $email_content, $headers);
+            $email_content = sprintf( esc_html_x('The following collective invoices were sent: %s', 'email', 'run-my-accounts-for-woocommerce'), implode(', ', $created_invoices ) );
+            wp_mail( LOGEMAIL, esc_html_x( 'Collective invoices were sent', 'email', 'run-my-accounts-for-woocommerce' ), $email_content, $headers);
 
         }
 

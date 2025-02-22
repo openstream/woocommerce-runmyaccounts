@@ -110,7 +110,7 @@ class RMA_WC_Payment {
 
             $status         = 'paid';
 
-            $message        = sprintf( esc_html_x( 'Payment %s %s booked on account %s', 'Order Note', 'rma-wc'), $data['payment']['amount_paid'], $data['payment']['currency'], $data['payment']['payment_accno'] );
+            $message        = sprintf( esc_html_x( 'Payment %s %s booked on account %s', 'Order Note', 'run-my-accounts-for-woocommerce'), $data['payment']['amount_paid'], $data['payment']['currency'], $data['payment']['payment_accno'] );
 
             // add order note
             $order          = wc_get_order(  $this->order_id );
@@ -131,7 +131,7 @@ class RMA_WC_Payment {
             $log_values = array(
                 'status' => $status,
                 'section_id' => $this->order_id,
-                'section' => esc_html_x('Payment', 'Log Section', 'rma-wc'),
+                'section' => esc_html_x('Payment', 'Log Section', 'run-my-accounts-for-woocommerce'),
                 'mode' => (new RMA_WC_API)->rma_mode(),
                 'message' => $message );
 
@@ -157,7 +157,7 @@ class RMA_WC_Payment {
 
         if ( isset( $this->settings[ $name ] ) && 1 == $this->settings[ $name ] ) {
 
-            $message        = esc_html_x( 'Payment not booked in Run my Accounts. Payment method is excluded for payment booking.', 'Order Note', 'rma-wc');
+            $message        = esc_html_x( 'Payment not booked in Run my Accounts. Payment method is excluded for payment booking.', 'Order Note', 'run-my-accounts-for-woocommerce');
             // add order note
             $order->add_order_note( $message );
 
