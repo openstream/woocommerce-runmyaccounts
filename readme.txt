@@ -2,7 +2,7 @@
 * Contributors: openstream
 * Tags: Run my Accounts, WooCommerce, Billing
 * Requires at least: 4.7
-* Tested up to: 6.7
+* Tested up to: 6.8
 * Stable tag: 1.8.0
 * Requires PHP: 7.2
 * License: GPLv2

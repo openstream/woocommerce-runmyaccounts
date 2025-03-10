@@ -27,7 +27,6 @@ if ( !defined('ABSPATH' ) ) exit;
 
 // Set full path
 if (!defined('RMA_WC_PFAD')) { define('RMA_WC_PFAD', plugin_dir_path(__FILE__)); }
-if (!defined('RMA_WC_LOG_TABLE')) { define('RMA_WC_LOG_TABLE', 'rma_wc_log'); }
 
 /**
  * Class autoload for plugin classes which contains RMA in the class name
@@ -55,6 +54,19 @@ if ( is_admin() ) {
 
     $my_settings_page = new RMA_WC_Settings_Page();
 
+	// delete table from deprecated log, which is moved to WC_LOG
+	if( get_option( 'wc_rma_db_version' ) ) {
+
+		global $wpdb;
+
+		// drop table
+		$wpdb->query( 'DROP TABLE IF EXISTS ' . $wpdb->prefix . 'rma_wc_log;');
+
+		delete_option('wc_rma_db_version');
+		delete_option('wc_rma_version');
+
+	}
+
 }
 
 /*
@@ -68,9 +80,7 @@ $t = new RMA_WC_Collective_Invoicing();
  * Integration of WooCommerce Rental & Booking System if activated
  * https://codecanyon.net/item/rnb-woocommerce-rental-booking-system/14835145
  */
-$active_plugins   = apply_filters( 'active_plugins', get_option( 'active_plugins' ) );
-$required_plugins = ['woocommerce-rental-and-booking'];
-if ( count( array_intersect( $required_plugins, $active_plugins ) ) !== count( $required_plugins ) ) {
+if ( class_exists( 'RedQ_Rental_And_Bookings' ) ) {
 
     $RMA_RnB = new RMA_WC_Rental_And_Booking();
 

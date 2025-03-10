@@ -16,63 +16,12 @@ if ( !class_exists('RMA_WC_Backend_Abstract') ) {
     abstract class RMA_WC_Backend_Abstract {
 
         const VERSION = '1.7.1';
-        const DB_VERSION = '1.1.0';
-
-        private static function _table_log() {
-		    global $wpdb;
-		    return $wpdb->prefix . RMA_WC_LOG_TABLE;
-	    }
-
-        public function create() {
-
-            /**
-             * Create Custom Table
-             * https://codex.wordpress.org/Creating_Tables_with_Plugins
-             */
-
-	        global $wpdb;
-
-	        if ($wpdb->get_var("SHOW TABLES LIKE '".self::_table_log()."'") != self::_table_log()) {
-
-		        $charset_collate = $wpdb->get_charset_collate();
-
-		        $sql = 'CREATE TABLE ' . self::_table_log() . ' (
-                    id mediumint(9) NOT NULL AUTO_INCREMENT,
-                    time datetime DEFAULT "0000-00-00 00:00:00" NOT NULL,
-                    status text NOT NULL,
-                    section text NOT NULL, 
-                    section_id text NOT NULL,
-                    mode text NOT NULL,
-                    message text NOT NULL, 
-                    UNIQUE KEY id (id) ) ' . $charset_collate . ';';
-
-		        require_once(ABSPATH . 'wp-admin/includes/upgrade.php');
-
-		        dbDelta($sql);
-
-	        }
-
-        }
 
         /**
          * Update Custom Tables
          * is called in class-backend.php with plugins_loaded()
          */
         public function update() {
-            /**
-             * get_option() WP Since: 1.0.0
-             * https://codex.wordpress.org/Function_Reference/get_option
-             */
-            if ( self::DB_VERSION > get_option( 'wc_rma_db_version' ) ) { // update option if value is different
-
-                // database update if necessary
-                /**
-                 * update_option() WP Since: 1.0.0
-                 * https://codex.wordpress.org/Function_Reference/update_option
-                 */
-                update_option("wc_rma_db_version", self::DB_VERSION);
-
-            }
 
             if ( self::VERSION > get_option( 'wc_rma_version' ) ) { // update option if value is different
 
@@ -89,7 +38,7 @@ if ( !class_exists('RMA_WC_Backend_Abstract') ) {
 			    global $wpdb;
 
 			    // drop table
-			    $wpdb->query('DROP TABLE IF EXISTS ' . self::_table_log() . ';');
+			    $wpdb->query('DROP TABLE IF EXISTS ' . $wpdb->prefix . 'rma_wc_log;');
 
 			    // delete all options
 			    delete_option('wc_rma_db_version');
@@ -106,7 +55,7 @@ if ( !class_exists('RMA_WC_Backend_Abstract') ) {
              * https://codex.wordpress.org/Function_Reference/add_option
              */
             add_option('wc_rma_version', self::VERSION);
-            add_option('wc_rma_db_version', self::DB_VERSION);
+
         }
 
         public function init_hooks() {
