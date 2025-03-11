@@ -23,65 +23,21 @@
  * License URI:          https://www.gnu.org/licenses/gpl-2.0.html
  */
 
-if ( !defined('ABSPATH' ) ) exit;
+if ( ! defined('ABSPATH' ) ) exit;
 
 // Set full path
-if (!defined('RMA_WC_PFAD')) { define('RMA_WC_PFAD', plugin_dir_path(__FILE__)); }
+if ( ! defined('RMA_WC_PFAD') ) {
+	define('RMA_WC_PFAD', trailingslashit( plugin_dir_path( __FILE__) ) );
+}
 
 /**
- * Class autoload for plugin classes which contains RMA in the class name
+ * Load the main file only if WooCommerce is full loaded
  *
- * @param $class_name
+ * @return void
  */
-function rma_wc_autoloader( $class_name )
-{
-    if ( false !== strpos( $class_name, 'RMA' ) ) {
-        require_once plugin_dir_path(__FILE__) . 'classes/class-' . $class_name . '.php';
-    }
-}
+function rma_woocommerce_loaded_action(){
 
-spl_autoload_register('rma_wc_autoloader');
-
-// LOAD BACKEND ////////////////////////////////////////////////////////////////
-
-if ( is_admin() ) {
-
-    // Instantiate backend class
-    $RMA_WC_BACKEND = new RMA_WC_Backend();
-
-    register_activation_hook(__FILE__, array('RMA_WC_Backend', 'activate') );
-    register_deactivation_hook(__FILE__, array('RMA_WC_Backend', 'deactivate') );
-
-    $my_settings_page = new RMA_WC_Settings_Page();
-
-	// delete table from deprecated log, which is moved to WC_LOG
-	if( get_option( 'wc_rma_db_version' ) ) {
-
-		global $wpdb;
-
-		// drop table
-		$wpdb->query( 'DROP TABLE IF EXISTS ' . $wpdb->prefix . 'rma_wc_log;');
-
-		delete_option('wc_rma_db_version');
-		delete_option('wc_rma_version');
-
-	}
+	include_once RMA_WC_PFAD . '/rma-wc-main.php';
 
 }
-
-/*
- * Instantiate Frontend Class
- */
-$RMA_WC_FRONTEND = new RMA_WC_Frontend();
-
-$t = new RMA_WC_Collective_Invoicing();
-
-/*
- * Integration of WooCommerce Rental & Booking System if activated
- * https://codecanyon.net/item/rnb-woocommerce-rental-booking-system/14835145
- */
-if ( class_exists( 'RedQ_Rental_And_Bookings' ) ) {
-
-    $RMA_RnB = new RMA_WC_Rental_And_Booking();
-
-}
+add_action( 'woocommerce_loaded', 'rma_woocommerce_loaded_action' );
