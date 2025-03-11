@@ -335,8 +335,8 @@ if ( !class_exists('RMA_WC_API') ) {
 					'status'         => 'OPEN',
 					'currency'       => $order_details[ 'currency' ],
 					'ar_accno'       => $order_details[ 'ar_accno' ],
-					'transdate'      => date(DateTimeInterface::RFC3339, time() ),
-					'duedate'        => $order_details[ 'duedate' ], //date( DateTime::RFC3339, time() ),
+					'transdate'      => gmdate(DateTimeInterface::RFC3339, time() ),
+					'duedate'        => $order_details[ 'duedate' ], //gmdate( DateTime::RFC3339, time() ),
 					'description'    => $description,
 					'notes'          => '',
 					'intnotes'       => $order_details[ 'notes' ],
@@ -397,7 +397,7 @@ if ( !class_exists('RMA_WC_API') ) {
 			return array(
 				'customernumber'    => $customer_prefix . $user_id,
 				'name'              => ( $is_company ? $customer->get_billing_company() : $customer->get_billing_first_name() . ' ' . $customer->get_billing_last_name() ),
-				'created'           => date('Y-m-d') . 'T00:00:00+01:00',
+				'created'           => gmdate('Y-m-d') . 'T00:00:00+01:00',
 				'salutation'        => ( 1 == get_user_meta( $user_id, 'billing_title', true ) ? __('Mr.', 'run-my-accounts-for-woocommerce') : __('Ms.', 'run-my-accounts-for-woocommerce') ),
 				'firstname'         => $customer->get_billing_first_name(),
 				'lastname'          => $customer->get_billing_last_name(),
@@ -446,7 +446,7 @@ if ( !class_exists('RMA_WC_API') ) {
 			return array(
 				'customernumber'    => $customer_prefix . $order_id,
 				'name'              => ( $is_company ? $order->get_billing_company() : $order->get_billing_first_name() . ' ' . $order->get_billing_last_name() ),
-				'created'           => date('Y-m-d') . 'T00:00:00+01:00',
+				'created'           => gmdate('Y-m-d') . 'T00:00:00+01:00',
 				'salutation'        => ( 1 == $order->get_meta( '_billing_title', true ) ? __('Mr.', 'run-my-accounts-for-woocommerce') : __('Ms.', 'run-my-accounts-for-woocommerce') ),
 				'firstname'         => $order->get_billing_first_name(),
 				'lastname'          => $order->get_billing_last_name(),
@@ -541,7 +541,7 @@ if ( !class_exists('RMA_WC_API') ) {
 			// Set payment period - if user payment period not exist set to global period
 			$payment_period                    = $user_payment_period ? $user_payment_period : RMA_GLOBAL_PAYMENT_PERIOD;
 			// Calculate duedate (now + payment period)
-			$order_details[ 'duedate' ]        = date( DateTime::RFC3339, time() + ( $payment_period*60*60*24 ) );
+			$order_details[ 'duedate' ]        = gmdate( DateTime::RFC3339, time() + ( $payment_period*60*60*24 ) );
 
 			// add shipping address if needed
 			$order_details[ 'notes' ]          = '';
