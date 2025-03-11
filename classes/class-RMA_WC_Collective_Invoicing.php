@@ -40,7 +40,7 @@ class RMA_WC_Collective_Invoicing {
 
         if( !empty( $dates ) ) {
 
-            $this->settings[ 'collective_invoice_next_date_ts' ] = strtotime(date('Y-m-d', $dates[ 'next_date_ts' ] ) );
+            $this->settings[ 'collective_invoice_next_date_ts' ] = strtotime(gmdate('Y-m-d', $dates[ 'next_date_ts' ] ) );
             update_option( 'wc_rma_settings_collective_invoice', $this->settings );
 
         }
@@ -80,7 +80,7 @@ class RMA_WC_Collective_Invoicing {
                 $possible_today_cron_ts_utc = $dt->getTimestamp();
 
                 // if weekday is today and the next cron run is today
-                if( date('N', strtotime( 'now' ) ) == $weekday_number &&
+                if( gmdate('N', strtotime( 'now' ) ) == $weekday_number &&
                     $next_time[ 'next_time_ts_utc' ] == $possible_today_cron_ts_utc ) {
 
                     $next_date_ts_utc = strtotime('now');
@@ -160,8 +160,8 @@ class RMA_WC_Collective_Invoicing {
 
                     return array(
                         'next_time_ts_utc' => $next_ts_utc,
-                        'time_utc'         => date( get_option( 'time_format' ) . ':s', $next_ts_utc ),
-                        'time'             => get_date_from_gmt( date( get_option( 'time_format' ), $next_ts_utc ), get_option( 'time_format' ) )
+                        'time_utc'         => gmdate( get_option( 'time_format' ) . ':s', $next_ts_utc ),
+                        'time'             => get_date_from_gmt( gmdate( get_option( 'time_format' ), $next_ts_utc ), get_option( 'time_format' ) )
                     );
 
                 }
@@ -261,7 +261,7 @@ class RMA_WC_Collective_Invoicing {
         $created_invoices   = array();
 
         // get the timestamp with the current date, but without time
-        $current_date = strtotime(date('Y-m-d', time() ) );
+        $current_date = strtotime(gmdate('Y-m-d', time() ) );
 
         // if we do not have to create collective invoices today
         if( $current_date != $this->settings[ 'collective_invoice_next_date_ts' ] ) {
@@ -365,7 +365,7 @@ class RMA_WC_Collective_Invoicing {
         // set the next invoice date
         if( !empty( $dates ) ) {
 
-            $this->settings[ 'collective_invoice_next_date_ts' ] = strtotime(date('Y-m-d', $dates[ 'next_date_ts' ] ) );
+            $this->settings[ 'collective_invoice_next_date_ts' ] = strtotime(gmdate('Y-m-d', $dates[ 'next_date_ts' ] ) );
             update_option( 'wc_rma_settings_collective_invoice', $this->settings );
 
         }

@@ -189,7 +189,7 @@ class RMA_WC_Payment {
             'payment' => array(
                 'id'             => $this->order_id,
                 'invnumber'      => $this->invoice,
-                'datepaid'       => date(DATE_RFC3339), //$order->get_date_paid() ,//date( DateTime::RFC3339, time() ),
+                'datepaid'       => gmdate(DATE_RFC3339), //$order->get_date_paid() ,//gmdate( DateTime::RFC3339, time() ),
                 'amount_paid'    => $order->get_total(),
                 'source'         => 'Shop-Payment',
                 'memo'           => $order->get_payment_method_title(),
