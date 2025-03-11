@@ -447,7 +447,7 @@ if ( !class_exists('RMA_WC_API') ) {
 				'customernumber'    => $customer_prefix . $order_id,
 				'name'              => ( $is_company ? $order->get_billing_company() : $order->get_billing_first_name() . ' ' . $order->get_billing_last_name() ),
 				'created'           => date('Y-m-d') . 'T00:00:00+01:00',
-				'salutation'        => ( 1 == get_post_meta( $order_id, '_billing_title', true ) ? __('Mr.', 'run-my-accounts-for-woocommerce') : __('Ms.', 'run-my-accounts-for-woocommerce') ),
+				'salutation'        => ( 1 == $order->get_meta( '_billing_title', true ) ? __('Mr.', 'run-my-accounts-for-woocommerce') : __('Ms.', 'run-my-accounts-for-woocommerce') ),
 				'firstname'         => $order->get_billing_first_name(),
 				'lastname'          => $order->get_billing_last_name(),
 				'address1'          => $order->get_billing_address_1(),
@@ -490,7 +490,7 @@ if ( !class_exists('RMA_WC_API') ) {
 			$order_payment_method = $order->get_payment_method();
 
 			// if order is done without user account
-			if ( 0 == get_post_meta( $order_id, '_customer_user', true ) ) {
+			if ( 0 == $order->get_meta( '_customer_user', true ) ) {
 
 				$settings = get_option('wc_rma_settings');
 
@@ -739,8 +739,9 @@ if ( !class_exists('RMA_WC_API') ) {
 					$order          = wc_get_order(  $order_id );
 					$note           = sprintf( esc_html_x( '%s %s created in Run my Accounts', 'Order Note', 'run-my-accounts-for-woocommerce'), $invoice_type, $invoice_number);
 					$order->add_order_note( $note );
+					$order->update_meta_data( '_rma_invoice', $invoice_number );
 
-					update_post_meta( $order_id, '_rma_invoice', $invoice_number );
+					$order->save();
 
 					unset( $order );
 
@@ -983,16 +984,24 @@ if ( !class_exists('RMA_WC_API') ) {
 		 */
 		public function write_log( &$values ): bool {
 
-			If( ! function_exists( 'wc_get_logger' ) ) {
+			If( ! function_exists( 'wc_get_logger' ) || empty( $values ) ) {
 				return false;
 			}
 
-			$message = sprintf( esc_html__( 'Status %s in section %s with ID xyz and message "%s" (mode: %s).', 'run-my-accounts-for-woocommerce'),
-			                    $values['status'] ,
+			// create the message
+			$message = sprintf( esc_html__( 'Section %s: status %s message "%s".', 'run-my-accounts-for-woocommerce'),
 			                    $values['section'],
-			                    $values['section_id'],
-			                    $values['message'],
-			                    $values['mode']
+			                    $values['status'],
+			                    $values['message']
+			);
+
+			// array with additional log information
+			$args = array(
+				'source'  => 'Run My Accounts',
+				'section' => $values['section'],
+				'ID'      => $values['section_id'],
+				'mode'    => $values['mode']
+
 			);
 
 			switch( $values['status'] ) {
@@ -1007,18 +1016,19 @@ if ( !class_exists('RMA_WC_API') ) {
 				 * wc_get_logger()->debug( '' ); debug-level messages
 				 */
 				case 'error':
-
-					wc_get_logger()->error( $message, array( 'source' => 'Run My Accounts' ) );
+					wc_get_logger()->error( $message, $args );
 
 					// send email on error
 					if ( SENDLOGEMAIL ) $this->send_log_email($values);
 
 					break;
 
-				default:
-					wc_get_logger()->info( $message, array( 'source' => 'Run My Accounts' ) );
+				case 'failed':
+					wc_get_logger()->warning( $message, $args );
 					break;
-
+				default:
+					wc_get_logger()->info( $message, $args );
+					break;
 			}
 
 			return true;

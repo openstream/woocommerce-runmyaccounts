@@ -132,7 +132,11 @@ if ( ! class_exists('RMA_WC_Frontend' ) ) {
         public function woocommerce_save_billing_fields( $order_id  ) {
 
             if ( ! empty( $_POST['billing_title'] ) ) {
-                update_post_meta( $order_id, '_billing_title', sanitize_text_field( $_POST['billing_title'] ) );
+
+	            $order = wc_get_order( $order_id );
+	            $order->update_meta_data( '_billing_title', sanitize_text_field( $_POST['billing_title'] ) );
+	            $order->save();
+
             }
 
         }
@@ -302,7 +306,8 @@ if ( ! class_exists('RMA_WC_Frontend' ) ) {
          */
         public function create_invoice_on_status_change( $order_id, $old_status, $new_status ) {
 
-            $invoice_number = get_post_meta( $order_id, '_rma_invoice', true );
+	        $order = wc_get_order( $order_id );
+	        $invoice_number = $order->get_meta( '_rma_invoice', true );
 
             if( !empty( $invoice_number ) || 'completed' != $new_status || !class_exists('RMA_WC_API') )
                 return false;

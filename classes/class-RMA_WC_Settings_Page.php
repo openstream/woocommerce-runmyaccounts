@@ -442,7 +442,7 @@ if ( !class_exists('RMA_WC_Settings_Page') ) {
 					'option_group' => $this->option_group_general,
 					'id'           => $id,
 					'value'        => $this->options_general[$id] ?? '',
-					'description'  => esc_html__('Please select the payment options you want to exclude?', 'run-my-accounts-for-woocommerce' ),
+					'description'  => esc_html__('Please select the payment options you want to exclude.', 'run-my-accounts-for-woocommerce' ),
 				)
 			);
 

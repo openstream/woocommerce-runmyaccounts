@@ -31,6 +31,18 @@ if ( ! defined('RMA_WC_PFAD') ) {
 }
 
 /**
+ * Declare WooCommerce HPOS compatibility
+ *
+ * @since 1.8.0
+ */
+function rma_declare_hpos() : void{
+	if ( class_exists( \Automattic\WooCommerce\Utilities\FeaturesUtil::class ) ) {
+		\Automattic\WooCommerce\Utilities\FeaturesUtil::declare_compatibility( 'custom_order_tables', __FILE__, true );
+	}
+}
+add_action( 'before_woocommerce_init', 'rma_declare_hpos');
+
+/**
  * Load the main file only if WooCommerce is full loaded
  *
  * @return void

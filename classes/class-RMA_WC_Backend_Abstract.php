@@ -140,7 +140,8 @@ if ( !class_exists('RMA_WC_Backend_Abstract') ) {
 
             foreach ( $post_ids as $post_id ) {
 
-                $invoice_number = get_post_meta( $post_id, '_rma_invoice' );
+	            $order = wc_get_order( $post_id );
+	            $invoice_number = $order->get_meta( '_rma_invoice', true );
 
                 // order has already an invoice
                 if( !empty( $invoice_number ) ) {
@@ -211,7 +212,7 @@ if ( !class_exists('RMA_WC_Backend_Abstract') ) {
             global $theorder;
 
             // bail if the order has been paid for or invoice was already created
-            if ( $theorder->is_paid() || !empty( get_post_meta( $theorder->get_id(), '_rma_invoice', true ) ) ){
+            if ( $theorder->is_paid() || !empty( $theorder->get_meta( '_rma_invoice', true ) ) ){
                 return $actions;
             }
 
@@ -254,7 +255,10 @@ if ( !class_exists('RMA_WC_Backend_Abstract') ) {
 
             switch ( $column ) {
                 case 'rma_invoice' :
-                    echo get_post_meta( $post->ID, '_rma_invoice', true );
+
+	                $order = wc_get_order( $post->ID );
+	                echo $order->get_meta( '_rma_invoice', true );
+
                 default:
             }
 

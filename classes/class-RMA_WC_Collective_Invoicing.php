@@ -196,19 +196,24 @@ class RMA_WC_Collective_Invoicing {
                 break;
         }
 
-        $orders_no_invoice = get_posts( array(
-                                            'numberposts'     => -1,
-                                            'post_type'       => 'shop_order',
-                                            'post_status'     => 'wc-completed',
-                                            'meta_query'      => array(
-                                                'relation'    => 'AND',
-                                                array(
-                                                    'key'     => '_rma_invoice',
-                                                    'compare' => 'NOT EXISTS',
-                                                ),
-                                            )
-                                        )
-        );
+	    $orders_no_invoice = wc_get_orders(
+		    array(
+			    'type' => 'shop_order',
+			    'limit' => -1,
+			    'status' => array(
+				    'wc-completed'
+			    ),
+			    array(
+				    'meta_query'      => array(
+					    'relation'    => 'AND',
+					    array(
+						    'key'     => '_rma_invoice',
+						    'compare' => 'NOT EXISTS',
+					    ),
+				    )
+			    )
+		    )
+	    );
 
         $cumulated_orders_by_customer_id = array();
 

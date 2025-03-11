@@ -80,7 +80,8 @@ class RMA_WC_Payment {
         if( !$this->order_id ) return false;
 
         // get the Run My Accounts invoice number
-        $this->invoice = get_post_meta( $this->order_id, '_rma_invoice', true );
+	    $order = wc_get_order( $this->order_id );
+	    $this->invoice = $order->get_meta('_rma_invoice', true );
 
         $data = self::get_payment_details();
         $url  = RMA_WC_API::get_caller_url() . RMA_MANDANT . '/invoices/' . $this->invoice . '/payments?api_key=' . RMA_APIKEY;
@@ -129,11 +130,11 @@ class RMA_WC_Payment {
         if ( ( 'error' == LOGLEVEL && 'error' == $status ) || 'complete' == LOGLEVEL ) {
 
             $log_values = array(
-                'status' => $status,
+                'status'     => $status,
                 'section_id' => $this->order_id,
-                'section' => esc_html_x('Payment', 'Log Section', 'run-my-accounts-for-woocommerce'),
-                'mode' => (new RMA_WC_API)->rma_mode(),
-                'message' => $message );
+                'section'    => esc_html_x('Payment', 'Log Section', 'run-my-accounts-for-woocommerce'),
+                'mode'       => (new RMA_WC_API)->rma_mode(),
+                'message'    => $message );
 
             (new RMA_WC_API)->write_log($log_values);
 
