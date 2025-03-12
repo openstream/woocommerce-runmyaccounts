@@ -30,7 +30,8 @@ if ( is_admin() ) {
 		global $wpdb;
 
 		// drop table
-		$wpdb->query( 'DROP TABLE IF EXISTS ' . $wpdb->prefix . 'rma_wc_log;');
+		$table_name = $wpdb->prefix . 'rma_wc_log';
+		$wpdb->query( $wpdb->prepare( 'DROP TABLE IF EXISTS %i', $table_name ) ); // phpcs:ignore WordPress.DB.DirectDatabaseQuery.NoCaching, WordPress.DB.DirectDatabaseQuery.DirectQuery, WordPress.DB.DirectDatabaseQuery.SchemaChange
 
 		delete_option('wc_rma_db_version');
 

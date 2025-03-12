@@ -38,7 +38,8 @@ if ( !class_exists('RMA_WC_Backend_Abstract') ) {
 			    global $wpdb;
 
 			    // drop table
-			    $wpdb->query('DROP TABLE IF EXISTS ' . $wpdb->prefix . 'rma_wc_log;');
+			    $table_name = $wpdb->prefix . 'rma_wc_log';
+			    $wpdb->query( $wpdb->prepare( 'DROP TABLE IF EXISTS %i', $table_name ) ); // phpcs:ignore WordPress.DB.DirectDatabaseQuery.NoCaching, WordPress.DB.DirectDatabaseQuery.DirectQuery, WordPress.DB.DirectDatabaseQuery.SchemaChange
 
 			    // delete all options
 			    delete_option('wc_rma_db_version');
