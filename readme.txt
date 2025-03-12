@@ -1,7 +1,7 @@
 === Run my Accounts for WooCommerce===
 * Contributors: openstream
 * Tags: Run my Accounts, WooCommerce, Billing
-* Requires at least: 4.7
+* Requires at least: 6.2
 * Tested up to: 6.8
 * Stable tag: 1.8.0
 * Requires PHP: 7.2
@@ -54,7 +54,10 @@ Please send a request to the Openstream Internet Solutions. We provide customiza
 
 == Changelog ==
 = 1.8.0 =
+* Added support for WooCommerce HPOS
 * Moved language handling to [GlotPress](https://translate.wordpress.org/projects/wp-plugins/run-my-accounts-for-woocommerce/)
+* Bumped required WordPress version to 6.2
+* Bumped required WooCommerce version to 8.2
 
 = 1.7.1 =
 * Fix - added handling cURL error on settings page
