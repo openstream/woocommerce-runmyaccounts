@@ -107,7 +107,7 @@ class RMA_WC_Rental_And_Booking {
                                  sprintf( __( 'Pickup Location: %s', 'run-my-accounts-for-woocommerce' ), $pickup_location ) . "\n" .
                                  sprintf( __( 'Pickup Date/Time: %s', 'run-my-accounts-for-woocommerce' ), $pickup_date ) . "\n" .
                                  sprintf( __( 'Return Date/Time: %s', 'run-my-accounts-for-woocommerce' ), $return_date ) . "\n" .
-                                 sprintf( __( 'Total Days: %s (%s)', 'run-my-accounts-for-woocommerce' ), $days, $total_days );
+                                 sprintf( __( 'Total Days: %1$s (%2$s)', 'run-my-accounts-for-woocommerce' ), $days, $total_days );
 
         // return modified array
         return $part;

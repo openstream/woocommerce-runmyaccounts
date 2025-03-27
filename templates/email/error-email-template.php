@@ -7,9 +7,9 @@
         <th><?php echo esc_html_x('Message', 'error email body', 'run-my-accounts-for-woocommerce') ?></th>
     </tr>
     <tr>
-        <td><?php echo $values['mode']; ?></td>
-        <td><?php echo $values['section']; ?></td>
-        <td><?php echo $values['section_id']; ?></td>
-        <td><?php echo $values['message']; ?></td>
+        <td><?php sanitize_text_field( $values['mode'] ); ?></td>
+        <td><?php sanitize_text_field( $values['section'] ); ?></td>
+        <td><?php sanitize_text_field( $values['section_id'] ); ?></td>
+        <td><?php sanitize_text_field( $values['message'] ); ?></td>
     </tr>
 </table>

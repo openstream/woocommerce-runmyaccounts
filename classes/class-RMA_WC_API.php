@@ -126,8 +126,8 @@ if ( !class_exists('RMA_WC_API') ) {
 
 				if ( is_wp_error( $response ) ) {
 
-					$error_string = $response->get_error_message();
-					echo '<div id="message" class="error"><p>' . $error_string . '</p></div>';
+					$error_string = sanitize_text_field( $response->get_error_message() );
+					echo '<div id="message" class="error"><p>' . esc_html( $error_string ) . '</p></div>';
 
 					return false;
 
@@ -162,7 +162,7 @@ if ( !class_exists('RMA_WC_API') ) {
 				if ( !$xml ) {
 					// ToDO: Add this information to error log
 					foreach( libxml_get_errors() as $error ) {
-						echo "\t", $error->message;
+						echo "\t", esc_html( $error->message );
 					}
 
 					return false;
@@ -266,7 +266,7 @@ if ( !class_exists('RMA_WC_API') ) {
 				if ( !$xml ) {
 					// ToDO: Add this information to error log
 					foreach( libxml_get_errors() as $error ) {
-						echo "\t", $error->message;
+						echo "\t", esc_html( $error->message );
 					}
 
 					return false;
@@ -731,13 +731,13 @@ if ( !class_exists('RMA_WC_API') ) {
 				$invoice_type   = $collective_invoice ? esc_html_x( 'Collective invoice', 'Order Note', 'run-my-accounts-for-woocommerce') : esc_html_x( 'Invoice', 'Order Note', 'run-my-accounts-for-woocommerce') ;
 
 				$invoice_number = $data[ 'invoice' ][ 'invnumber' ];
-				$message        = sprintf( esc_html_x( '%s %s created', 'Log', 'run-my-accounts-for-woocommerce'), $collective_invoice, $invoice_number);
+				$message        = sprintf( esc_html_x( '%1$s %2$s created', 'Log', 'run-my-accounts-for-woocommerce'), $collective_invoice, $invoice_number);
 
 				// add order note to each order
 				foreach ( $order_ids as $order_id ) {
 
 					$order          = wc_get_order(  $order_id );
-					$note           = sprintf( esc_html_x( '%s %s created in Run my Accounts', 'Order Note', 'run-my-accounts-for-woocommerce'), $invoice_type, $invoice_number);
+					$note           = sprintf( esc_html_x( '%1$s %2$s created in Run my Accounts', 'Order Note', 'run-my-accounts-for-woocommerce'), $invoice_type, $invoice_number);
 					$order->add_order_note( $note );
 					$order->update_meta_data( '_rma_invoice', $invoice_number );
 
@@ -989,7 +989,7 @@ if ( !class_exists('RMA_WC_API') ) {
 			}
 
 			// create the message
-			$message = sprintf( esc_html__( 'Section %s: status %s message "%s".', 'run-my-accounts-for-woocommerce'),
+			$message = sprintf( esc_html__( 'Section %1$s: status %2$s message "%3$s".', 'run-my-accounts-for-woocommerce'),
 			                    $values['section'],
 			                    $values['status'],
 			                    $values['message']

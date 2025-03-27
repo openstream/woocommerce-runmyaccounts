@@ -111,7 +111,7 @@ class RMA_WC_Payment {
 
             $status         = 'paid';
 
-            $message        = sprintf( esc_html_x( 'Payment %s %s booked on account %s', 'Order Note', 'run-my-accounts-for-woocommerce'), $data['payment']['amount_paid'], $data['payment']['currency'], $data['payment']['payment_accno'] );
+            $message        = sprintf( esc_html_x( 'Payment %1$s %2$s booked on account %3$s', 'Order Note', 'run-my-accounts-for-woocommerce'), $data['payment']['amount_paid'], $data['payment']['currency'], $data['payment']['payment_accno'] );
 
             // add order note
             $order          = wc_get_order(  $this->order_id );
