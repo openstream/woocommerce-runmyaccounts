@@ -246,11 +246,10 @@ if ( !class_exists('RMA_WC_Backend_Abstract') ) {
          *
          * @return array
          */
-        public function add_column_to_order_table( $columns ) {
+        public function add_column_to_order_table( $columns ): array {
 
-            $columns = RMA_WC_Frontend::array_insert( $columns, 'order_total', 'rma_invoice', __( 'Invoice #', 'run-my-accounts-for-woocommerce'));
+			return RMA_WC_Frontend::array_insert($columns, 'order_total', 'rma_invoice', __('Invoice #', 'run-my-accounts-for-woocommerce'));
 
-            return $columns;
         }
         public function add_value_to_order_table_row( $column ) {
 
@@ -288,8 +287,6 @@ if ( !class_exists('RMA_WC_Backend_Abstract') ) {
 
 
 	    }
-
-
 
         /**
          * Update user profile in Run my Accounts
@@ -402,9 +399,10 @@ if ( !class_exists('RMA_WC_Backend_Abstract') ) {
          * Save custom user meta field.
          *
          * @param $user_id int the ID of the current user.
+         *
          * @return bool Meta ID if the key didn't exist, true on successful update, false on failure.
          */
-        public function usermeta_form_field_update( $user_id ) {
+        public function usermeta_form_field_update( int $user_id ): bool {
             // check that the current user have the capability to edit the $user_id
             if (!current_user_can('edit_user', $user_id))
                 return false;
