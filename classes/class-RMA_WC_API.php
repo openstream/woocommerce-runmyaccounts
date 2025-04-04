@@ -578,10 +578,12 @@ if ( !class_exists('RMA_WC_API') ) {
 				// make sure the product is still available in WooCommerce
 				if( is_object( $product ) ) {
 
+					$qty = $item->get_quantity();
+
 					$order_details_products[ $product->get_sku() ] = array(
 						'name'     => $item->get_name(),
-						'quantity' => $item->get_quantity(),
-						'price'    => wc_format_decimal( $product->get_price(), 2 ),
+						'quantity' => $qty,
+						'price'    => wc_format_decimal( $item->get_total() / $qty, 2 ),
 						'item_id'  => $item_id
 					);
 
