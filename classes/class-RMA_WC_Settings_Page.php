@@ -154,6 +154,8 @@ if ( !class_exists('RMA_WC_Settings_Page') ) {
 
 			$this->options_payment_gateways();
 
+			$this->options_tax_accounts();
+
 			register_setting(
 				$this->option_group_collective_invoice, // Option group
 				$this->option_group_collective_invoice, // Option name
@@ -809,6 +811,67 @@ if ( !class_exists('RMA_WC_Settings_Page') ) {
 
 		}
 
+        public function options_tax_accounts() {
+
+	        $section = 'accounting_settings_tax_account';
+
+	        add_settings_section(
+		        $section, // ID
+		        esc_html__('Tax Account', 'run-my-accounts-for-woocommerce'), // Title
+		        array( $this, 'section_info_tax' ), // Callback
+		        $this->option_page_accounting // Page
+	        );
+
+	        // Get all tax classes incl. standard
+	        $tax_classes = WC_Tax::get_tax_classes();
+	        array_unshift( $tax_classes, '' );
+
+	        $all_tax_rates = array();
+
+	        foreach ( $tax_classes as $tax_class ) {
+		        $rates = WC_Tax::get_rates_for_tax_class( $tax_class );
+		        $all_tax_rates = array_merge( $all_tax_rates, $rates );
+	        }
+
+	        // Add settings fields for all tax rates
+	        foreach ( $all_tax_rates as $rate ) {
+
+		        $tax_rate_id = $rate->rate_id ?? $rate->tax_rate_id ?? 0;
+		        if ( ! $tax_rate_id ) {
+			        continue;
+		        }
+
+		        $field_id = 'tax_rate_' . $tax_rate_id . '_account';
+
+		        $label = sprintf( '%1$s (%2$s) %3$s',
+			        esc_html( $rate->tax_rate_country ?? '' ),
+                    $rate->tax_rate ?? '',
+			        $rate->tax_rate_class ?? ''
+		        );
+
+		        if( ! $rate->tax_rate_class ) {
+
+			        $label = esc_html( $rate->tax_rate_country ) . ' (' . $rate->tax_rate . ')';
+
+		        }
+
+		        add_settings_field(
+			        $field_id,
+			        $label,
+			        array( $this, 'option_input_text_cb' ),
+			        $this->option_page_accounting,
+			        $section,
+			        array(
+				        'option_group' => $this->option_group_accounting,
+				        'id'           => $field_id,
+				        'value'        => $this->options_accounting[ $field_id ] ?? '',
+				        'placeholder'  => __( 'e.g. 8400', 'run-my-accounts-for-woocommerce' ),
+			        )
+		        );
+	        }
+
+        }
+
 		public function options_collective_invoice() {
 
 			$section = 'collective_invoice_settings';
@@ -918,6 +981,10 @@ if ( !class_exists('RMA_WC_Settings_Page') ) {
 
 		public function section_info_payment() {
 			esc_html_e('You can specify a dedicated payment account for each active payment gateway.', 'run-my-accounts-for-woocommerce');
+		}
+
+		public function section_info_tax() {
+			esc_html_e('You can specify a dedicated account for each tax rate.', 'run-my-accounts-for-woocommerce');
 		}
 
 		/**
