@@ -358,7 +358,8 @@ if ( !class_exists('RMA_WC_API') ) {
 					    !array_key_exists( $part_number, $rma_part_numbers ) )
 						$part_number = $fallback_sku;
 
-					$data['part'][] = apply_filters( 'rma_invoice_part', array (
+
+					$temp_part = array (
 						'partnumber'   => $part_number,
 						'description'  => $part[ 'name' ],
 						'unit'         => '',
@@ -367,7 +368,16 @@ if ( !class_exists('RMA_WC_API') ) {
 						'discount'     => '0.0',
 						'itemnote'     => '',
 						'price_update' => '',
-					), $part[ 'item_id' ] ?? null );
+					);
+
+					// Add the tax account if needed
+					// since 1.10.0
+					if( ! empty( $part[ 'tax_accnos' ] )) {
+						$temp_part[ 'tax_accnos' ] = $part[ 'tax_accnos' ];
+					}
+
+					$data['part'][] = apply_filters( 'rma_invoice_part', $temp_part , $part[ 'item_id' ] ?? null );
+
 				endforeach;
 
 			endif;
@@ -558,7 +568,7 @@ if ( !class_exists('RMA_WC_API') ) {
 			// Calculate duedate (now + payment period)
 			$order_details[ 'duedate' ]        = gmdate( DateTime::RFC3339, time() + ( $payment_period*60*60*24 ) );
 
-			// add shipping address if needed
+			// add a shipping address if needed
 			$order_details[ 'notes' ]          = '';
 			if( $order->needs_shipping_address() ) {
 
@@ -581,30 +591,50 @@ if ( !class_exists('RMA_WC_API') ) {
 		 *
 		 * @since 1.7.0
 		 */
-		public static function get_order_details_products( int $order_id, array $order_details_products = array() ): array
-		{
+		public static function get_order_details_products( int $order_id, array $order_details_products = array() ): array {
+
+			$option_accounting = get_option( 'wc_rma_settings_accounting' );
 
 			$order = wc_get_order( $order_id );
 
 			// add line items
 			foreach ( $order->get_items() as $item_id => $item ) {
+
 				$product       = $item->get_product();
 
-				// make sure the product is still available in WooCommerce
-				if( is_object( $product ) ) {
+				if ( ! is_a( $item, 'WC_Order_Item_Product' ) || ! is_object( $product ) ) {
+					continue; // only order items of type product
+				}
 
-					$qty = $item->get_quantity();
+				$qty = $item->get_quantity();
 
-					$order_details_products[ $product->get_sku() ] = array(
-						'name'     => $item->get_name(),
-						'quantity' => $qty,
-						'price'    => wc_format_decimal( $item->get_total() / $qty, 2 ),
-						'item_id'  => $item_id
-					);
+				$order_details_products[ $product->get_sku() ] = array(
+					'name'       => $item->get_name(),
+					'quantity'   => $qty,
+					'price'      => wc_format_decimal( $item->get_total() / $qty, 2 ),
+					'item_id'    => $item_id,
+				);
+
+				$taxes = $item->get_taxes();
+
+				// Loop through taxes to get the tax_rate_id
+				foreach ( $taxes[ 'total' ] as $tax_rate_id => $amount ) {
+
+					$tax_rate_id = absint( $tax_rate_id );
+
+					$account = $option_accounting[ 'tax_rate_' . $tax_rate_id . '_account' ] ?? '';
+
+					// Add tax account number to item if available
+					if( ! empty( $account ) ) {
+
+						$order_details_products[ $product->get_sku() ][ 'tax_accnos' ] = $account;
+
+					}
 
 				}
 
 			}
+
 
 			return $order_details_products;
 
@@ -708,7 +738,7 @@ if ( !class_exists('RMA_WC_API') ) {
 
 			$url  = self::get_caller_url() . RMA_MANDANT . '/invoices?api_key=' . RMA_APIKEY;
 
-			//create the xml document
+			//create the XML document
 			$xml  = new DOMDocument('1.0', 'UTF-8');
 
 			// create root element invoice and child

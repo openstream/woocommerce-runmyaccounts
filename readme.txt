@@ -54,7 +54,7 @@ Please send a request to the Openstream Internet Solutions. We provide customiza
 
 == Changelog ==
 = 1.10.0 =
-* Added accounts for VAT accounting
+* Added Run my Accounts accounts for VAT
 
 = 1.9.1 =
 * Fixed a fatal error that could occur on the log page
