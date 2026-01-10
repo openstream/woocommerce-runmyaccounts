@@ -348,7 +348,8 @@ if ( !class_exists('RMA_WC_Backend_Abstract') ) {
                             1 => __('Mr.', 'run-my-accounts-for-woocommerce'),
                             2 => __('Ms.', 'run-my-accounts-for-woocommerce')
                         )
-                    )
+                    ),
+                    'description' => ''
                 );
             }
 
