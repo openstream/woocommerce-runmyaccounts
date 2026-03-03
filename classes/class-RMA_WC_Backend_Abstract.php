@@ -280,7 +280,7 @@ if ( !class_exists('RMA_WC_Backend_Abstract') ) {
 		    switch ( $column ) {
 			    case 'rma_invoice' :
 
-				    echo $wc_order_obj->get_meta( '_rma_invoice', true );
+				    echo esc_attr( $wc_order_obj->get_meta( '_rma_invoice', true ) );
 
 			    default:
 		    }
