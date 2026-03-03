@@ -84,6 +84,10 @@ if ( !class_exists('RMA_WC_Backend_Abstract') ) {
 	            // add bulk action to order page
                 add_filter( 'bulk_actions-edit-shop_order', array( $this, 'create_invoice_bulk_actions_edit_product'), 20, 1 );
                 add_filter( 'handle_bulk_actions-edit-shop_order', array( $this, 'create_invoice_handle_bulk_action_edit_shop_order'), 10, 3 );
+
+                // add bulk action to HPOS order page
+                add_filter( 'bulk_actions-woocommerce_page_wc-orders', array( $this, 'create_invoice_bulk_actions_edit_product'), 20, 1 );
+                add_filter( 'handle_bulk_actions-woocommerce_page_wc-orders', array( $this, 'create_invoice_handle_bulk_action_edit_shop_order'), 10, 3 );
                 add_action( 'admin_notices', array( $this, 'create_invoice_bulk_action_admin_notice' ) );
 
             }
