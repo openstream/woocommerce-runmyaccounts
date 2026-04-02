@@ -13,7 +13,7 @@ if ( !class_exists('RMA_WC_API') ) {
 			// define constants only if they are not defined yet
 			// for this we check for two common constants which definitely needs to be defined
 			if ( !defined( 'RMA_MANDANT' ) || !defined( 'RMA_INVOICE_PREFIX' ) )
-				self::define_constants();
+				$this->define_constants();
 
 		}
 
@@ -999,7 +999,7 @@ if ( !class_exists('RMA_WC_API') ) {
 		 *
 		 * @return bool
 		 */
-		public function write_log( &$values ): bool {
+		public static function write_log( &$values ): bool {
 
 			If( ! function_exists( 'wc_get_logger' ) || empty( $values ) ) {
 				return false;
@@ -1036,7 +1036,7 @@ if ( !class_exists('RMA_WC_API') ) {
 					wc_get_logger()->error( $message, $args );
 
 					// send email on error
-					if ( SENDLOGEMAIL ) $this->send_log_email($values);
+					if ( SENDLOGEMAIL ) self::send_log_email($values);
 
 					break;
 
@@ -1058,7 +1058,7 @@ if ( !class_exists('RMA_WC_API') ) {
 		 *
 		 * @return bool
 		 */
-		public function send_log_email( &$values ): bool {
+		public static function send_log_email( &$values ): bool {
 
 			ob_start();
 			include( plugin_dir_path( __FILE__ ) . '../templates/email/error-email-template.php');
